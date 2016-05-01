@@ -1,0 +1,124 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using WindowsFirewallHelper.Addresses;
+
+namespace WindowsFirewallHelper.Helpers
+{
+    internal static class AddressHelper
+    {
+        public static ushort[] StringToPorts(string str)
+        {
+            if (string.IsNullOrEmpty(str?.Trim()))
+            {
+                return new ushort[0];
+            }
+            var ports = new List<ushort>();
+            foreach (var port in str.Split(','))
+            {
+                ushort p;
+                if (ushort.TryParse(port, out p))
+                {
+                    ports.Add(p);
+                }
+            }
+            return ports.ToArray();
+        }
+
+
+        public static string PortsToString(ushort[] ports)
+        {
+            var strList = new string[ports.Length];
+            for (var i = 0; i < ports.Length; i++)
+            {
+                strList[i] = ports[i].ToString();
+            }
+            return strList.Length == 0 ? null : string.Join(",", strList);
+        }
+
+        public static IAddress[] StringToAddresses(string str)
+        {
+            var remoteAddresses = new List<IAddress>();
+            foreach (var remoteAddress in str.Split(','))
+            {
+                SingleIP ip;
+                IPRange range;
+                NetworkAddress network;
+                if (IPRange.TryParse(remoteAddress, out range))
+                {
+                    remoteAddresses.Add(range);
+                }
+                else if (SingleIP.TryParse(remoteAddress, out ip))
+                {
+                    remoteAddresses.Add(ip);
+                }
+                else if (NetworkAddress.TryParse(remoteAddress, out network))
+                {
+                    remoteAddresses.Add(network);
+                }
+            }
+            return remoteAddresses.ToArray();
+        }
+
+
+        public static string AddressesToString(IAddress[] rules)
+        {
+            var addresses = new List<string>();
+            foreach (var address in rules)
+            {
+                if (SingleIP.Any.Equals(address))
+                {
+                    addresses.Clear();
+                    addresses.Add(address.ToString());
+                    break;
+                }
+                addresses.Add(address.ToString());
+            }
+            return string.Join(",", addresses.ToArray());
+        }
+
+        public static IPAddress Max(IPAddress val1, IPAddress val2)
+        {
+            if (val1.AddressFamily != val2.AddressFamily)
+            {
+                throw new ArgumentException("Addresses of different family can not be compared.");
+            }
+            var bytes1 = val1.GetAddressBytes();
+            var bytes2 = val2.GetAddressBytes();
+            for (var i = 0; i < bytes1.Length; i++)
+            {
+                if (bytes1[i] > bytes2[i])
+                {
+                    return val1;
+                }
+                if (bytes2[i] > bytes1[i])
+                {
+                    return val2;
+                }
+            }
+            return val1;
+        }
+
+        public static IPAddress Min(IPAddress val1, IPAddress val2)
+        {
+            if (val1.AddressFamily != val2.AddressFamily)
+            {
+                throw new ArgumentException("Addresses of different family can not be compared.");
+            }
+            var bytes1 = val1.GetAddressBytes();
+            var bytes2 = val2.GetAddressBytes();
+            for (var i = 0; i < bytes1.Length; i++)
+            {
+                if (bytes1[i] < bytes2[i])
+                {
+                    return val1;
+                }
+                if (bytes2[i] < bytes1[i])
+                {
+                    return val2;
+                }
+            }
+            return val1;
+        }
+    }
+}

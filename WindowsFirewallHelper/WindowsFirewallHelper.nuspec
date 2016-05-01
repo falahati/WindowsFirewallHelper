@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>WindowsFirewallHelper</id>
+        <version>0.0</version>
+        <title>Windows Firewall Helper (Win XP+)</title>
+        <authors>Soroush Falahati</authors>
+        <licenseUrl>https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/falahati/WindowsFirewallHelper</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list. Supporting Windows XP+.</description>
+        <language>en-US</language>
+    </metadata>
+    <files>
+		<file src="readme.txt" target="" />
+		<file src="bin/Release/Interop.NetFwTypeLib.dll" target="lib\net20" />
+    </files>
+</package>

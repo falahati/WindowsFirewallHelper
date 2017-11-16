@@ -10,11 +10,6 @@ namespace WindowsFirewallHelper.Addresses
     /// </summary>
     public class NetworkAddress : IAddress
     {
-        /// <summary>
-        ///     A static instance of the <see cref="NetworkAddress" /> class representing the local subnet
-        /// </summary>
-        public static readonly NetworkAddress LocalSubnet = new NetworkAddress(IPAddress.Any, IPAddress.Any);
-
         private int? _hashCode;
 
         /// <summary>
@@ -109,10 +104,6 @@ namespace WindowsFirewallHelper.Addresses
         /// </returns>
         public override string ToString()
         {
-            if (Equals(LocalSubnet))
-            {
-                return "LocalSubnet";
-            }
             if (SubnetMask.Equals(IPAddress.None))
             {
                 return Address.ToString();
@@ -182,11 +173,6 @@ namespace WindowsFirewallHelper.Addresses
             var ips = str.Split('/');
             if (ips.Length == 1)
             {
-                if (ips[0].Trim().ToLower() == "LocalSubnet".ToLower())
-                {
-                    addressNetwork = LocalSubnet;
-                    return true;
-                }
                 IPAddress address;
                 if (IPAddress.TryParse(ips[0], out address))
                 {

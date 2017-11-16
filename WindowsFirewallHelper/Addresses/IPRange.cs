@@ -6,9 +6,9 @@ using WindowsFirewallHelper.Helpers;
 namespace WindowsFirewallHelper.Addresses
 {
     /// <summary>
-    ///     A Class representing a range of Internet Protocol addresses
+    ///     A class representing a range of Internet Protocol addresses
     /// </summary>
-    public sealed class IPRange : IAddress
+    public class IPRange : IAddress
     {
         private int? _hashCode;
 

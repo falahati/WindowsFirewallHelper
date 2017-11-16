@@ -41,10 +41,35 @@ namespace WindowsFirewallHelper.Helpers
             var remoteAddresses = new List<IAddress>();
             foreach (var remoteAddress in str.Split(','))
             {
-                SingleIP ip;
+                DNSService dns;
+                DHCPService dhcp;
+                WINSService wins;
+                LocalSubnet localSubnet;
+                DefaultGateway defaultGateway;
                 IPRange range;
+                SingleIP ip;
                 NetworkAddress network;
-                if (IPRange.TryParse(remoteAddress, out range))
+                if (DNSService.TryParse(remoteAddress, out dns))
+                {
+                    remoteAddresses.Add(dns);
+                }
+                else if (DHCPService.TryParse(remoteAddress, out dhcp))
+                {
+                    remoteAddresses.Add(dhcp);
+                }
+                else if (WINSService.TryParse(remoteAddress, out wins))
+                {
+                    remoteAddresses.Add(wins);
+                }
+                else if (LocalSubnet.TryParse(remoteAddress, out localSubnet))
+                {
+                    remoteAddresses.Add(localSubnet);
+                }
+                else if (DefaultGateway.TryParse(remoteAddress, out defaultGateway))
+                {
+                    remoteAddresses.Add(defaultGateway);
+                }
+                else if (IPRange.TryParse(remoteAddress, out range))
                 {
                     remoteAddresses.Add(range);
                 }

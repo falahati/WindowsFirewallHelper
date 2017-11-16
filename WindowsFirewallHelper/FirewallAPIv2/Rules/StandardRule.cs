@@ -303,7 +303,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                         {
                             return FirewallScope.All;
                         }
-                        if (NetworkAddress.LocalSubnet.Equals(address))
+                        if (address is LocalSubnet)
                         {
                             return FirewallScope.LocalSubnet;
                         }
@@ -319,7 +319,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                         RemoteAddresses = new IAddress[] {SingleIP.Any};
                         break;
                     case FirewallScope.LocalSubnet:
-                        RemoteAddresses = new IAddress[] {NetworkAddress.LocalSubnet};
+                        RemoteAddresses = new IAddress[] {new LocalSubnet()};
                         break;
                     default:
                         throw new ArgumentException("Use the RemoteAddresses property to set the exact remote addresses");

@@ -40,6 +40,12 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addresses\DefaultGateway.cs" />
+    <Compile Include="Addresses\DNSService.cs" />
+    <Compile Include="Addresses\LocalSubnet.cs" />
+    <Compile Include="Addresses\SpecialAddress.cs" />
+    <Compile Include="Addresses\WINSService.cs" />
+    <Compile Include="Addresses\DHCPService.cs" />
     <Compile Include="Addresses\SingleIP.cs" />
     <Compile Include="APIVersion.cs" />
     <Compile Include="FirewallAPIv2\EdgeTraversalAction.cs" />

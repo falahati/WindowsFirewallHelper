@@ -224,7 +224,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                 }
                 if (value == FirewallScope.LocalSubnet)
                 {
-                    RemoteAddresses = new IAddress[] {NetworkAddress.LocalSubnet};
+                    RemoteAddresses = new IAddress[] {new LocalSubnet()};
                     UnderlyingObject.Scope = NET_FW_SCOPE_.NET_FW_SCOPE_LOCAL_SUBNET;
                 }
                 else

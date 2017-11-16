@@ -4,7 +4,10 @@ using System.Net;
 
 namespace WindowsFirewallHelper.Addresses
 {
-    internal class SingleIP : IPAddress, IAddress
+    /// <summary>
+    ///     A class representing a Internet Protocol address
+    /// </summary>
+    public class SingleIP : IPAddress, IAddress
     {
         /// <summary>
         ///     Provides an IP address that matches any IPAddress. This field is read-only.
@@ -43,8 +46,7 @@ namespace WindowsFirewallHelper.Addresses
         /// </summary>
         // ReSharper disable once InconsistentNaming
         [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] public new static readonly SingleIP IPv6Any = FromIPAddress(IPAddress.IPv6Any);
-
-
+        
         /// <summary>
         ///     Creates a new instance of the SingleIP class with IP Address passed as an integer value.
         /// </summary>

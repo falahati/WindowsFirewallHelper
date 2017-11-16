@@ -26,21 +26,34 @@ namespace WindowsFirewallHelper
             lock (_syncLock)
             {
                 foreach (var item in newItems)
-                {
                     if (!EnumerableHelper.Contains(this, item))
-                    {
                         Add(item);
-                    }
-                }
                 var array = ToArray();
                 foreach (var item in array)
-                {
                     if (!EnumerableHelper.Contains(newItems, item))
-                    {
                         Remove(item);
-                    }
-                }
             }
+        }
+
+        /// <summary>
+        ///     Creates an array from the current collection
+        /// </summary>
+        /// <returns>An array that contains the elements from the current collection.</returns>
+        public T[] ToArray()
+        {
+            return EnumerableHelper.EnumerableToArray(this);
+        }
+
+        /// <summary>
+        ///     Removes all elements from the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" />.
+        /// </summary>
+        protected override void ClearItems()
+        {
+            var items = ToArray();
+            base.ClearItems();
+            foreach (var item in items)
+                ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
+                    ActiveCollectionChangeType.Removed, item));
         }
 
         /// <summary>
@@ -56,26 +69,6 @@ namespace WindowsFirewallHelper
         {
             base.InsertItem(index, item);
 
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Added, item));
-        }
-
-        /// <summary>
-        ///     Replaces the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to replace.</param>
-        /// <param name="item">The new value for the element at the specified index. The value can be null for reference types.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        ///     <paramref name="index" /> is less than zero.-or-
-        ///     <paramref name="index" /> is greater than <see cref="P:WindowsFirewallHelper.Helpers.ActiveCollection.Count" />.
-        /// </exception>
-        protected override void SetItem(int index, T item)
-        {
-            var replaced = Items[index];
-            base.SetItem(index, item);
-
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Removed, replaced));
             ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
                 ActiveCollectionChangeType.Added, item));
         }
@@ -98,26 +91,23 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Removes all elements from the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" />.
+        ///     Replaces the element at the specified index.
         /// </summary>
-        protected override void ClearItems()
+        /// <param name="index">The zero-based index of the element to replace.</param>
+        /// <param name="item">The new value for the element at the specified index. The value can be null for reference types.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     <paramref name="index" /> is less than zero.-or-
+        ///     <paramref name="index" /> is greater than <see cref="P:WindowsFirewallHelper.Helpers.ActiveCollection.Count" />.
+        /// </exception>
+        protected override void SetItem(int index, T item)
         {
-            var items = ToArray();
-            base.ClearItems();
-            foreach (var item in items)
-            {
-                ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                    ActiveCollectionChangeType.Removed, item));
-            }
-        }
+            var replaced = Items[index];
+            base.SetItem(index, item);
 
-        /// <summary>
-        ///     Creates an array from the current collection
-        /// </summary>
-        /// <returns>An array that contains the elements from the current collection.</returns>
-        public T[] ToArray()
-        {
-            return EnumerableHelper.EnumerableToArray(this);
+            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
+                ActiveCollectionChangeType.Removed, replaced));
+            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
+                ActiveCollectionChangeType.Added, item));
         }
     }
 }

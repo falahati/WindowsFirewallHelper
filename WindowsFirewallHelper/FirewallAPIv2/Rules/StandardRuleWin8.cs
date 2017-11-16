@@ -8,11 +8,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
     /// </summary>
     public class StandardRuleWin8 : StandardRuleWin7
     {
-        internal StandardRuleWin8(INetFwRule3 rule) : base(rule)
-        {
-            UnderlyingObjectV3 = rule;
-        }
-
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -27,9 +22,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             UnderlyingObjectV3 = UnderlyingObject as INetFwRule3;
             if (UnderlyingObjectV3 == null)
-            {
                 throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
         /// <summary>
@@ -46,15 +39,13 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             UnderlyingObjectV3 = UnderlyingObject as INetFwRule3;
             if (UnderlyingObjectV3 == null)
-            {
                 throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
-        /// <summary>
-        ///     Returns a Boolean value indicating if these class is available in the current machine
-        /// </summary>
-        public new static bool IsSupported => Environment.OSVersion.Version >= new Version(6, 2);
+        internal StandardRuleWin8(INetFwRule3 rule) : base(rule)
+        {
+            UnderlyingObjectV3 = rule;
+        }
 
         /// <summary>
         ///     Gets or sets the PackageId of the Windows Store Application that this rule applies to
@@ -66,13 +57,28 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <summary>
-        ///     Gets or sets the Domain and User Name of the user that owns this rule
+        ///     Gets or sets the expected Internet Protocol Security level of this rule
         /// </summary>
-        public string UserOwner
+        public IPSecSecurityLevel IPSecSecurityLevel
         {
-            get { return UnderlyingObjectV3.LocalUserOwner; }
-            set { UnderlyingObjectV3.LocalUserOwner = value; }
+            get
+            {
+                if (!Enum.IsDefined(typeof(IPSecSecurityLevel), UnderlyingObjectV3.SecureFlags))
+                    throw new NotSupportedException();
+                return (IPSecSecurityLevel) UnderlyingObjectV3.SecureFlags;
+            }
+            set
+            {
+                if (!Enum.IsDefined(typeof(IPSecSecurityLevel), value))
+                    throw new NotSupportedException();
+                UnderlyingObjectV3.SecureFlags = (int) value;
+            }
         }
+
+        /// <summary>
+        ///     Returns a Boolean value indicating if these class is available in the current machine
+        /// </summary>
+        public new static bool IsSupported => Environment.OSVersion.Version >= new Version(6, 2);
 
         /// <summary>
         ///     Gets or sets the list of the authorized local users
@@ -81,15 +87,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             get { return UnderlyingObjectV3.LocalUserAuthorizedList; }
             set { UnderlyingObjectV3.LocalUserAuthorizedList = value; }
-        }
-
-        /// <summary>
-        ///     Gets or sets the list of the authorized remote users
-        /// </summary>
-        public string RemoteUserAuthorizedList
-        {
-            get { return UnderlyingObjectV3.RemoteUserAuthorizedList; }
-            set { UnderlyingObjectV3.RemoteUserAuthorizedList = value; }
         }
 
         /// <summary>
@@ -102,28 +99,23 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <summary>
-        ///     Gets or sets the expected Internet Protocol Security level of this rule
+        ///     Gets or sets the list of the authorized remote users
         /// </summary>
-        public IPSecSecurityLevel IPSecSecurityLevel
+        public string RemoteUserAuthorizedList
         {
-            get
-            {
-                if (!Enum.IsDefined(typeof (IPSecSecurityLevel), UnderlyingObjectV3.SecureFlags))
-                {
-                    throw new NotSupportedException();
-                }
-                return (IPSecSecurityLevel) UnderlyingObjectV3.SecureFlags;
-            }
-            set
-            {
-                if (!Enum.IsDefined(typeof (IPSecSecurityLevel), value))
-                {
-                    throw new NotSupportedException();
-                }
-                UnderlyingObjectV3.SecureFlags = (int) value;
-            }
+            get { return UnderlyingObjectV3.RemoteUserAuthorizedList; }
+            set { UnderlyingObjectV3.RemoteUserAuthorizedList = value; }
         }
 
         internal INetFwRule3 UnderlyingObjectV3 { get; }
+
+        /// <summary>
+        ///     Gets or sets the Domain and User Name of the user that owns this rule
+        /// </summary>
+        public string UserOwner
+        {
+            get { return UnderlyingObjectV3.LocalUserOwner; }
+            set { UnderlyingObjectV3.LocalUserOwner = value; }
+        }
     }
 }

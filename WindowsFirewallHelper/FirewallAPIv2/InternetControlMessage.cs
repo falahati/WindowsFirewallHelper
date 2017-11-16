@@ -15,12 +15,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         private readonly byte? _code;
         private readonly byte? _type;
 
-        private InternetControlMessage()
-        {
-            _type = null;
-            _code = null;
-        }
-
         /// <summary>
         ///     Creates a new instance of the InternetControlMessage class with the specified ICM type number
         /// </summary>
@@ -76,15 +70,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
         }
 
-        /// <summary>
-        ///     Gets the corresponding ICM type number
-        /// </summary>
-        public int Type => _type ?? -1;
+        private InternetControlMessage()
+        {
+            _type = null;
+            _code = null;
+        }
 
         /// <summary>
         ///     Gets the corresponding ICM type code
         /// </summary>
         public int Code => _code ?? -1;
+
+        /// <summary>
+        ///     Gets the corresponding ICM type number
+        /// </summary>
+        public int Type => _type ?? -1;
 
         /// <summary>
         ///     Determines whether the specified<see cref="InternetControlMessage" /> is equal to the current
@@ -100,7 +100,77 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Type == other.Type && Code == other.Code;
+            return (Type == other.Type) && (Code == other.Code);
+        }
+
+        /// <summary>
+        ///     Compares two <see cref="InternetControlMessage" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="InternetControlMessage" /> object</param>
+        /// <param name="right">A <see cref="InternetControlMessage" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
+        public static bool operator ==(InternetControlMessage left, InternetControlMessage right)
+        {
+            return (((object) left != null) && ((object) right != null) && left.Equals(right)) ||
+                   (((object) left == null) && ((object) right == null));
+        }
+
+        /// <summary>
+        ///     Compares two <see cref="InternetControlMessage" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="InternetControlMessage" /> object</param>
+        /// <param name="right">A <see cref="InternetControlMessage" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
+        public static bool operator !=(InternetControlMessage left, InternetControlMessage right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        ///     Tries to create a <see cref="InternetControlMessage" /> object from the the string
+        /// </summary>
+        /// <param name="str">The string to be analyzed</param>
+        /// <param name="icm">Returning <see cref="InternetControlMessage" /> object</param>
+        /// <returns>
+        ///     <see langword="true" /> if process ends well and <see cref="InternetControlMessage" /> created; otherwise
+        ///     <see langword="false" />
+        /// </returns>
+        public static bool TryParse(string str, out InternetControlMessage icm)
+        {
+            var parts = str.Split(':');
+            if (parts.Length == 1)
+            {
+                if (parts[0].Trim() == "*")
+                {
+                    icm = Any;
+                    return true;
+                }
+            }
+            else if (parts.Length == 2)
+            {
+                if ((parts[0].Trim() == "*") && (parts[1].Trim() == "*"))
+                {
+                    icm = Any;
+                    return true;
+                }
+                byte t;
+                if (byte.TryParse(parts[0].Trim(), out t))
+                {
+                    byte c;
+                    if (parts[1].Trim() == "*")
+                    {
+                        icm = new InternetControlMessage(t);
+                        return true;
+                    }
+                    if (byte.TryParse(parts[1].Trim(), out c))
+                    {
+                        icm = new InternetControlMessage(t, c);
+                        return true;
+                    }
+                }
+            }
+            icm = null;
+            return false;
         }
 
         /// <summary>
@@ -137,29 +207,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         }
 
         /// <summary>
-        ///     Compares two <see cref="InternetControlMessage" /> objects for equality
-        /// </summary>
-        /// <param name="left">A <see cref="InternetControlMessage" /> object</param>
-        /// <param name="right">A <see cref="InternetControlMessage" /> object</param>
-        /// <returns>true if two sides are equal; otherwise false</returns>
-        public static bool operator ==(InternetControlMessage left, InternetControlMessage right)
-        {
-            return ((object) left != null && (object) right != null && left.Equals(right)) ||
-                   ((object) left == null && (object) right == null);
-        }
-
-        /// <summary>
-        ///     Compares two <see cref="InternetControlMessage" /> objects for inequality
-        /// </summary>
-        /// <param name="left">A <see cref="InternetControlMessage" /> object</param>
-        /// <param name="right">A <see cref="InternetControlMessage" /> object</param>
-        /// <returns>true if two sides are not equal; otherwise false</returns>
-        public static bool operator !=(InternetControlMessage left, InternetControlMessage right)
-        {
-            return !(left == right);
-        }
-
-        /// <summary>
         ///     Returns a string that represents the current object.
         /// </summary>
         /// <returns>
@@ -169,57 +216,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         public override string ToString()
         {
             if (Equals(Any))
-            {
                 return "*";
-            }
             return $"{_type}:{_code?.ToString() ?? "*"}";
-        }
-
-        /// <summary>
-        ///     Tries to create a <see cref="InternetControlMessage" /> object from the the string
-        /// </summary>
-        /// <param name="str">The string to be analyzed</param>
-        /// <param name="icm">Returning <see cref="InternetControlMessage" /> object</param>
-        /// <returns>
-        ///     <see langword="true" /> if process ends well and <see cref="InternetControlMessage" /> created; otherwise
-        ///     <see langword="false" />
-        /// </returns>
-        public static bool TryParse(string str, out InternetControlMessage icm)
-        {
-            var parts = str.Split(':');
-            if (parts.Length == 1)
-            {
-                if (parts[0].Trim() == "*")
-                {
-                    icm = Any;
-                    return true;
-                }
-            }
-            else if (parts.Length == 2)
-            {
-                if (parts[0].Trim() == "*" && parts[1].Trim() == "*")
-                {
-                    icm = Any;
-                    return true;
-                }
-                byte t;
-                if (byte.TryParse(parts[0].Trim(), out t))
-                {
-                    byte c;
-                    if (parts[1].Trim() == "*")
-                    {
-                        icm = new InternetControlMessage(t);
-                        return true;
-                    }
-                    if (byte.TryParse(parts[1].Trim(), out c))
-                    {
-                        icm = new InternetControlMessage(t, c);
-                        return true;
-                    }
-                }
-            }
-            icm = null;
-            return false;
         }
     }
 }

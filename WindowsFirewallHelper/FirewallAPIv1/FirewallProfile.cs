@@ -15,39 +15,6 @@ namespace WindowsFirewallHelper.FirewallAPIv1
 
         internal INetFwProfile UnderlyingObject { get; }
 
-        /// <summary>
-        ///     Gets a Boolean value showing if this firewall profile is enable and available
-        /// </summary>
-        public bool Enable
-        {
-            get { return UnderlyingObject.FirewallEnabled; }
-            set { UnderlyingObject.FirewallEnabled = value; }
-        }
-
-        /// <summary>
-        ///     Gets a FirewallProfiles showing the type of this firewall profile
-        /// </summary>
-        public FirewallProfiles Type
-        {
-            get
-            {
-                switch (UnderlyingObject.Type)
-                {
-                    case NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN:
-                        return FirewallProfiles.Domain;
-                    case NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD:
-                        return FirewallProfiles.Private;
-                    default:
-                        throw new FirewallAPIv1NotSupportedException();
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Gets a Boolean value showing if this firewall profile is the currently active profile.
-        /// </summary>
-        public bool IsActive => Firewall.Instance.UnderlyingObject?.CurrentProfileType == UnderlyingObject.Type;
-
 
         /// <summary>
         ///     Gets or sets a Boolean value that blocks all inbound traffic completely regardless of any rules in this profile
@@ -79,13 +46,18 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating if the firewall should send unicast responses to the multicast broadcasts
+        ///     Gets a Boolean value showing if this firewall profile is enable and available
         /// </summary>
-        public bool UnicastResponsesToMulticastBroadcast
+        public bool Enable
         {
-            get { return !UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled; }
-            set { UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled = !value; }
+            get { return UnderlyingObject.FirewallEnabled; }
+            set { UnderlyingObject.FirewallEnabled = value; }
         }
+
+        /// <summary>
+        ///     Gets a Boolean value showing if this firewall profile is the currently active profile.
+        /// </summary>
+        public bool IsActive => Firewall.Instance.UnderlyingObject?.CurrentProfileType == UnderlyingObject.Type;
 
         /// <summary>
         ///     Gets or sets a value indicating if the user should get notifications about rules of this profile
@@ -94,6 +66,34 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         {
             get { return !UnderlyingObject.NotificationsDisabled; }
             set { UnderlyingObject.NotificationsDisabled = !value; }
+        }
+
+        /// <summary>
+        ///     Gets a FirewallProfiles showing the type of this firewall profile
+        /// </summary>
+        public FirewallProfiles Type
+        {
+            get
+            {
+                switch (UnderlyingObject.Type)
+                {
+                    case NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN:
+                        return FirewallProfiles.Domain;
+                    case NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD:
+                        return FirewallProfiles.Private;
+                    default:
+                        throw new FirewallAPIv1NotSupportedException();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating if the firewall should send unicast responses to the multicast broadcasts
+        /// </summary>
+        public bool UnicastResponsesToMulticastBroadcast
+        {
+            get { return !UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled; }
+            set { UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled = !value; }
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly:
     AssemblyDescription(
         "A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list. Supporting Windows XP+."
-        )]
+    )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Soroush Falahati")]
 [assembly: AssemblyProduct("WindowsFirewallHelper")]

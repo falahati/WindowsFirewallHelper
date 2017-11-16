@@ -8,11 +8,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
     /// </summary>
     public class StandardRuleWin7 : StandardRule
     {
-        internal StandardRuleWin7(INetFwRule2 rule) : base(rule)
-        {
-            UnderlyingObjectV2 = rule;
-        }
-
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -27,9 +22,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             UnderlyingObjectV2 = UnderlyingObject as INetFwRule2;
             if (UnderlyingObjectV2 == null)
-            {
                 throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
         /// <summary>
@@ -46,8 +39,30 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             UnderlyingObjectV2 = UnderlyingObject as INetFwRule2;
             if (UnderlyingObjectV2 == null)
-            {
                 throw new FirewallAPIv2NotSupportedException();
+        }
+
+        internal StandardRuleWin7(INetFwRule2 rule) : base(rule)
+        {
+            UnderlyingObjectV2 = rule;
+        }
+
+        /// <summary>
+        ///     Gets or sets the behavior of this rule about the Edge Traversal
+        /// </summary>
+        public EdgeTraversalAction EdgeTraversalOptions
+        {
+            get
+            {
+                if (!Enum.IsDefined(typeof(EdgeTraversalAction), UnderlyingObjectV2.EdgeTraversalOptions))
+                    throw new NotSupportedException();
+                return (EdgeTraversalAction) UnderlyingObjectV2.EdgeTraversalOptions;
+            }
+            set
+            {
+                if (!Enum.IsDefined(typeof(EdgeTraversalAction), value))
+                    throw new NotSupportedException();
+                UnderlyingObjectV2.EdgeTraversalOptions = (int) value;
             }
         }
 
@@ -57,28 +72,5 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public new static bool IsSupported => Environment.OSVersion.Version >= new Version(6, 1);
 
         internal INetFwRule2 UnderlyingObjectV2 { get; }
-
-        /// <summary>
-        ///     Gets or sets the behavior of this rule about the Edge Traversal
-        /// </summary>
-        public EdgeTraversalAction EdgeTraversalOptions
-        {
-            get
-            {
-                if (!Enum.IsDefined(typeof (EdgeTraversalAction), UnderlyingObjectV2.EdgeTraversalOptions))
-                {
-                    throw new NotSupportedException();
-                }
-                return (EdgeTraversalAction) UnderlyingObjectV2.EdgeTraversalOptions;
-            }
-            set
-            {
-                if (!Enum.IsDefined(typeof (EdgeTraversalAction), value))
-                {
-                    throw new NotSupportedException();
-                }
-                UnderlyingObjectV2.EdgeTraversalOptions = (int) value;
-            }
-        }
     }
 }

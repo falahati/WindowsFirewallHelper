@@ -46,7 +46,8 @@ namespace WindowsFirewallHelper.Addresses
         /// </summary>
         // ReSharper disable once InconsistentNaming
         [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] public new static readonly SingleIP IPv6Any = FromIPAddress(IPAddress.IPv6Any);
-        
+
+
         /// <summary>
         ///     Creates a new instance of the SingleIP class with IP Address passed as an integer value.
         /// </summary>
@@ -72,18 +73,18 @@ namespace WindowsFirewallHelper.Addresses
         public override string ToString()
         {
             if (Equals(Any))
-            {
                 return "*";
-            }
             return base.ToString();
         }
 
         /// <summary>
-        ///     NOT SUPPORTED
+        ///     Creates a new instance of the <see cref="SingleIP" /> class using the provided <see cref="IPAddress" />.
         /// </summary>
-        public new static bool TryParse(string ipString, out IPAddress address)
+        /// <param name="ip">The <see cref="IPAddress" /> to create new object from.</param>
+        /// <returns>Newly created <see cref="SingleIP" /> instance</returns>
+        public static SingleIP FromIPAddress(IPAddress ip)
         {
-            throw new NotSupportedException();
+            return new SingleIP(ip.GetAddressBytes());
         }
 
         /// <summary>
@@ -104,6 +105,36 @@ namespace WindowsFirewallHelper.Addresses
         public static bool IsLoopback(SingleIP address)
         {
             return IPAddress.IsLoopback(address.ToIPAddress());
+        }
+
+        /// <summary>
+        ///     Converts an IP address string to an <see cref="SingleIP" /> instance.
+        /// </summary>
+        /// <returns>
+        ///     An <see cref="SingleIP" /> instance.
+        /// </returns>
+        /// <param name="ipString">
+        ///     A string that contains an IP address in dotted-quad notation for IPv4 and in colon-hexadecimal
+        ///     notation for IPv6.
+        /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="ipString" /> is null. </exception>
+        /// <exception cref="FormatException"><paramref name="ipString" /> is not a valid IP address. </exception>
+        public new static SingleIP Parse(string ipString)
+        {
+            if (ipString == null)
+                throw new ArgumentNullException(nameof(ipString));
+            SingleIP ip;
+            if (!TryParse(ipString, out ip))
+                throw new FormatException();
+            return ip;
+        }
+
+        /// <summary>
+        ///     NOT SUPPORTED
+        /// </summary>
+        public new static bool TryParse(string ipString, out IPAddress address)
+        {
+            throw new NotSupportedException();
         }
 
 
@@ -130,42 +161,6 @@ namespace WindowsFirewallHelper.Addresses
             }
             address = null;
             return false;
-        }
-
-        /// <summary>
-        ///     Converts an IP address string to an <see cref="SingleIP" /> instance.
-        /// </summary>
-        /// <returns>
-        ///     An <see cref="SingleIP" /> instance.
-        /// </returns>
-        /// <param name="ipString">
-        ///     A string that contains an IP address in dotted-quad notation for IPv4 and in colon-hexadecimal
-        ///     notation for IPv6.
-        /// </param>
-        /// <exception cref="ArgumentNullException"><paramref name="ipString" /> is null. </exception>
-        /// <exception cref="FormatException"><paramref name="ipString" /> is not a valid IP address. </exception>
-        public new static SingleIP Parse(string ipString)
-        {
-            if (ipString == null)
-            {
-                throw new ArgumentNullException(nameof(ipString));
-            }
-            SingleIP ip;
-            if (!TryParse(ipString, out ip))
-            {
-                throw new FormatException();
-            }
-            return ip;
-        }
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="SingleIP" /> class using the provided <see cref="IPAddress" />.
-        /// </summary>
-        /// <param name="ip">The <see cref="IPAddress" /> to create new object from.</param>
-        /// <returns>Newly created <see cref="SingleIP" /> instance</returns>
-        public static SingleIP FromIPAddress(IPAddress ip)
-        {
-            return new SingleIP(ip.GetAddressBytes());
         }
 
         /// <summary>

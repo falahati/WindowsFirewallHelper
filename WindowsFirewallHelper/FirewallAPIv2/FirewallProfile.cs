@@ -18,38 +18,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
         internal INetFwPolicy2 UnderlyingObject { get; }
 
-        /// <summary>
-        ///     Gets a Boolean value showing if this firewall profile is enable and available
-        /// </summary>
-        public bool Enable
-        {
-            get { return UnderlyingObject.FirewallEnabled[_profile]; }
-            set { UnderlyingObject.FirewallEnabled[_profile] = value; }
-        }
-
-        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-        /// <summary>
-        ///     Gets a Boolean value showing if this firewall profile is the currently active profile.
-        /// </summary>
-        public bool IsActive => ((NET_FW_PROFILE_TYPE2_) UnderlyingObject.CurrentProfileTypes) ==
-                                NET_FW_PROFILE_TYPE2_.NET_FW_PROFILE2_ALL ||
-                                (((NET_FW_PROFILE_TYPE2_) UnderlyingObject.CurrentProfileTypes) & _profile) == _profile;
-
-        /// <summary>
-        ///     Gets a FirewallProfiles showing the type of this firewall profile
-        /// </summary>
-        public FirewallProfiles Type
-        {
-            get
-            {
-                if (_profile == NET_FW_PROFILE_TYPE2_.NET_FW_PROFILE2_ALL)
-                {
-                    throw new NotSupportedException();
-                }
-                return (FirewallProfiles) _profile;
-            }
-        }
-
 
         /// <summary>
         ///     Gets or sets a Boolean value that blocks all inbound traffic completely regardless of any rules in this profile
@@ -98,15 +66,22 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             }
         }
 
-
         /// <summary>
-        ///     Gets or sets a value indicating if the firewall should send unicast responses to the multicast broadcasts
+        ///     Gets a Boolean value showing if this firewall profile is enable and available
         /// </summary>
-        public bool UnicastResponsesToMulticastBroadcast
+        public bool Enable
         {
-            get { return !UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled[_profile]; }
-            set { UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled[_profile] = !value; }
+            get { return UnderlyingObject.FirewallEnabled[_profile]; }
+            set { UnderlyingObject.FirewallEnabled[_profile] = value; }
         }
+
+        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+        /// <summary>
+        ///     Gets a Boolean value showing if this firewall profile is the currently active profile.
+        /// </summary>
+        public bool IsActive => ((NET_FW_PROFILE_TYPE2_) UnderlyingObject.CurrentProfileTypes ==
+                                 NET_FW_PROFILE_TYPE2_.NET_FW_PROFILE2_ALL) ||
+                                (((NET_FW_PROFILE_TYPE2_) UnderlyingObject.CurrentProfileTypes & _profile) == _profile);
 
         /// <summary>
         ///     Gets or sets a value indicating if the user should get notifications about rules of this profile
@@ -115,6 +90,29 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
             get { return !UnderlyingObject.NotificationsDisabled[_profile]; }
             set { UnderlyingObject.NotificationsDisabled[_profile] = !value; }
+        }
+
+        /// <summary>
+        ///     Gets a FirewallProfiles showing the type of this firewall profile
+        /// </summary>
+        public FirewallProfiles Type
+        {
+            get
+            {
+                if (_profile == NET_FW_PROFILE_TYPE2_.NET_FW_PROFILE2_ALL)
+                    throw new NotSupportedException();
+                return (FirewallProfiles) _profile;
+            }
+        }
+
+
+        /// <summary>
+        ///     Gets or sets a value indicating if the firewall should send unicast responses to the multicast broadcasts
+        /// </summary>
+        public bool UnicastResponsesToMulticastBroadcast
+        {
+            get { return !UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled[_profile]; }
+            set { UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled[_profile] = !value; }
         }
 
         /// <summary>

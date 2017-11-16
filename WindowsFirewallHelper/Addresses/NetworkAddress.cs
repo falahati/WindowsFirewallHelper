@@ -34,9 +34,7 @@ namespace WindowsFirewallHelper.Addresses
         public NetworkAddress(IPAddress address, IPAddress subnetMask)
         {
             if (address.AddressFamily != subnetMask.AddressFamily)
-            {
                 throw new ArgumentException("Addresses of different family can not be used.");
-            }
             Address = address;
             SubnetMask = subnetMask;
         }
@@ -47,9 +45,22 @@ namespace WindowsFirewallHelper.Addresses
         public IPAddress Address { get; set; }
 
         /// <summary>
-        ///     Gets or sets the Subnet Mask in which this <see cref="NetworkAddress" /> is based on
+        ///     Gets the calculated upper bound of the range
         /// </summary>
-        public IPAddress SubnetMask { get; set; }
+        public IPAddress EndAddress
+        {
+            get
+            {
+                if (Equals(SubnetMask, IPAddress.None))
+                    return Address;
+                var addressBytes = Address.GetAddressBytes();
+                var subnetMaskBytes = SubnetMask.GetAddressBytes();
+                for (var i = 0; i < addressBytes.Length; i++)
+                    addressBytes[i] |= (byte) (subnetMaskBytes[i] ^ 0xFF);
+                addressBytes[addressBytes.Length - 1] &= 0xFE;
+                return new IPAddress(addressBytes);
+            }
+        }
 
         /// <summary>
         ///     Gets the calculated lower bound of the range
@@ -59,41 +70,20 @@ namespace WindowsFirewallHelper.Addresses
             get
             {
                 if (Equals(SubnetMask, IPAddress.None))
-                {
                     return Address;
-                }
                 var addressBytes = Address.GetAddressBytes();
                 var subnetMaskBytes = SubnetMask.GetAddressBytes();
                 for (var i = 0; i < addressBytes.Length; i++)
-                {
                     addressBytes[i] &= subnetMaskBytes[i];
-                }
                 addressBytes[addressBytes.Length - 1] |= 0x01;
                 return new IPAddress(addressBytes);
             }
         }
 
         /// <summary>
-        ///     Gets the calculated upper bound of the range
+        ///     Gets or sets the Subnet Mask in which this <see cref="NetworkAddress" /> is based on
         /// </summary>
-        public IPAddress EndAddress
-        {
-            get
-            {
-                if (Equals(SubnetMask, IPAddress.None))
-                {
-                    return Address;
-                }
-                var addressBytes = Address.GetAddressBytes();
-                var subnetMaskBytes = SubnetMask.GetAddressBytes();
-                for (var i = 0; i < addressBytes.Length; i++)
-                {
-                    addressBytes[i] |= (byte) (subnetMaskBytes[i] ^ 0xFF);
-                }
-                addressBytes[addressBytes.Length - 1] &= 0xFE;
-                return new IPAddress(addressBytes);
-            }
-        }
+        public IPAddress SubnetMask { get; set; }
 
 
         /// <summary>
@@ -105,58 +95,8 @@ namespace WindowsFirewallHelper.Addresses
         public override string ToString()
         {
             if (SubnetMask.Equals(IPAddress.None))
-            {
                 return Address.ToString();
-            }
             return $"{Address}/{SubnetMask}";
-        }
-
-        /// <summary>
-        ///     Compares two network addresses.
-        /// </summary>
-        /// <returns>
-        ///     <see langword="true" /> if the two network address are equal; otherwise, <see langword="false" />.
-        /// </returns>
-        /// <param name="obj">An <see cref="T:Object" /> instance to compare to the current instance. </param>
-        public override bool Equals(object obj)
-        {
-            // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
-            if (obj is NetworkAddress)
-            {
-                return Equals((NetworkAddress) obj);
-            }
-            return ReferenceEquals(this, obj);
-        }
-
-        /// <summary>
-        ///     Compares two network address.
-        /// </summary>
-        /// <returns>
-        ///     <see langword="true" /> if the two network address are equal; otherwise, <see langword="false" />.
-        /// </returns>
-        /// <param name="comparand">An <see cref="NetworkAddress" /> instance to compare to the current instance. </param>
-        protected bool Equals(NetworkAddress comparand)
-        {
-            return Address.Equals(comparand.Address) && SubnetMask.Equals(comparand.SubnetMask);
-        }
-
-        /// <summary>
-        ///     Serves as a hash function for a particular type.
-        /// </summary>
-        /// <returns>
-        ///     A hash code for the current <see cref="NetworkAddress" />.
-        /// </returns>
-        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
-        public override int GetHashCode()
-        {
-            if (_hashCode == null)
-            {
-                unchecked
-                {
-                    _hashCode = ((Address?.GetHashCode() ?? 0)*397) ^ (SubnetMask?.GetHashCode() ?? 0);
-                }
-            }
-            return _hashCode.Value;
         }
 
         /// <summary>
@@ -186,20 +126,16 @@ namespace WindowsFirewallHelper.Addresses
                 if (IPAddress.TryParse(ips[0], out address1))
                 {
                     int netmask;
-                    if (int.TryParse(ips[1], out netmask) && netmask >= 1)
-                    {
-                        if ((address1.AddressFamily == AddressFamily.InterNetwork && netmask <= 32) ||
-                            (address1.AddressFamily == AddressFamily.InterNetworkV6 && netmask <= 128))
+                    if (int.TryParse(ips[1], out netmask) && (netmask >= 1))
+                        if (((address1.AddressFamily == AddressFamily.InterNetwork) && (netmask <= 32)) ||
+                            ((address1.AddressFamily == AddressFamily.InterNetworkV6) && (netmask <= 128)))
                         {
                             var bytes = new byte[address1.AddressFamily == AddressFamily.InterNetworkV6 ? 16 : 4];
                             for (byte i = 0; i < netmask; i++)
-                            {
-                                bytes[(int) Math.Floor(i/8d)] |= (byte) ((1 << (7 - (i%8))));
-                            }
+                                bytes[(int) Math.Floor(i/8d)] |= (byte) (1 << (7 - i%8));
                             addressNetwork = new NetworkAddress(address1, new IPAddress(bytes));
                             return true;
                         }
-                    }
                     IPAddress address2;
                     if (IPAddress.TryParse(ips[1], out address2))
                     {
@@ -210,6 +146,50 @@ namespace WindowsFirewallHelper.Addresses
             }
             addressNetwork = null;
             return false;
+        }
+
+        /// <summary>
+        ///     Compares two network addresses.
+        /// </summary>
+        /// <returns>
+        ///     <see langword="true" /> if the two network address are equal; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <param name="obj">An <see cref="T:Object" /> instance to compare to the current instance. </param>
+        public override bool Equals(object obj)
+        {
+            // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
+            if (obj is NetworkAddress)
+                return Equals((NetworkAddress) obj);
+            return ReferenceEquals(this, obj);
+        }
+
+        /// <summary>
+        ///     Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        ///     A hash code for the current <see cref="NetworkAddress" />.
+        /// </returns>
+        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
+        public override int GetHashCode()
+        {
+            if (_hashCode == null)
+                unchecked
+                {
+                    _hashCode = ((Address?.GetHashCode() ?? 0)*397) ^ (SubnetMask?.GetHashCode() ?? 0);
+                }
+            return _hashCode.Value;
+        }
+
+        /// <summary>
+        ///     Compares two network address.
+        /// </summary>
+        /// <returns>
+        ///     <see langword="true" /> if the two network address are equal; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <param name="comparand">An <see cref="NetworkAddress" /> instance to compare to the current instance. </param>
+        protected bool Equals(NetworkAddress comparand)
+        {
+            return Address.Equals(comparand.Address) && SubnetMask.Equals(comparand.SubnetMask);
         }
     }
 }

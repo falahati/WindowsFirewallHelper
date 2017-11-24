@@ -12,13 +12,31 @@ namespace WindowsFirewallHelper.Addresses
     {
         private int? _hashCode;
 
+        // ReSharper disable once InconsistentNaming
+        public static readonly IPAddress IPv4SingleHostSubnet = IPAddress.Parse("255.255.255.255");
+
+        // ReSharper disable once InconsistentNaming
+        public static readonly IPAddress IPv6SingleHostSubnet = IPAddress.Parse("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+
         /// <summary>
         ///     Creates an instance of the <see cref="NetworkAddress" /> class using an <see cref="IPAddress" /> and
-        ///     255.255.255.255 as the Subnet Mask
+        ///     255.255.255.255 or ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff as the Subnet Mask
         /// </summary>
         /// <param name="address">IPAddress to create an instance of <see cref="NetworkAddress" /> with</param>
-        public NetworkAddress(IPAddress address) : this(address, IPAddress.None)
+        public NetworkAddress(IPAddress address)
         {
+            switch (address.AddressFamily)
+            {
+                case AddressFamily.InterNetwork:
+                    SubnetMask = IPv4SingleHostSubnet;
+                    break;
+                case AddressFamily.InterNetworkV6:
+                    SubnetMask = IPv6SingleHostSubnet;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            Address = address;
         }
 
         /// <summary>
@@ -51,7 +69,7 @@ namespace WindowsFirewallHelper.Addresses
         {
             get
             {
-                if (Equals(SubnetMask, IPAddress.None))
+                if (SubnetMask.Equals(IPv4SingleHostSubnet) || SubnetMask.Equals(IPv6SingleHostSubnet))
                     return Address;
                 var addressBytes = Address.GetAddressBytes();
                 var subnetMaskBytes = SubnetMask.GetAddressBytes();
@@ -69,7 +87,7 @@ namespace WindowsFirewallHelper.Addresses
         {
             get
             {
-                if (Equals(SubnetMask, IPAddress.None))
+                if (SubnetMask.Equals(IPv4SingleHostSubnet) || SubnetMask.Equals(IPv6SingleHostSubnet))
                     return Address;
                 var addressBytes = Address.GetAddressBytes();
                 var subnetMaskBytes = SubnetMask.GetAddressBytes();
@@ -94,7 +112,7 @@ namespace WindowsFirewallHelper.Addresses
         /// </returns>
         public override string ToString()
         {
-            if (SubnetMask.Equals(IPAddress.None))
+            if (StartAddress.Equals(EndAddress))
                 return Address.ToString();
             return $"{Address}/{SubnetMask}";
         }

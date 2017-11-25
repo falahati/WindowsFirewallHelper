@@ -12,9 +12,15 @@ namespace WindowsFirewallHelper.Addresses
     {
         private int? _hashCode;
 
+        /// <summary>
+        ///     Returns the single host subnet for IPv4 IPs (255.255.255.255)
+        /// </summary>
         // ReSharper disable once InconsistentNaming
         public static readonly IPAddress IPv4SingleHostSubnet = IPAddress.Parse("255.255.255.255");
 
+        /// <summary>
+        ///     Returns the single host subnet for IPv6 IPs (ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
+        /// </summary>
         // ReSharper disable once InconsistentNaming
         public static readonly IPAddress IPv6SingleHostSubnet = IPAddress.Parse("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
 

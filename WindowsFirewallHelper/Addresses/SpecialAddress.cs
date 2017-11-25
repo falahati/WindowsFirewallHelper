@@ -2,8 +2,14 @@
 
 namespace WindowsFirewallHelper.Addresses
 {
+    /// <summary>
+    ///     This class is the parent class of all special address values
+    /// </summary>
     public abstract class SpecialAddress : IAddress, IEquatable<SpecialAddress>
     {
+        /// <summary>
+        ///     Should returns the constant value of the special address
+        /// </summary>
         protected abstract string AddressString { get; }
 
         /// <inheritdoc />

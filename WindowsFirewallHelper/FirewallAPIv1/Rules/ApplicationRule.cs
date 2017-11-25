@@ -50,7 +50,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </summary>
         public static bool IsSupported => Type.GetTypeFromProgID(@"HNetCfg.FwAuthorizedApplication") != null;
 
-        internal INetFwAuthorizedApplication UnderlyingObject { get; }
+        /// <summary>
+        ///     Returns the underlying Windows Firewall Object
+        /// </summary>
+        public INetFwAuthorizedApplication UnderlyingObject { get; }
 
         /// <summary>
         ///     Determines whether the specified<see cref="ApplicationRule" /> is equal to the current

@@ -40,7 +40,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </summary>
         public static bool IsSupported => Type.GetTypeFromProgID(@"HNetCfg.FwOpenPort") != null;
 
-        internal INetFwOpenPort UnderlyingObject { get; }
+        /// <summary>
+        ///     Returns the underlying Windows Firewall Object
+        /// </summary>
+        public INetFwOpenPort UnderlyingObject { get; }
 
         /// <summary>
         ///     Determines whether the specified<see cref="PortRule" /> is equal to the current

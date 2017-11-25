@@ -142,7 +142,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             set { UnderlyingObject.serviceName = value; }
         }
 
-        internal INetFwRule UnderlyingObject { get; }
+        /// <summary>
+        ///     Returns the underlying Windows Firewall Object
+        /// </summary>
+        public INetFwRule UnderlyingObject { get; }
 
         /// <summary>
         ///     Determines whether the specified<see cref="StandardRule" /> is equal to the current

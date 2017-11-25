@@ -159,6 +159,18 @@ namespace WindowsFirewallHelper.Addresses
                 address = FromIPAddress(ipAddress);
                 return true;
             }
+            var ips = ipString.Split('-');
+            if (ips.Length == 2)
+            {
+                IPAddress address1;
+                IPAddress address2;
+                if (IPAddress.TryParse(ips[0], out address1) && IPAddress.TryParse(ips[1], out address2))
+                    if (address1.Equals(address2))
+                    {
+                        address = FromIPAddress(address1);
+                        return true;
+                    }
+            }
             address = null;
             return false;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using WindowsFirewallHelper.Addresses;
 using WindowsFirewallHelper.Helpers;
 using NetFwTypeLib;
@@ -226,7 +227,20 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public IAddress[] LocalAddresses
         {
             get { return AddressHelper.StringToAddresses(UnderlyingObject.LocalAddresses); }
-            set { UnderlyingObject.LocalAddresses = AddressHelper.AddressesToString(value); }
+            set
+            {
+                try
+                {
+                    UnderlyingObject.LocalAddresses = AddressHelper.AddressesToString(value);
+                }
+                catch (COMException exception)
+                {
+                    if ((uint) exception.ErrorCode == 0xD000000D)
+                        throw new ArgumentException(
+                            "An unspecified, multicast, broadcast or loopback IPv6 address was specified.", exception);
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -282,7 +296,20 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public IAddress[] RemoteAddresses
         {
             get { return AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses); }
-            set { UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value); }
+            set
+            {
+                try
+                {
+                    UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value);
+                }
+                catch (COMException exception)
+                {
+                    if ((uint) exception.ErrorCode == 0xD000000D)
+                        throw new ArgumentException(
+                            "An unspecified, multicast, broadcast or loopback IPv6 address was specified.", exception);
+                    throw;
+                }
+            }
         }
 
         /// <summary>

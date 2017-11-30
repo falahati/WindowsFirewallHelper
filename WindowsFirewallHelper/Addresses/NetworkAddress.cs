@@ -10,8 +10,6 @@ namespace WindowsFirewallHelper.Addresses
     /// </summary>
     public class NetworkAddress : IAddress
     {
-        private int? _hashCode;
-
         /// <summary>
         ///     Returns the single host subnet for IPv4 IPs (255.255.255.255)
         /// </summary>
@@ -22,7 +20,10 @@ namespace WindowsFirewallHelper.Addresses
         ///     Returns the single host subnet for IPv6 IPs (ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public static readonly IPAddress IPv6SingleHostSubnet = IPAddress.Parse("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+        public static readonly IPAddress IPv6SingleHostSubnet =
+            IPAddress.Parse("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+
+        private int? _hashCode;
 
         /// <summary>
         ///     Creates an instance of the <see cref="NetworkAddress" /> class using an <see cref="IPAddress" /> and

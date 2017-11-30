@@ -20,7 +20,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             FirewallProfiles profiles)
             : base(name, filename, action, direction, profiles)
         {
-            UnderlyingObjectV3 = UnderlyingObject as INetFwRule3;
             if (UnderlyingObjectV3 == null)
                 throw new FirewallAPIv2NotSupportedException();
         }
@@ -37,14 +36,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             FirewallProfiles profiles)
             : base(name, port, action, direction, profiles)
         {
-            UnderlyingObjectV3 = UnderlyingObject as INetFwRule3;
             if (UnderlyingObjectV3 == null)
                 throw new FirewallAPIv2NotSupportedException();
         }
 
         internal StandardRuleWin8(INetFwRule3 rule) : base(rule)
         {
-            UnderlyingObjectV3 = rule;
         }
 
         /// <summary>
@@ -107,7 +104,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             set { UnderlyingObjectV3.RemoteUserAuthorizedList = value; }
         }
 
-        internal INetFwRule3 UnderlyingObjectV3 { get; }
+        private INetFwRule3 UnderlyingObjectV3 => UnderlyingObject as INetFwRule3;
 
         /// <summary>
         ///     Gets or sets the Domain and User Name of the user that owns this rule

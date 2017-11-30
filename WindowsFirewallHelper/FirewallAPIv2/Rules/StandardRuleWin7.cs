@@ -20,7 +20,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             FirewallProfiles profiles)
             : base(name, filename, action, direction, profiles)
         {
-            UnderlyingObjectV2 = UnderlyingObject as INetFwRule2;
             if (UnderlyingObjectV2 == null)
                 throw new FirewallAPIv2NotSupportedException();
         }
@@ -37,14 +36,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             FirewallProfiles profiles)
             : base(name, port, action, direction, profiles)
         {
-            UnderlyingObjectV2 = UnderlyingObject as INetFwRule2;
             if (UnderlyingObjectV2 == null)
                 throw new FirewallAPIv2NotSupportedException();
         }
 
         internal StandardRuleWin7(INetFwRule2 rule) : base(rule)
         {
-            UnderlyingObjectV2 = rule;
         }
 
         /// <summary>
@@ -71,6 +68,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public new static bool IsSupported => Environment.OSVersion.Version >= new Version(6, 1);
 
-        internal INetFwRule2 UnderlyingObjectV2 { get; }
+        private INetFwRule2 UnderlyingObjectV2 => UnderlyingObject as INetFwRule2;
     }
 }

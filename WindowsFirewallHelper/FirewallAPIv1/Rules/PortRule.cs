@@ -129,7 +129,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </summary>
         public string Name
         {
-            get { return UnderlyingObject.Name; }
+            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Name); }
             set { UnderlyingObject.Name = value; }
         }
 

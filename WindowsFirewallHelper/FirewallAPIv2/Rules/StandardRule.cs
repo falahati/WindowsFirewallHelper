@@ -75,7 +75,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Description
         {
-            get { return UnderlyingObject.Description; }
+            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Description); }
             set { UnderlyingObject.Description = value; }
         }
 
@@ -93,7 +93,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Grouping
         {
-            get { return UnderlyingObject.Grouping; }
+            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Grouping); }
             set { UnderlyingObject.Grouping = value; }
         }
 
@@ -258,7 +258,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Name
         {
-            get { return UnderlyingObject.Name; }
+            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Name); }
             set { UnderlyingObject.Name = value; }
         }
 

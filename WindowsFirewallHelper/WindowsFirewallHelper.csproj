@@ -67,6 +67,7 @@
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="FirewallAPIv2\InternetControlMessage.cs" />
     <Compile Include="Helpers\ICMPHelper.cs" />
+    <Compile Include="Helpers\NativeHelper.cs" />
     <Compile Include="Helpers\NetworkInterfaceHelper.cs" />
     <Compile Include="IFirewall.cs" />
     <Compile Include="IAddress.cs" />

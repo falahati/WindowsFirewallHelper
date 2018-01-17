@@ -50,6 +50,7 @@
     <Compile Include="APIVersion.cs" />
     <Compile Include="FirewallAPIv2\EdgeTraversalAction.cs" />
     <Compile Include="FirewallAction.cs" />
+    <Compile Include="FirewallAPIv2\FirewallAPIv2InvalidProtocolException.cs" />
     <Compile Include="FirewallDirection.cs" />
     <Compile Include="FirewallAPIv2\FirewallInterfaceTypes.cs" />
     <Compile Include="FirewallProfiles.cs" />

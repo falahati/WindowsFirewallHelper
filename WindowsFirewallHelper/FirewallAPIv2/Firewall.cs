@@ -109,6 +109,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
             if (!IsSupported)
                 throw new NotSupportedException();
+            if (!protocol.Equals(FirewallProtocol.TCP) && protocol.Equals(FirewallProtocol.UDP))
+                throw new FirewallAPIv2InvalidProtocolException("Invalid protocol selected; rule's protocol should be TCP or UDP.");
             return new StandardRule(name, portNumber, action, FirewallDirection.Inbound, profiles) {Protocol = protocol};
         }
 
@@ -123,7 +125,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         public IRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber)
         {
-            return CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.Any);
+            return CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.TCP);
         }
 
         /// <summary>

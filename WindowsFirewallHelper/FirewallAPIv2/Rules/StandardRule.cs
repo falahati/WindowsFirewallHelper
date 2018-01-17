@@ -100,10 +100,15 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <summary>
         ///     Gets or sets the list of the acceptable ICMP Messages with this rule
         /// </summary>
-        public InternetControlMessage[] IcmpTypesAndCodes
+        public InternetControlMessage[] ICMPTypesAndCodes
         {
             get { return ICMPHelper.StringToICM(UnderlyingObject.IcmpTypesAndCodes); }
-            set { UnderlyingObject.IcmpTypesAndCodes = ICMPHelper.ICMToString(value); }
+            set
+            {
+                if (value.Length > 0 && !Protocol.Equals(FirewallProtocol.ICMPv4) && !Protocol.Equals(FirewallProtocol.ICMPv6))
+                    throw new FirewallAPIv2InvalidProtocolException("ICMPTypesAndCodes property can only be specifid for the ICMP protocols.");
+                UnderlyingObject.IcmpTypesAndCodes = ICMPHelper.ICMToString(value);
+            }
         }
 
         /// <summary>
@@ -249,7 +254,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public ushort[] LocalPorts
         {
             get { return AddressHelper.StringToPorts(UnderlyingObject.LocalPorts); }
-            set { UnderlyingObject.LocalPorts = AddressHelper.PortsToString(value); }
+            set
+            {
+                if (value.Length > 0 && !Protocol.Equals(FirewallProtocol.TCP) && !Protocol.Equals(FirewallProtocol.UDP))
+                    throw new FirewallAPIv2InvalidProtocolException("Port number can only be specifid for the UDP and TCP protocols.");
+                UnderlyingObject.LocalPorts = AddressHelper.PortsToString(value);
+            }
         }
 
 
@@ -318,7 +328,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public ushort[] RemotePorts
         {
             get { return AddressHelper.StringToPorts(UnderlyingObject.RemotePorts); }
-            set { UnderlyingObject.RemotePorts = AddressHelper.PortsToString(value); }
+            set
+            {
+                if (value.Length > 0 && !Protocol.Equals(FirewallProtocol.TCP) && !Protocol.Equals(FirewallProtocol.UDP))
+                    throw new FirewallAPIv2InvalidProtocolException("Port number can only be specifid for the UDP and TCP protocols.");
+                UnderlyingObject.RemotePorts = AddressHelper.PortsToString(value);
+            }
         }
 
         /// <summary>

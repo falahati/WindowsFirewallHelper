@@ -62,9 +62,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                    (UnderlyingObject.Protocol == other.UnderlyingObject.Protocol);
         }
 
-        /// <summary>
-        ///     Gets the action that this rules define
-        /// </summary>
+
+        /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public FirewallAction Action
         {
@@ -72,9 +71,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             set { throw new FirewallAPIv1NotSupportedException(); }
         }
 
-        /// <summary>
-        ///     Gets the data direction that rule applies to
-        /// </summary>
+
+        /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public FirewallDirection Direction
         {
@@ -82,9 +80,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             set { throw new FirewallAPIv1NotSupportedException(); }
         }
 
-        /// <summary>
-        ///     Gets or sets a Boolean value indicating if this rule is active
-        /// </summary>
+
+        /// <inheritdoc />
         public bool IsEnable
         {
             get { return UnderlyingObject.Enabled; }
@@ -92,9 +89,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         }
 
 
-        /// <summary>
-        ///     Gets the local addresses that rule applies to
-        /// </summary>
+        /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public IAddress[] LocalAddresses
         {
@@ -102,9 +97,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             set { throw new FirewallAPIv1NotSupportedException(); }
         }
 
-        /// <summary>
-        ///     Gets or sets the local ports that rule applies to
-        /// </summary>
+
+        /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">
         ///     The array passes to this property as value should have one and
         ///     only one element
@@ -124,9 +118,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the name of the rule
-        /// </summary>
+        /// <inheritdoc />
         public string Name
         {
             get { return NativeHelper.ResolveStringResource(UnderlyingObject.Name); }
@@ -134,9 +126,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         }
 
 
-        /// <summary>
-        ///     Gets or sets the profiles that this rule belongs to
-        /// </summary>
+        /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Public profile or multiple profile registration is not supported</exception>
         public FirewallProfiles Profiles
         {
@@ -168,9 +158,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         }
 
 
-        /// <summary>
-        ///     Gets or sets the protocol that rule applies to
-        /// </summary>
+        /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Only acceptable values are UDP, TCP and Any</exception>
         public FirewallProtocol Protocol
         {
@@ -184,18 +172,16 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the remote addresses that rule applies to
-        /// </summary>
+
+        /// <inheritdoc />
         public IAddress[] RemoteAddresses
         {
             get { return AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses); }
             set { UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value); }
         }
 
-        /// <summary>
-        ///     Gets the remote ports that rule applies to
-        /// </summary>
+
+        /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public ushort[] RemotePorts
         {
@@ -203,9 +189,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             set { throw new FirewallAPIv1NotSupportedException(); }
         }
 
-        /// <summary>
-        ///     Gets or sets the scope that this rule applies to
-        /// </summary>
+
+        /// <inheritdoc />
         public FirewallScope Scope
         {
             get

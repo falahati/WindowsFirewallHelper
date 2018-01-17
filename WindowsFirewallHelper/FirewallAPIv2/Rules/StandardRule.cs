@@ -297,7 +297,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public FirewallProtocol Protocol
         {
             get { return new FirewallProtocol(UnderlyingObject.Protocol); }
-            set { UnderlyingObject.Protocol = value.ProtocolNumber; }
+            set
+            {
+                if ((Protocol.Equals(FirewallProtocol.TCP) || Protocol.Equals(FirewallProtocol.UDP)) &&
+                    !(value.Equals(FirewallProtocol.TCP) || value.Equals(FirewallProtocol.UDP)))
+                {
+                    LocalPorts = new ushort[0];
+                    RemotePorts = new ushort[0];
+                }
+                if ((Protocol.Equals(FirewallProtocol.ICMPv4) || Protocol.Equals(FirewallProtocol.ICMPv6)) &&
+                    !(value.Equals(FirewallProtocol.ICMPv4) || value.Equals(FirewallProtocol.ICMPv6)))
+                {
+                    ICMPTypesAndCodes = new InternetControlMessage[0];
+                }
+                UnderlyingObject.Protocol = value.ProtocolNumber;
+            }
         }
 
         /// <summary>

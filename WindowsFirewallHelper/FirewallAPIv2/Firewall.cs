@@ -57,8 +57,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         public IRule CreateApplicationRule(FirewallProfiles profiles, string name, FirewallAction action,
-            string filename,
-            FirewallProtocol protocol)
+            string filename, FirewallProtocol protocol)
         {
             if (!IsSupported)
                 throw new NotSupportedException();
@@ -110,7 +109,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             if (!IsSupported)
                 throw new NotSupportedException();
             if (!protocol.Equals(FirewallProtocol.TCP) && protocol.Equals(FirewallProtocol.UDP))
-                throw new FirewallAPIv2InvalidProtocolException("Invalid protocol selected; rule's protocol should be TCP or UDP.");
+                throw new FirewallAPIv2InvalidProtocolException(
+                    "Invalid protocol selected; rule's protocol should be TCP or UDP.");
             return new StandardRule(name, portNumber, action, FirewallDirection.Inbound, profiles) {Protocol = protocol};
         }
 

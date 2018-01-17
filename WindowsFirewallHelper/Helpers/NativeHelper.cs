@@ -8,7 +8,7 @@ namespace WindowsFirewallHelper.Helpers
     {
         public static string ResolveStringResource(string str)
         {
-            if (str.StartsWith("@"))
+            if (str?.StartsWith("@") == true)
                 try
                 {
                     var buffer = new StringBuilder(8*1024);

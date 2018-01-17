@@ -25,6 +25,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <summary>
+        ///     Creates a new application rule for Windows Firewall with Advanced Security
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action that this rule defines</param>
+        /// <param name="direction">Data direction in which this rule applies to</param>
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        public StandardRuleWin8(string name, FirewallAction action, FirewallDirection direction,
+            FirewallProfiles profiles)
+            : base(name, action, direction, profiles)
+        {
+            if (UnderlyingObjectV3 == null)
+                throw new FirewallAPIv2NotSupportedException();
+        }
+
+        /// <summary>
         ///     Creates a new port rule for Windows Firewall with Advanced Security
         /// </summary>
         /// <param name="name">Name of the rule</param>

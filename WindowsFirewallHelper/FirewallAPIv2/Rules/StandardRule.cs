@@ -20,12 +20,22 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="action">Action that this rule defines</param>
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
-        public StandardRule(string name, string filename, FirewallAction action, FirewallDirection direction,
-            FirewallProfiles profiles)
+        public StandardRule(string name, string filename, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles) : this(name, action, direction, profiles)
         {
-            UnderlyingObject = (INetFwRule) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
-            Name = name;
             ApplicationName = filename;
+        }
+
+        /// <summary>
+        ///     Creates a new application rule for Windows Firewall with Advanced Security
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action that this rule defines</param>
+        /// <param name="direction">Data direction in which this rule applies to</param>
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        public StandardRule(string name, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles)
+        {
+            UnderlyingObject = (INetFwRule)Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
+            Name = name;
             Action = action;
             Direction = direction;
             IsEnable = true;
@@ -40,20 +50,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="action">Action that this rule defines</param>
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
-        public StandardRule(string name, ushort port, FirewallAction action, FirewallDirection direction,
-            FirewallProfiles profiles)
+        public StandardRule(string name, ushort port, FirewallAction action, FirewallDirection direction,FirewallProfiles profiles) : this(name, action, direction, profiles)
         {
-            UnderlyingObject = (INetFwRule) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
-            Name = name;
-            Action = action;
-            Direction = direction;
             Protocol = FirewallProtocol.TCP;
-            IsEnable = true;
-            Profiles = profiles;
-            if (direction == FirewallDirection.Inbound)
-                LocalPorts = new[] {port};
-            else
-                RemotePorts = new[] {port};
+            LocalPorts = new[] {port};
         }
 
         internal StandardRule(INetFwRule rule)

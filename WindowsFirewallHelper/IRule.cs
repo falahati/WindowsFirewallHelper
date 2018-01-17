@@ -31,6 +31,11 @@
         ushort[] LocalPorts { get; set; }
 
         /// <summary>
+        ///     Gets or sets the type of local ports that the rules applies to
+        /// </summary>
+        LocalPortTypes LocalPortType { get; set; }
+
+        /// <summary>
         ///     Gets or sets the name of the rule
         /// </summary>
         string Name { get; set; }

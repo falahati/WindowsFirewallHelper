@@ -119,6 +119,14 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         }
 
         /// <inheritdoc />
+        /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
+        public LocalPortTypes LocalPortType
+        {
+            get { return LocalPortTypes.Specific; }
+            set { throw new FirewallAPIv1NotSupportedException(); }
+        }
+
+        /// <inheritdoc />
         public string Name
         {
             get { return NativeHelper.ResolveStringResource(UnderlyingObject.Name); }

@@ -65,6 +65,7 @@
     <Compile Include="FirewallAPIv2\Rules\StandardRuleWin7.cs" />
     <Compile Include="FirewallAPIv2\Rules\StandardRuleWin8.cs" />
     <Compile Include="FirewallManager.cs" />
+    <Compile Include="LocalPortTypes.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="FirewallAPIv2\InternetControlMessage.cs" />
     <Compile Include="Helpers\ICMPHelper.cs" />
@@ -108,7 +109,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="../NuGet.targets" />
 </Project>

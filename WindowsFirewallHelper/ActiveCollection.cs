@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using WindowsFirewallHelper.Helpers;
 using System.Linq;
 
 namespace WindowsFirewallHelper
@@ -42,20 +41,11 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Creates an array from the current collection
-        /// </summary>
-        /// <returns>An array that contains the elements from the current collection.</returns>
-        public T[] ToArray()
-        {
-            return EnumerableHelper.EnumerableToArray(this);
-        }
-
-        /// <summary>
         ///     Removes all elements from the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" />.
         /// </summary>
         protected override void ClearItems()
         {
-            var items = ToArray();
+            var items = this.ToArray();
             base.ClearItems();
             foreach (var item in items)
                 ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(

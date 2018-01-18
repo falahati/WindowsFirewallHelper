@@ -83,7 +83,6 @@
     <Compile Include="FirewallScope.cs" />
     <Compile Include="ActiveCollectionChangedEventArgs.cs" />
     <Compile Include="ActiveCollectionChangeType.cs" />
-    <Compile Include="Helpers\EnumerableHelper.cs" />
     <Compile Include="Helpers\AddressHelper.cs" />
     <Compile Include="Addresses\IPRange.cs" />
     <Compile Include="Addresses\NetworkAddress.cs" />

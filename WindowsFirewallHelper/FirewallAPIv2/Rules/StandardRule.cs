@@ -118,9 +118,9 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             get
             {
-                if (!(UnderlyingObject.Interfaces is string[]))
+                if (!(UnderlyingObject.Interfaces is object[]))
                     return new NetworkInterface[0];
-                return NetworkInterfaceHelper.StringToInterfaces((string[]) UnderlyingObject.Interfaces);
+                return NetworkInterfaceHelper.StringToInterfaces(((object[]) UnderlyingObject.Interfaces).Select((o, i) => o.ToString()).ToArray());
             }
             set { UnderlyingObject.Interfaces = NetworkInterfaceHelper.InterfacesToString(value); }
         }

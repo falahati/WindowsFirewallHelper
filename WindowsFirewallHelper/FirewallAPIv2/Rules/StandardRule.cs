@@ -283,61 +283,61 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <inheritdoc />
-        public LocalPortTypes LocalPortType
+        public FirewallPortType LocalPortType
         {
             get
             {
                 if (LocalPorts.Length > 0)
-                    return LocalPortTypes.Specific;
+                    return FirewallPortType.Specific;
                 if (UnderlyingObject.LocalPorts?.StartsWith("RPC,", StringComparison.InvariantCultureIgnoreCase) == true)
-                    return LocalPortTypes.RPCDynamicPorts;
+                    return FirewallPortType.RPCDynamicPorts;
                 if (
                     UnderlyingObject.LocalPorts?.StartsWith("RPC-EPMap,", StringComparison.InvariantCultureIgnoreCase) ==
                     true)
-                    return LocalPortTypes.RPCEndpointMapper;
+                    return FirewallPortType.RPCEndpointMapper;
                 if (UnderlyingObject.LocalPorts?.StartsWith("IPHTTPS,", StringComparison.InvariantCultureIgnoreCase) ==
                     true)
-                    return LocalPortTypes.IPHTTPS;
+                    return FirewallPortType.IPHTTPS;
                 if (UnderlyingObject.LocalPorts?.StartsWith("Teredo,", StringComparison.InvariantCultureIgnoreCase) ==
                     true)
-                    return LocalPortTypes.EdgeTraversal;
+                    return FirewallPortType.EdgeTraversal;
                 if (UnderlyingObject.LocalPorts?.StartsWith("Ply2Disc,", StringComparison.InvariantCultureIgnoreCase) ==
                     true)
-                    return LocalPortTypes.PlayToDiscovery;
-                return LocalPortTypes.All;
+                    return FirewallPortType.PlayToDiscovery;
+                return FirewallPortType.All;
             }
             set
             {
                 switch (value)
                 {
-                    case LocalPortTypes.All:
+                    case FirewallPortType.All:
                         LocalPorts = new ushort[0];
                         break;
-                    case LocalPortTypes.RPCDynamicPorts:
+                    case FirewallPortType.RPCDynamicPorts:
                         if (!Protocol.Equals(FirewallProtocol.TCP))
                             throw new FirewallAPIv2InvalidProtocolException(
                                 "RPCDynamicPorts is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "RPC,";
                         break;
-                    case LocalPortTypes.RPCEndpointMapper:
+                    case FirewallPortType.RPCEndpointMapper:
                         if (!Protocol.Equals(FirewallProtocol.TCP))
                             throw new FirewallAPIv2InvalidProtocolException(
                                 "RPCEndpointMapper is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "RPC-EPMap,";
                         break;
-                    case LocalPortTypes.IPHTTPS:
+                    case FirewallPortType.IPHTTPS:
                         if (!Protocol.Equals(FirewallProtocol.TCP))
                             throw new FirewallAPIv2InvalidProtocolException(
                                 "IPHTTPS is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "IPHTTPS,";
                         break;
-                    case LocalPortTypes.EdgeTraversal:
+                    case FirewallPortType.EdgeTraversal:
                         if (!Protocol.Equals(FirewallProtocol.UDP))
                             throw new FirewallAPIv2InvalidProtocolException(
                                 "EdgeTraversal is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "Teredo,";
                         break;
-                    case LocalPortTypes.PlayToDiscovery:
+                    case FirewallPortType.PlayToDiscovery:
                         if (!Protocol.Equals(FirewallProtocol.UDP))
                             throw new FirewallAPIv2InvalidProtocolException(
                                 "PlayToDiscovery is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");

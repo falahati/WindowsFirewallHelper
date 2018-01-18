@@ -3,7 +3,7 @@
     /// <summary>
     ///     Firewall port types
     /// </summary>
-    public enum LocalPortTypes
+    public enum FirewallPortType
     {
         /// <summary>
         ///     All local ports

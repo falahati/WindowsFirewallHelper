@@ -33,7 +33,7 @@
         /// <summary>
         ///     Gets or sets the type of local ports that the rules applies to
         /// </summary>
-        LocalPortTypes LocalPortType { get; set; }
+        FirewallPortType LocalPortType { get; set; }
 
         /// <summary>
         ///     Gets or sets the name of the rule

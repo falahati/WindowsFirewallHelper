@@ -166,17 +166,28 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(UnderlyingObject.Name, other.UnderlyingObject.Name) &&
-                   (UnderlyingObject.Profiles == other.UnderlyingObject.Profiles) &&
-                   (UnderlyingObject.Protocol == other.UnderlyingObject.Protocol) &&
-                   (UnderlyingObject.Action == other.UnderlyingObject.Action) &&
-                   (UnderlyingObject.Enabled == other.UnderlyingObject.Enabled) &&
-                   (UnderlyingObject.Direction == other.UnderlyingObject.Direction) &&
-                   (UnderlyingObject.Interfaces == other.UnderlyingObject.Interfaces) &&
-                   (UnderlyingObject.RemoteAddresses == other.UnderlyingObject.RemoteAddresses) &&
-                   (UnderlyingObject.RemotePorts == other.UnderlyingObject.RemotePorts) &&
-                   (UnderlyingObject.LocalAddresses == other.UnderlyingObject.LocalAddresses) &&
-                   (UnderlyingObject.LocalPorts == other.UnderlyingObject.LocalPorts);
+            if (UnderlyingObject == other.UnderlyingObject) return true;
+            if (!(string.Equals(UnderlyingObject.Name, other.UnderlyingObject.Name) &&
+                  (UnderlyingObject.Profiles == other.UnderlyingObject.Profiles) &&
+                  (UnderlyingObject.Protocol == other.UnderlyingObject.Protocol) &&
+                  (UnderlyingObject.Action == other.UnderlyingObject.Action) &&
+                  (UnderlyingObject.Enabled == other.UnderlyingObject.Enabled) &&
+                  (UnderlyingObject.Direction == other.UnderlyingObject.Direction) &&
+                  (UnderlyingObject.RemoteAddresses == other.UnderlyingObject.RemoteAddresses) &&
+                  (UnderlyingObject.RemotePorts == other.UnderlyingObject.RemotePorts) &&
+                  (UnderlyingObject.LocalAddresses == other.UnderlyingObject.LocalAddresses) &&
+                  (UnderlyingObject.LocalPorts == other.UnderlyingObject.LocalPorts) &&
+                  (UnderlyingObject.ApplicationName == other.UnderlyingObject.ApplicationName)))
+                return false;
+            if (UnderlyingObject.Interfaces == other.UnderlyingObject.Interfaces)
+                return true;
+            if (UnderlyingObject.Interfaces is object[] != other.UnderlyingObject.Interfaces is object[])
+                return false;
+            if (!(UnderlyingObject.Interfaces is object[]))
+                return true;
+            return
+                ((object[]) UnderlyingObject.Interfaces).Select((o, i) => o?.ToString())
+                    .SequenceEqual(((object[]) other.UnderlyingObject.Interfaces).Select((o, i) => o?.ToString()));
         }
 
         /// <summary>
@@ -488,19 +499,44 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((StandardRule) obj);
+            return Equals(obj as StandardRule);
         }
 
-        /// <summary>
-        ///     Serves as a hash function for a particular type.
-        /// </summary>
-        /// <returns>
-        ///     A hash code for the current <see cref="StandardRule" />.
-        /// </returns>
+        /// <inheritdoc />
         public override int GetHashCode()
         {
-            return UnderlyingObject?.GetHashCode() ?? 0;
+            unchecked
+            {
+                var hashCode = 132619;
+                hashCode = hashCode*467 + (int) UnderlyingObject.Action;
+                hashCode = hashCode*467 + (int) UnderlyingObject.Direction;
+                hashCode = hashCode*467 + (UnderlyingObject.Name?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.RemoteAddresses?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.RemotePorts?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.LocalAddresses?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.LocalPorts?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.ApplicationName?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.Grouping?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.Description?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.IcmpTypesAndCodes?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.InterfaceTypes?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.serviceName?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + UnderlyingObject.Profiles;
+                hashCode = hashCode*467 + UnderlyingObject.Protocol;
+                hashCode = hashCode*467 + UnderlyingObject.Enabled.GetHashCode();
+                hashCode = hashCode*467 + UnderlyingObject.EdgeTraversal.GetHashCode();
+                var interfaces = UnderlyingObject.Interfaces as object[];
+                if (interfaces != null)
+                {
+                    var hash = 260671;
+                    foreach (var @interface in interfaces)
+                        hash = hash*727 + (@interface?.ToString().GetHashCode() ?? 0);
+                    hashCode = hashCode*467 + hash.GetHashCode();
+                }
+                else
+                    hashCode = hashCode*467;
+                return hashCode;
+            }
         }
 
         /// <summary>

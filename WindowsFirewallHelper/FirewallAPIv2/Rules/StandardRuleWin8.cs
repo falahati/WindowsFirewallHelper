@@ -6,7 +6,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
     /// <summary>
     ///     Contains properties of a Windows Firewall with Advanced Security rule in Windows 8 and above
     /// </summary>
-    public class StandardRuleWin8 : StandardRuleWin7
+    public class StandardRuleWin8 : StandardRuleWin7, IEquatable<StandardRuleWin8>
     {
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
@@ -128,6 +128,59 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             get { return UnderlyingObjectV3.LocalUserOwner; }
             set { UnderlyingObjectV3.LocalUserOwner = value; }
+        }
+
+        /// <inheritdoc />
+        public bool Equals(StandardRuleWin8 other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (!base.Equals(other)) return false;
+            return string.Equals(UnderlyingObjectV3.LocalAppPackageId, other.UnderlyingObjectV3.LocalAppPackageId) &&
+                   string.Equals(UnderlyingObjectV3.LocalUserAuthorizedList,
+                       other.UnderlyingObjectV3.LocalUserAuthorizedList) &&
+                   string.Equals(UnderlyingObjectV3.RemoteMachineAuthorizedList,
+                       other.UnderlyingObjectV3.RemoteMachineAuthorizedList) &&
+                   string.Equals(UnderlyingObjectV3.RemoteUserAuthorizedList,
+                       other.UnderlyingObjectV3.RemoteUserAuthorizedList) &&
+                   string.Equals(UnderlyingObjectV3.LocalUserOwner, other.UnderlyingObjectV3.LocalUserOwner) &&
+                   (UnderlyingObjectV3.SecureFlags == other.UnderlyingObjectV3.SecureFlags);
+        }
+
+        /// <inheritdoc />
+        public static bool operator ==(StandardRuleWin8 left, StandardRuleWin8 right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public static bool operator !=(StandardRuleWin8 left, StandardRuleWin8 right)
+        {
+            return !Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as StandardRuleWin8);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = base.GetHashCode();
+                hashCode = hashCode*467 + (UnderlyingObjectV3.LocalAppPackageId?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObjectV3.LocalUserAuthorizedList?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObjectV3.RemoteMachineAuthorizedList?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObjectV3.RemoteUserAuthorizedList?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObjectV3.LocalUserOwner?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + UnderlyingObjectV3.SecureFlags;
+                return hashCode;
+            }
         }
     }
 }

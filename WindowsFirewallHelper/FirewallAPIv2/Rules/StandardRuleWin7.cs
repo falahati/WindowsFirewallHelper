@@ -6,7 +6,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
     /// <summary>
     ///     Contains properties of a Windows Firewall with Advanced Security rule in Windows 7 and above
     /// </summary>
-    public class StandardRuleWin7 : StandardRule
+    public class StandardRuleWin7 : StandardRule, IEquatable<StandardRuleWin7>
     {
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
@@ -83,5 +83,45 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public new static bool IsSupported => Environment.OSVersion.Version >= new Version(6, 1);
 
         private INetFwRule2 UnderlyingObjectV2 => UnderlyingObject as INetFwRule2;
+
+        /// <inheritdoc />
+        public bool Equals(StandardRuleWin7 other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (!base.Equals(other)) return false;
+            return UnderlyingObjectV2.EdgeTraversalOptions == other.UnderlyingObjectV2.EdgeTraversalOptions;
+        }
+
+        /// <inheritdoc />
+        public static bool operator ==(StandardRuleWin7 left, StandardRuleWin7 right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public static bool operator !=(StandardRuleWin7 left, StandardRuleWin7 right)
+        {
+            return !Equals(left, right);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as StandardRuleWin7);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = base.GetHashCode();
+                hashCode = hashCode*467 + UnderlyingObjectV2.EdgeTraversalOptions;
+                return hashCode;
+            }
+        }
     }
 }

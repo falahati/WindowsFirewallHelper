@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using WindowsFirewallHelper.Helpers;
+using System.Linq;
 
 namespace WindowsFirewallHelper
 {
@@ -25,13 +26,18 @@ namespace WindowsFirewallHelper
         {
             lock (_syncLock)
             {
-                foreach (var item in newItems)
-                    if (!EnumerableHelper.Contains(this, item))
-                        Add(item);
-                var array = ToArray();
-                foreach (var item in array)
-                    if (!EnumerableHelper.Contains(newItems, item))
-                        Remove(item);
+                var hashTable = this.Select(arg => new {Item = arg, HashCode = arg.GetHashCode()}).ToArray();
+                var newItemsHashTable = newItems.Select(arg => new {Item = arg, HashCode = arg.GetHashCode()}).ToArray();
+                foreach (
+                    var newItem in
+                    newItemsHashTable.Where(arg => hashTable.All(arg1 => arg1.HashCode != arg.HashCode))
+                        .Select(arg => arg.Item))
+                    Add(newItem);
+                foreach (
+                    var obj in
+                    hashTable.Where(arg => newItemsHashTable.All(arg1 => arg1.HashCode != arg.HashCode))
+                        .Select(arg => arg.Item))
+                    Remove(obj);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using WindowsFirewallHelper.Addresses;
 using WindowsFirewallHelper.Helpers;
 using NetFwTypeLib;
@@ -146,8 +147,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                 if ((value != FirewallProfiles.Private) && (value != FirewallProfiles.Domain))
                     throw new FirewallAPIv1NotSupportedException("Multiple profile per each rule is not supported.");
                 var rules = Firewall.Instance.Rules;
-                var rulesArray = EnumerableHelper.EnumerableToArray(rules);
-                if ((_profiles != 0) && (value != _profiles) && EnumerableHelper.Contains(rulesArray, this))
+                var rulesArray = rules.ToArray();
+                if ((_profiles != 0) && (value != _profiles) && rulesArray.Contains(this))
                 {
                     foreach (var rule in rulesArray)
                         if (Equals(rule) ||

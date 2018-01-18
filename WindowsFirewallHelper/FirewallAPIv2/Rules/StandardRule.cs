@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using WindowsFirewallHelper.Addresses;
@@ -20,7 +21,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="action">Action that this rule defines</param>
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
-        public StandardRule(string name, string filename, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles) : this(name, action, direction, profiles)
+        public StandardRule(string name, string filename, FirewallAction action, FirewallDirection direction,
+            FirewallProfiles profiles) : this(name, action, direction, profiles)
         {
             ApplicationName = filename;
         }
@@ -34,7 +36,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="profiles">The profile that this rule belongs to</param>
         public StandardRule(string name, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles)
         {
-            UnderlyingObject = (INetFwRule)Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
+            UnderlyingObject = (INetFwRule) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
             Name = name;
             Action = action;
             Direction = direction;
@@ -50,7 +52,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="action">Action that this rule defines</param>
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
-        public StandardRule(string name, ushort port, FirewallAction action, FirewallDirection direction,FirewallProfiles profiles) : this(name, action, direction, profiles)
+        public StandardRule(string name, ushort port, FirewallAction action, FirewallDirection direction,
+            FirewallProfiles profiles) : this(name, action, direction, profiles)
         {
             Protocol = FirewallProtocol.TCP;
             LocalPorts = new[] {port};
@@ -105,8 +108,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             get { return ICMPHelper.StringToICM(UnderlyingObject.IcmpTypesAndCodes); }
             set
             {
-                if (value.Length > 0 && !Protocol.Equals(FirewallProtocol.ICMPv4) && !Protocol.Equals(FirewallProtocol.ICMPv6))
-                    throw new FirewallAPIv2InvalidProtocolException("ICMPTypesAndCodes property can only be specifid for the ICMP protocols.");
+                if ((value.Length > 0) && !Protocol.Equals(FirewallProtocol.ICMPv4) &&
+                    !Protocol.Equals(FirewallProtocol.ICMPv6))
+                    throw new FirewallAPIv2InvalidProtocolException(
+                        "ICMPTypesAndCodes property can only be specifid for the ICMP protocols.");
                 UnderlyingObject.IcmpTypesAndCodes = ICMPHelper.ICMToString(value);
             }
         }
@@ -120,7 +125,9 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             {
                 if (!(UnderlyingObject.Interfaces is object[]))
                     return new NetworkInterface[0];
-                return NetworkInterfaceHelper.StringToInterfaces(((object[]) UnderlyingObject.Interfaces).Select((o, i) => o.ToString()).ToArray());
+                return
+                    NetworkInterfaceHelper.StringToInterfaces(
+                        ((object[]) UnderlyingObject.Interfaces).Select((o, i) => o?.ToString()).ToArray());
             }
             set { UnderlyingObject.Interfaces = NetworkInterfaceHelper.InterfacesToString(value); }
         }
@@ -258,36 +265,45 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                 }
             }
         }
-        
+
+        /// <summary>
+        ///     Gets or sets the local ports that rule applies to
+        /// </summary>
+        public ushort[] LocalPorts
+        {
+            get { return AddressHelper.StringToPorts(UnderlyingObject.LocalPorts); }
+            set
+            {
+                if ((value.Length > 0) && !Protocol.Equals(FirewallProtocol.TCP) &&
+                    !Protocol.Equals(FirewallProtocol.UDP))
+                    throw new FirewallAPIv2InvalidProtocolException(
+                        "Port number can only be specifid for the UDP and TCP protocols.");
+                UnderlyingObject.LocalPorts = AddressHelper.PortsToString(value);
+            }
+        }
+
         /// <inheritdoc />
         public LocalPortTypes LocalPortType
         {
             get
             {
                 if (LocalPorts.Length > 0)
-                {
                     return LocalPortTypes.Specific;
-                }
                 if (UnderlyingObject.LocalPorts?.StartsWith("RPC,", StringComparison.InvariantCultureIgnoreCase) == true)
-                {
                     return LocalPortTypes.RPCDynamicPorts;
-                }
-                if (UnderlyingObject.LocalPorts?.StartsWith("RPC-EPMap,", StringComparison.InvariantCultureIgnoreCase) == true)
-                {
+                if (
+                    UnderlyingObject.LocalPorts?.StartsWith("RPC-EPMap,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
                     return LocalPortTypes.RPCEndpointMapper;
-                }
-                if (UnderlyingObject.LocalPorts?.StartsWith("IPHTTPS,", StringComparison.InvariantCultureIgnoreCase) == true)
-                {
+                if (UnderlyingObject.LocalPorts?.StartsWith("IPHTTPS,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
                     return LocalPortTypes.IPHTTPS;
-                }
-                if (UnderlyingObject.LocalPorts?.StartsWith("Teredo,", StringComparison.InvariantCultureIgnoreCase) == true)
-                {
+                if (UnderlyingObject.LocalPorts?.StartsWith("Teredo,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
                     return LocalPortTypes.EdgeTraversal;
-                }
-                if (UnderlyingObject.LocalPorts?.StartsWith("Ply2Disc,", StringComparison.InvariantCultureIgnoreCase) == true)
-                {
+                if (UnderlyingObject.LocalPorts?.StartsWith("Ply2Disc,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
                     return LocalPortTypes.PlayToDiscovery;
-                }
                 return LocalPortTypes.All;
             }
             set
@@ -299,46 +315,37 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                         break;
                     case LocalPortTypes.RPCDynamicPorts:
                         if (!Protocol.Equals(FirewallProtocol.TCP))
-                            throw new FirewallAPIv2InvalidProtocolException("RPCDynamicPorts is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "RPCDynamicPorts is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "RPC,";
                         break;
                     case LocalPortTypes.RPCEndpointMapper:
                         if (!Protocol.Equals(FirewallProtocol.TCP))
-                            throw new FirewallAPIv2InvalidProtocolException("RPCEndpointMapper is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "RPCEndpointMapper is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "RPC-EPMap,";
                         break;
                     case LocalPortTypes.IPHTTPS:
                         if (!Protocol.Equals(FirewallProtocol.TCP))
-                            throw new FirewallAPIv2InvalidProtocolException("IPHTTPS is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "IPHTTPS is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "IPHTTPS,";
                         break;
                     case LocalPortTypes.EdgeTraversal:
                         if (!Protocol.Equals(FirewallProtocol.UDP))
-                            throw new FirewallAPIv2InvalidProtocolException("EdgeTraversal is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "EdgeTraversal is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "Teredo,";
                         break;
                     case LocalPortTypes.PlayToDiscovery:
                         if (!Protocol.Equals(FirewallProtocol.UDP))
-                            throw new FirewallAPIv2InvalidProtocolException("PlayToDiscovery is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "PlayToDiscovery is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");
                         UnderlyingObject.LocalPorts = "Ply2Disc,";
                         break;
                     default:
                         throw new ArgumentException("Use the LocalPorts property to set the exact local ports.");
                 }
-            }
-        }
-
-        /// <summary>
-        ///     Gets or sets the local ports that rule applies to
-        /// </summary>
-        public ushort[] LocalPorts
-        {
-            get { return AddressHelper.StringToPorts(UnderlyingObject.LocalPorts); }
-            set
-            {
-                if (value.Length > 0 && !Protocol.Equals(FirewallProtocol.TCP) && !Protocol.Equals(FirewallProtocol.UDP))
-                    throw new FirewallAPIv2InvalidProtocolException("Port number can only be specifid for the UDP and TCP protocols.");
-                UnderlyingObject.LocalPorts = AddressHelper.PortsToString(value);
             }
         }
 
@@ -387,9 +394,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                 }
                 if ((Protocol.Equals(FirewallProtocol.ICMPv4) || Protocol.Equals(FirewallProtocol.ICMPv6)) &&
                     !(value.Equals(FirewallProtocol.ICMPv4) || value.Equals(FirewallProtocol.ICMPv6)))
-                {
                     ICMPTypesAndCodes = new InternetControlMessage[0];
-                }
                 UnderlyingObject.Protocol = value.ProtocolNumber;
             }
         }
@@ -424,8 +429,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             get { return AddressHelper.StringToPorts(UnderlyingObject.RemotePorts); }
             set
             {
-                if (value.Length > 0 && !Protocol.Equals(FirewallProtocol.TCP) && !Protocol.Equals(FirewallProtocol.UDP))
-                    throw new FirewallAPIv2InvalidProtocolException("Port number can only be specifid for the UDP and TCP protocols.");
+                if ((value.Length > 0) && !Protocol.Equals(FirewallProtocol.TCP) &&
+                    !Protocol.Equals(FirewallProtocol.UDP))
+                    throw new FirewallAPIv2InvalidProtocolException(
+                        "Port number can only be specifid for the UDP and TCP protocols.");
                 UnderlyingObject.RemotePorts = AddressHelper.PortsToString(value);
             }
         }
@@ -539,12 +546,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             }
         }
 
-        /// <summary>
-        ///     Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>
-        ///     A string that represents the current object.
-        /// </returns>
+
+        /// <inheritdoc />
         public override string ToString()
         {
             return Name;

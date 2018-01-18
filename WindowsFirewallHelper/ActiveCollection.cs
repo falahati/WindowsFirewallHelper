@@ -10,12 +10,12 @@ namespace WindowsFirewallHelper
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     public class ActiveCollection<T> : Collection<T>
     {
-        private readonly object _syncLock = new object();
-
         /// <summary>
         ///     An event to be raised when an Item got removed or added to the collection
         /// </summary>
         public event EventHandler<ActiveCollectionChangedEventArgs<T>> ItemsModified;
+
+        private readonly object _syncLock = new object();
 
         /// <summary>
         ///     Syncs this ActiveCollection object with the provided <see cref="Array" />
@@ -64,7 +64,6 @@ namespace WindowsFirewallHelper
         protected override void InsertItem(int index, T item)
         {
             base.InsertItem(index, item);
-
             ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
                 ActiveCollectionChangeType.Added, item));
         }
@@ -99,7 +98,6 @@ namespace WindowsFirewallHelper
         {
             var replaced = Items[index];
             base.SetItem(index, item);
-
             ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
                 ActiveCollectionChangeType.Removed, replaced));
             ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(

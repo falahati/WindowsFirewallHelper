@@ -86,9 +86,9 @@
         AddressMaskReply = 18,
 
         /// <summary>
-        ///     Traceroute Message
+        ///     Trace-route Message
         /// </summary>
-        Traceroute = 30,
+        TraceRoute = 30,
 
         /// <summary>
         ///     Datagram Conversion Error Message

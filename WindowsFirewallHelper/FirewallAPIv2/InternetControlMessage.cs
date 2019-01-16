@@ -79,12 +79,18 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <summary>
         ///     Gets the corresponding ICM type code
         /// </summary>
-        public int Code => _code ?? -1;
+        public int Code
+        {
+            get => _code ?? -1;
+        }
 
         /// <summary>
         ///     Gets the corresponding ICM type number
         /// </summary>
-        public int Type => _type ?? -1;
+        public int Type
+        {
+            get => _type ?? -1;
+        }
 
         /// <summary>
         ///     Determines whether the specified<see cref="InternetControlMessage" /> is equal to the current
@@ -98,9 +104,17 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </returns>
         public bool Equals(InternetControlMessage other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return (Type == other.Type) && (Code == other.Code);
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return Type == other.Type && Code == other.Code;
         }
 
         /// <summary>
@@ -111,8 +125,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(InternetControlMessage left, InternetControlMessage right)
         {
-            return (((object) left != null) && ((object) right != null) && left.Equals(right)) ||
-                   (((object) left == null) && ((object) right == null));
+            return Equals(left, right) || left?.Equals(right) == true;
         }
 
         /// <summary>
@@ -135,41 +148,50 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         ///     <see langword="true" /> if process ends well and <see cref="InternetControlMessage" /> created; otherwise
         ///     <see langword="false" />
         /// </returns>
+        // ReSharper disable once MethodTooLong
+        // ReSharper disable once ExcessiveIndentation
         public static bool TryParse(string str, out InternetControlMessage icm)
         {
             var parts = str.Split(':');
+
             if (parts.Length == 1)
             {
                 if (parts[0].Trim() == "*")
                 {
                     icm = Any;
+
                     return true;
                 }
             }
             else if (parts.Length == 2)
             {
-                if ((parts[0].Trim() == "*") && (parts[1].Trim() == "*"))
+                if (parts[0].Trim() == "*" && parts[1].Trim() == "*")
                 {
                     icm = Any;
+
                     return true;
                 }
-                byte t;
-                if (byte.TryParse(parts[0].Trim(), out t))
+
+                if (byte.TryParse(parts[0].Trim(), out var type))
                 {
-                    byte c;
                     if (parts[1].Trim() == "*")
                     {
-                        icm = new InternetControlMessage(t);
+                        icm = new InternetControlMessage(type);
+
                         return true;
                     }
-                    if (byte.TryParse(parts[1].Trim(), out c))
+
+                    if (byte.TryParse(parts[1].Trim(), out var code))
                     {
-                        icm = new InternetControlMessage(t, c);
+                        icm = new InternetControlMessage(type, code);
+
                         return true;
                     }
                 }
             }
+
             icm = null;
+
             return false;
         }
 
@@ -185,10 +207,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((InternetControlMessage) obj);
+            return Equals(obj as InternetControlMessage);
         }
 
         /// <summary>
@@ -202,7 +221,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
             unchecked
             {
-                return (Type.GetHashCode()*397) ^ Code.GetHashCode();
+                return (Type.GetHashCode() * 397) ^ Code.GetHashCode();
             }
         }
 
@@ -216,7 +235,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         public override string ToString()
         {
             if (Equals(Any))
+            {
                 return "*";
+            }
+
             return $"{_type}:{_code?.ToString() ?? "*"}";
         }
     }

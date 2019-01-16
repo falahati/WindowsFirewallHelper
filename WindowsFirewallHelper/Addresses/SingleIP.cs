@@ -4,10 +4,11 @@ using System.Net;
 
 namespace WindowsFirewallHelper.Addresses
 {
+    /// <inheritdoc cref="IAddress" />
     /// <summary>
-    ///     A class representing a Internet Protocol address
+    ///     A class representing an Internet Protocol address
     /// </summary>
-    public class SingleIP : IPAddress, IAddress
+    public class SingleIP : IPAddress, IAddress, IEquatable<SingleIP>, IEquatable<IPAddress>
     {
         /// <summary>
         ///     Provides an IP address that matches any IPAddress. This field is read-only.
@@ -34,18 +35,23 @@ namespace WindowsFirewallHelper.Addresses
         ///     Obsolete - Provides an IP address that indicates that no IPv6 IPAddress is mentioned. This property is read-only.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] public new static readonly SingleIP IPv6None = FromIPAddress(IPAddress.IPv6None);
+        [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)]
+        // ReSharper disable once InconsistentNaming
+        public new static readonly SingleIP IPv6None = FromIPAddress(IPAddress.IPv6None);
 
         /// <summary>
         ///     Obsolete - Provides an IP address that indicates that no IPAddress is mentioned. This property is read-only.
         /// </summary>
-        [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] public new static readonly SingleIP None = FromIPAddress(IPAddress.None);
+        [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static readonly SingleIP None = FromIPAddress(IPAddress.None);
 
         /// <summary>
         ///     Obsolete - Provides an IP address that matches any IPv6 IPAddress. This field is read-only.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)] public new static readonly SingleIP IPv6Any = FromIPAddress(IPAddress.IPv6Any);
+        [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)]
+        // ReSharper disable once InconsistentNaming
+        public new static readonly SingleIP IPv6Any = FromIPAddress(IPAddress.IPv6Any);
 
 
         /// <summary>
@@ -64,6 +70,7 @@ namespace WindowsFirewallHelper.Addresses
         {
         }
 
+
         /// <summary>
         ///     Converts an Internet address to its standard notation.
         /// </summary>
@@ -73,8 +80,43 @@ namespace WindowsFirewallHelper.Addresses
         public override string ToString()
         {
             if (Equals(Any))
+            {
                 return "*";
+            }
+
             return base.ToString();
+        }
+
+        /// <inheritdoc />
+        public bool Equals(IPAddress other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return ToIPAddress().Equals(other);
+        }
+
+        /// <inheritdoc />
+        public bool Equals(SingleIP other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return ToIPAddress().Equals(other.ToIPAddress());
         }
 
         /// <summary>
@@ -107,6 +149,36 @@ namespace WindowsFirewallHelper.Addresses
             return IPAddress.IsLoopback(address.ToIPAddress());
         }
 
+        public static bool operator ==(SingleIP left, SingleIP right)
+        {
+            return Equals(left, right) || left?.Equals(right) == true;
+        }
+
+        public static bool operator ==(SingleIP left, IPAddress right)
+        {
+            return Equals(left, right) || left?.Equals(right) == true;
+        }
+
+        public static bool operator ==(IPAddress left, SingleIP right)
+        {
+            return Equals(left, right) || right?.Equals(left) == true;
+        }
+
+        public static bool operator !=(SingleIP left, SingleIP right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator !=(SingleIP left, IPAddress right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator !=(IPAddress left, SingleIP right)
+        {
+            return !(left == right);
+        }
+
         /// <summary>
         ///     Converts an IP address string to an <see cref="SingleIP" /> instance.
         /// </summary>
@@ -122,10 +194,15 @@ namespace WindowsFirewallHelper.Addresses
         public new static SingleIP Parse(string ipString)
         {
             if (ipString == null)
+            {
                 throw new ArgumentNullException(nameof(ipString));
-            SingleIP ip;
-            if (!TryParse(ipString, out ip))
+            }
+
+            if (!TryParse(ipString, out SingleIP ip))
+            {
                 throw new FormatException();
+            }
+
             return ip;
         }
 
@@ -151,28 +228,47 @@ namespace WindowsFirewallHelper.Addresses
             if (ipString.Trim() == "*")
             {
                 address = Any;
+
                 return true;
             }
-            IPAddress ipAddress;
-            if (IPAddress.TryParse(ipString, out ipAddress))
+
+            if (IPAddress.TryParse(ipString, out var ipAddress))
             {
                 address = FromIPAddress(ipAddress);
+
                 return true;
             }
+
             var ips = ipString.Split('-');
+
             if (ips.Length == 2)
             {
-                IPAddress address1;
-                IPAddress address2;
-                if (IPAddress.TryParse(ips[0], out address1) && IPAddress.TryParse(ips[1], out address2))
+                if (IPAddress.TryParse(ips[0], out var address1) && IPAddress.TryParse(ips[1], out var address2))
+                {
                     if (address1.Equals(address2))
                     {
                         address = FromIPAddress(address1);
+
                         return true;
                     }
+                }
             }
+
             address = null;
+
             return false;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object other)
+        {
+            return Equals(other as SingleIP) || Equals(other as IPAddress);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return ToIPAddress().GetHashCode();
         }
 
         /// <summary>

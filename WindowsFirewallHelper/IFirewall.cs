@@ -37,8 +37,14 @@ namespace WindowsFirewallHelper
         /// <param name="filename">Address of the executable file that the rule applies to</param>
         /// <param name="protocol">Protocol that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
-        IRule CreateApplicationRule(FirewallProfiles profiles, string name, FirewallAction action, string filename,
-            FirewallProtocol protocol);
+        // ReSharper disable once TooManyArguments
+        IRule CreateApplicationRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
+            string filename,
+            FirewallProtocol protocol
+        );
 
         /// <summary>
         ///     Creates a rule about an executable file (application) to be registered to a firewall profile
@@ -48,6 +54,7 @@ namespace WindowsFirewallHelper
         /// <param name="action">Action of the rule</param>
         /// <param name="filename">Address of the executable file that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
+        // ReSharper disable once TooManyArguments
         IRule CreateApplicationRule(FirewallProfiles profiles, string name, FirewallAction action, string filename);
 
         /// <summary>
@@ -68,8 +75,14 @@ namespace WindowsFirewallHelper
         /// <param name="portNumber">Port number that the rule applies to</param>
         /// <param name="protocol">Protocol that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
-        IRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber,
-            FirewallProtocol protocol);
+        // ReSharper disable once TooManyArguments
+        IRule CreatePortRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
+            ushort portNumber,
+            FirewallProtocol protocol
+        );
 
         /// <summary>
         ///     Creates a rule about a port to be registered to a firewall profile
@@ -79,6 +92,7 @@ namespace WindowsFirewallHelper
         /// <param name="action">Action of the rule</param>
         /// <param name="portNumber">Port number that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
+        // ReSharper disable once TooManyArguments
         IRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber);
 
         /// <summary>

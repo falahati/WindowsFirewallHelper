@@ -5,6 +5,7 @@ using NetFwTypeLib;
 
 namespace WindowsFirewallHelper.FirewallAPIv2
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Contains properties and methods of Windows Firewall with Advanced Security
     /// </summary>
@@ -15,6 +16,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
         private readonly ActiveCollection<IRule> _rules = new ActiveCollection<IRule>();
 
+        /// <inheritdoc />
         private Firewall()
         {
             if (Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2", false) != null)
@@ -46,6 +48,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
         internal INetFwPolicy2 UnderlyingObject { get; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Creates a rule about an executable file (application) to be registered to a firewall profile
         /// </summary>
@@ -56,14 +59,23 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <param name="protocol">Protocol that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
-        public IRule CreateApplicationRule(FirewallProfiles profiles, string name, FirewallAction action,
-            string filename, FirewallProtocol protocol)
+        // ReSharper disable once TooManyArguments
+        public IRule CreateApplicationRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
+            string filename,
+            FirewallProtocol protocol)
         {
             if (!IsSupported)
+            {
                 throw new NotSupportedException();
+            }
+
             return new StandardRule(name, filename, action, FirewallDirection.Inbound, profiles) {Protocol = protocol};
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Creates a rule about an executable file (application) to be registered to a firewall profile
         /// </summary>
@@ -73,12 +85,17 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <param name="filename">Address of the executable file that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
-        public IRule CreateApplicationRule(FirewallProfiles profiles, string name, FirewallAction action,
+        // ReSharper disable once TooManyArguments
+        public IRule CreateApplicationRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
             string filename)
         {
             return CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.Any);
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Creates a rule about an executable file (application) to be registered to a firewall profile
         /// </summary>
@@ -93,6 +110,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         }
 
 
+        /// <inheritdoc />
         /// <summary>
         ///     Creates a rule about a port to be registered to a firewall profile
         /// </summary>
@@ -103,17 +121,30 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <param name="protocol">Protocol that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
-        public IRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber,
+        // ReSharper disable once TooManyArguments
+        public IRule CreatePortRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
+            ushort portNumber,
             FirewallProtocol protocol)
         {
             if (!IsSupported)
+            {
                 throw new NotSupportedException();
+            }
+
             if (!protocol.Equals(FirewallProtocol.TCP) && protocol.Equals(FirewallProtocol.UDP))
+            {
                 throw new FirewallAPIv2InvalidProtocolException(
                     "Invalid protocol selected; rule's protocol should be TCP or UDP.");
-            return new StandardRule(name, portNumber, action, FirewallDirection.Inbound, profiles) {Protocol = protocol};
+            }
+
+            return new StandardRule(name, portNumber, action, FirewallDirection.Inbound,
+                profiles) {Protocol = protocol};
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Creates a rule about a port to be registered to a firewall profile
         /// </summary>
@@ -123,11 +154,13 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <param name="portNumber">Port number that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
+        // ReSharper disable once TooManyArguments
         public IRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber)
         {
             return CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.TCP);
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Creates a rule about a port to be registered to a firewall profile
         /// </summary>
@@ -141,6 +174,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             return CreatePortRule(profiles, name, FirewallAction.Allow, portNumber);
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Returns a specific firewall profile
         /// </summary>
@@ -148,16 +182,26 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <returns>Firewall profile object implementing <see cref="IProfile" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         /// <exception cref="FirewallAPIv2NotSupportedException">The asked profile is not supported with this class</exception>
+        // ReSharper disable once FlagArgument
         public IProfile GetProfile(FirewallProfiles profile)
         {
             if (!IsSupported)
+            {
                 throw new NotSupportedException();
+            }
+
             foreach (var p in Profiles)
+            {
                 if (p.Type == profile)
+                {
                     return p;
+                }
+            }
+
             throw new FirewallAPIv2NotSupportedException();
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Returns the active firewall profile, if any
         /// </summary>
@@ -168,28 +212,46 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         public IProfile GetProfile()
         {
             if (!IsSupported)
+            {
                 throw new NotSupportedException();
+            }
+
             foreach (var p in Profiles)
+            {
                 if (p.IsActive)
+                {
                     return p;
+                }
+            }
+
             return null;
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets a Boolean value showing if the firewall is supported in this environment.
         /// </summary>
-        public bool IsSupported => UnderlyingObject != null;
+        public bool IsSupported
+        {
+            get => UnderlyingObject != null;
+        }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets the name of the firewall
         /// </summary>
-        public string Name => "Windows Firewall with Advanced Security";
+        public string Name
+        {
+            get => "Windows Firewall with Advanced Security";
+        }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets the list of all available profiles of the firewall
         /// </summary>
         public IProfile[] Profiles { get; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Gets the list of all registered rules of the firewall
         /// </summary>
@@ -198,6 +260,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             get
             {
                 SyncRules();
+
                 return _rules;
             }
         }
@@ -209,32 +272,53 @@ namespace WindowsFirewallHelper.FirewallAPIv2
                 if (e.ActionType == ActiveCollectionChangeType.Added)
                 {
                     var rule = e.Item as StandardRule;
+
                     if (rule != null)
+                    {
                         UnderlyingObject.Rules.Add(rule.UnderlyingObject);
+                    }
                 }
                 else if (e.ActionType == ActiveCollectionChangeType.Removed)
                 {
                     var rule = e.Item as StandardRule;
+
                     if (rule != null)
+                    {
                         UnderlyingObject.Rules.Remove(rule.UnderlyingObject.Name);
+                    }
                 }
             }
+
             SyncRules();
         }
 
 
+        // ReSharper disable once ExcessiveIndentation
         private void SyncRules()
         {
             lock (_rules)
             {
                 var rules = new List<IRule>();
+
                 foreach (var rule in UnderlyingObject.Rules)
-                    if (rule is INetFwRule3)
-                        rules.Add(new StandardRuleWin8((INetFwRule3) rule));
-                    else if (rule is INetFwRule2)
-                        rules.Add(new StandardRuleWin7((INetFwRule2) rule));
-                    else if (rule is INetFwRule)
-                        rules.Add(new StandardRule((INetFwRule) rule));
+                {
+                    switch (rule)
+                    {
+                        case INetFwRule3 rule3:
+                            rules.Add(new StandardRuleWin8(rule3));
+
+                            break;
+                        case INetFwRule2 rule2:
+                            rules.Add(new StandardRuleWin7(rule2));
+
+                            break;
+                        case INetFwRule rule1:
+                            rules.Add(new StandardRule(rule1));
+
+                            break;
+                    }
+                }
+
                 _rules.ItemsModified -= RulesOnItemsModified;
                 _rules.Sync(rules.ToArray());
                 _rules.ItemsModified += RulesOnItemsModified;

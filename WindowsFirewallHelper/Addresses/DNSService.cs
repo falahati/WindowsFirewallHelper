@@ -1,12 +1,16 @@
 ﻿namespace WindowsFirewallHelper.Addresses
 {
+    /// <inheritdoc />
     /// <summary>
     ///     A class representing a DNS service as an address
     /// </summary>
     public sealed class DNSService : SpecialAddress
     {
         /// <inheritdoc />
-        protected override string AddressString => "DNS";
+        protected override string AddressString
+        {
+            get => @"DNS";
+        }
 
         /// <summary>
         ///     Determines whether a string is a valid DNS service

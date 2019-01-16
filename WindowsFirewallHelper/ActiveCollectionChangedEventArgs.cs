@@ -2,12 +2,14 @@
 
 namespace WindowsFirewallHelper
 {
+    /// <inheritdoc />
     /// <summary>
     ///     ActiveCollectionChangedEventArgs is a class containing event data about the
     ///     <see cref="ActiveCollectionChangeType" /> event.
     /// </summary>
     public class ActiveCollectionChangedEventArgs<T> : EventArgs
     {
+        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollectionChangedEventArgs" />
         ///     class.

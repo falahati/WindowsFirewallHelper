@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace WindowsFirewallHelper
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Represents a dynamic data collection that provides notifications when items get added or removed.
     /// </summary>
@@ -21,37 +22,56 @@ namespace WindowsFirewallHelper
         ///     Syncs this ActiveCollection object with the provided <see cref="Array" />
         /// </summary>
         /// <param name="newItems"></param>
+        // ReSharper disable once TooManyDeclarations
         public void Sync(T[] newItems)
         {
             lock (_syncLock)
             {
-                var hashTable = this.Select(arg => new {Item = arg, HashCode = arg.GetHashCode()}).ToArray();
-                var newItemsHashTable = newItems.Select(arg => new {Item = arg, HashCode = arg.GetHashCode()}).ToArray();
-                foreach (
-                    var newItem in
-                    newItemsHashTable.Where(arg => hashTable.All(arg1 => arg1.HashCode != arg.HashCode))
-                        .Select(arg => arg.Item))
+                var oldItemsHashTable = this
+                    .Select(o => new {Item = o, HashCode = o.GetHashCode()})
+                    .ToArray();
+                var newItemsHashTable = newItems
+                    .Select(n => new {Item = n, HashCode = n.GetHashCode()})
+                    .ToArray();
+
+                foreach (var newItem in newItemsHashTable
+                    .Where(n => oldItemsHashTable.All(o => o.HashCode != n.HashCode))
+                    .Select(n => n.Item)
+                )
+                {
                     Add(newItem);
-                foreach (
-                    var obj in
-                    hashTable.Where(arg => newItemsHashTable.All(arg1 => arg1.HashCode != arg.HashCode))
-                        .Select(arg => arg.Item))
+                }
+
+                foreach (var obj in oldItemsHashTable
+                    .Where(o => newItemsHashTable.All(n => n.HashCode != o.HashCode))
+                    .Select(o => o.Item)
+                )
+                {
                     Remove(obj);
+                }
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Removes all elements from the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" />.
         /// </summary>
+        /// <exception cref="Exception">A delegate callback throws an exception.</exception>
         protected override void ClearItems()
         {
             var items = this.ToArray();
             base.ClearItems();
+
             foreach (var item in items)
-                ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                    ActiveCollectionChangeType.Removed, item));
+            {
+                ItemsModified?.Invoke(
+                    this,
+                    new ActiveCollectionChangedEventArgs<T>(ActiveCollectionChangeType.Removed, item)
+                );
+            }
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Inserts an element into the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" /> at the specified index.
         /// </summary>
@@ -61,13 +81,17 @@ namespace WindowsFirewallHelper
         ///     <paramref name="index" /> is less than zero.-or-
         ///     <paramref name="index" /> is greater than <see cref="P:WindowsFirewallHelper.Helpers.ActiveCollection.Count" />.
         /// </exception>
+        /// <exception cref="Exception">A delegate callback throws an exception.</exception>
         protected override void InsertItem(int index, T item)
         {
             base.InsertItem(index, item);
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Added, item));
+            ItemsModified?.Invoke(
+                this,
+                new ActiveCollectionChangedEventArgs<T>(ActiveCollectionChangeType.Added, item)
+            );
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Removes the element at the specified index of the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" />.
         /// </summary>
@@ -77,14 +101,18 @@ namespace WindowsFirewallHelper
         ///     <paramref name="index" /> is equal to or greater than
         ///     <see cref="P:WindowsFirewallHelper.Helpers.ActiveCollection.Count" />.
         /// </exception>
+        /// <exception cref="Exception">A delegate callback throws an exception.</exception>
         protected override void RemoveItem(int index)
         {
             var item = Items[index];
             base.RemoveItem(index);
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Removed, item));
+            ItemsModified?.Invoke(
+                this,
+                new ActiveCollectionChangedEventArgs<T>(ActiveCollectionChangeType.Removed, item)
+            );
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Replaces the element at the specified index.
         /// </summary>
@@ -94,14 +122,19 @@ namespace WindowsFirewallHelper
         ///     <paramref name="index" /> is less than zero.-or-
         ///     <paramref name="index" /> is greater than <see cref="P:WindowsFirewallHelper.Helpers.ActiveCollection.Count" />.
         /// </exception>
+        /// <exception cref="T:System.Exception">A delegate callback throws an exception.</exception>
         protected override void SetItem(int index, T item)
         {
             var replaced = Items[index];
             base.SetItem(index, item);
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Removed, replaced));
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Added, item));
+            ItemsModified?.Invoke(
+                this,
+                new ActiveCollectionChangedEventArgs<T>(ActiveCollectionChangeType.Removed, replaced)
+            );
+            ItemsModified?.Invoke(
+                this,
+                new ActiveCollectionChangedEventArgs<T>(ActiveCollectionChangeType.Added, item)
+            );
         }
     }
 }

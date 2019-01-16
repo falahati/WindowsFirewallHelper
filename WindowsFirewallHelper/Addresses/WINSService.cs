@@ -1,12 +1,16 @@
 ﻿namespace WindowsFirewallHelper.Addresses
 {
+    /// <inheritdoc />
     /// <summary>
     ///     A class representing a WINS service as an address
     /// </summary>
     public sealed class WINSService : SpecialAddress
     {
         /// <inheritdoc />
-        protected override string AddressString => "WINS";
+        protected override string AddressString
+        {
+            get => @"WINS";
+        }
 
         /// <summary>
         ///     Determines whether a string is a valid WINS service

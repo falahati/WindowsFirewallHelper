@@ -6,6 +6,7 @@ using NetFwTypeLib;
 
 namespace WindowsFirewallHelper.FirewallAPIv1.Rules
 {
+    /// <inheritdoc cref="IRule" />
     /// <summary>
     ///     Contains properties of a Windows Firewall v1 port rule
     /// </summary>
@@ -39,7 +40,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <summary>
         ///     Returns a Boolean value indicating if these class is available in the current machine
         /// </summary>
-        public static bool IsSupported => Type.GetTypeFromProgID(@"HNetCfg.FwOpenPort") != null;
+        public static bool IsSupported
+        {
+            get => Type.GetTypeFromProgID(@"HNetCfg.FwOpenPort") != null;
+        }
 
         /// <summary>
         ///     Returns the underlying Windows Firewall Object
@@ -57,10 +61,19 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </returns>
         public bool Equals(PortRule other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return (Profiles == other.Profiles) && (UnderlyingObject.Port == other.UnderlyingObject.Port) &&
-                   (UnderlyingObject.Protocol == other.UnderlyingObject.Protocol);
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return Profiles == other.Profiles &&
+                   UnderlyingObject.Port == other.UnderlyingObject.Port &&
+                   UnderlyingObject.Protocol == other.UnderlyingObject.Protocol;
         }
 
 
@@ -68,8 +81,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public FirewallAction Action
         {
-            get { return FirewallAction.Allow; }
-            set { throw new FirewallAPIv1NotSupportedException(); }
+            get => FirewallAction.Allow;
+            set => throw new FirewallAPIv1NotSupportedException();
         }
 
 
@@ -77,16 +90,16 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public FirewallDirection Direction
         {
-            get { return FirewallDirection.Inbound; }
-            set { throw new FirewallAPIv1NotSupportedException(); }
+            get => FirewallDirection.Inbound;
+            set => throw new FirewallAPIv1NotSupportedException();
         }
 
 
         /// <inheritdoc />
         public bool IsEnable
         {
-            get { return UnderlyingObject.Enabled; }
-            set { UnderlyingObject.Enabled = value; }
+            get => UnderlyingObject.Enabled;
+            set => UnderlyingObject.Enabled = value;
         }
 
 
@@ -94,27 +107,33 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public IAddress[] LocalAddresses
         {
-            get { return new IAddress[] {SingleIP.Any}; }
-            set { throw new FirewallAPIv1NotSupportedException(); }
+            get => new IAddress[] {SingleIP.Any};
+            set => throw new FirewallAPIv1NotSupportedException();
         }
 
 
         /// <inheritdoc />
-        /// <exception cref="FirewallAPIv1NotSupportedException">
+        /// <exception cref="NotSupportedException">
         ///     The array passes to this property as value should have one and
         ///     only one element
         /// </exception>
         public ushort[] LocalPorts
         {
-            get { return new[] {(ushort) UnderlyingObject.Port}; }
+            get => new[] {(ushort) UnderlyingObject.Port};
             set
             {
                 if (value.Length == 0)
+                {
                     throw new ArgumentException(
                         "You can not change the identity of a port rule. Consider creating an other rule.");
+                }
+
                 if (value.Length > 1)
-                    throw new FirewallAPIv1NotSupportedException(
+                {
+                    throw new NotSupportedException(
                         "This property only accept an array of one element length.");
+                }
+
                 UnderlyingObject.Port = value[0];
             }
         }
@@ -123,39 +142,52 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public FirewallPortType LocalPortType
         {
-            get { return FirewallPortType.Specific; }
-            set { throw new FirewallAPIv1NotSupportedException(); }
+            get => FirewallPortType.Specific;
+            set => throw new FirewallAPIv1NotSupportedException();
         }
 
         /// <inheritdoc />
         public string Name
         {
-            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Name); }
-            set { UnderlyingObject.Name = value; }
+            get => NativeHelper.ResolveStringResource(UnderlyingObject.Name);
+            set => UnderlyingObject.Name = value;
         }
 
 
         /// <inheritdoc />
-        /// <exception cref="FirewallAPIv1NotSupportedException">Public profile or multiple profile registration is not supported</exception>
+        /// <exception cref="NotSupportedException">Public profile or multiple profile registration is not supported</exception>
         public FirewallProfiles Profiles
         {
-            get { return _profiles; }
+            get => _profiles;
             set
             {
                 if (EnumHelper.HasFlag(value, FirewallProfiles.Public))
-                    throw new FirewallAPIv1NotSupportedException("Public profile is not supported.");
-                if ((value != FirewallProfiles.Private) && (value != FirewallProfiles.Domain))
-                    throw new FirewallAPIv1NotSupportedException("Multiple profile per each rule is not supported.");
+                {
+                    throw new NotSupportedException("Public profile is not supported.");
+                }
+
+                if (value != FirewallProfiles.Private && value != FirewallProfiles.Domain)
+                {
+                    throw new NotSupportedException("Multiple profile per each rule is not supported.");
+                }
+
                 var rules = Firewall.Instance.Rules;
                 var rulesArray = rules.ToArray();
-                if ((_profiles != 0) && (value != _profiles) && rulesArray.Contains(this))
+
+                if (_profiles != 0 && value != _profiles && rulesArray.Contains(this))
                 {
                     foreach (var rule in rulesArray)
+                    {
                         if (Equals(rule) ||
-                            ((LocalPorts.Length == 1) && ((rule as PortRule)?.LocalPorts.Length == 1) &&
-                             LocalPorts[0].Equals((rule as PortRule).LocalPorts[0]) &&
-                             (Protocol?.ProtocolNumber == (rule as PortRule).Protocol?.ProtocolNumber)))
+                            LocalPorts.Length == 1 &&
+                            (rule as PortRule)?.LocalPorts.Length == 1 &&
+                            LocalPorts[0].Equals((rule as PortRule).LocalPorts[0]) &&
+                            Protocol?.ProtocolNumber == (rule as PortRule).Protocol?.ProtocolNumber)
+                        {
                             rules.Remove(rule);
+                        }
+                    }
+
                     _profiles = value;
                     rules.Add(this);
                 }
@@ -168,15 +200,19 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
 
 
         /// <inheritdoc />
-        /// <exception cref="FirewallAPIv1NotSupportedException">Only acceptable values are UDP, TCP and Any</exception>
+        /// <exception cref="NotSupportedException">Only acceptable values are UDP, TCP and Any</exception>
         public FirewallProtocol Protocol
         {
-            get { return new FirewallProtocol((int) UnderlyingObject.Protocol); }
+            get => new FirewallProtocol((int) UnderlyingObject.Protocol);
             set
             {
-                if (!value.Equals(FirewallProtocol.Any) && !value.Equals(FirewallProtocol.TCP) &&
+                if (!value.Equals(FirewallProtocol.Any) &&
+                    !value.Equals(FirewallProtocol.TCP) &&
                     !value.Equals(FirewallProtocol.UDP))
-                    throw new FirewallAPIv1NotSupportedException("Acceptable values are UDP, TCP and Any");
+                {
+                    throw new NotSupportedException("Acceptable values are UDP, TCP and Any");
+                }
+
                 UnderlyingObject.Protocol = (NET_FW_IP_PROTOCOL_) value.ProtocolNumber;
             }
         }
@@ -185,8 +221,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <inheritdoc />
         public IAddress[] RemoteAddresses
         {
-            get { return AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses); }
-            set { UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value); }
+            get => AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses);
+            set => UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value);
         }
 
 
@@ -194,24 +230,24 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         public ushort[] RemotePorts
         {
-            get { return new ushort[0]; }
-            set { throw new FirewallAPIv1NotSupportedException(); }
+            get => new ushort[0];
+            set => throw new FirewallAPIv1NotSupportedException();
         }
 
 
         /// <inheritdoc />
         public FirewallScope Scope
         {
-            get
-            {
-                return UnderlyingObject.Scope == NET_FW_SCOPE_.NET_FW_SCOPE_LOCAL_SUBNET
-                    ? FirewallScope.LocalSubnet
-                    : FirewallScope.All;
-            }
+            get => UnderlyingObject.Scope == NET_FW_SCOPE_.NET_FW_SCOPE_LOCAL_SUBNET
+                ? FirewallScope.LocalSubnet
+                : FirewallScope.All;
             set
             {
                 if (value == FirewallScope.Specific)
+                {
                     throw new ArgumentException("Use the RemoteAddresses property to set the exact remote addresses");
+                }
+
                 if (value == FirewallScope.LocalSubnet)
                 {
                     RemoteAddresses = new IAddress[] {new LocalSubnet()};
@@ -233,8 +269,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(PortRule left, PortRule right)
         {
-            return (((object) left != null) && ((object) right != null) && left.Equals(right)) ||
-                   (((object) left == null) && ((object) right == null));
+            return Equals(left, right) || left?.Equals(right) == true;
         }
 
         /// <summary>
@@ -258,10 +293,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <param name="obj">The <see cref="T:System.Object" /> to compare with the current <see cref="PortRule" />. </param>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((PortRule) obj);
+            return Equals(obj as PortRule);
         }
 
         /// <summary>

@@ -1,12 +1,16 @@
 ﻿namespace WindowsFirewallHelper.Addresses
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     A class representing local subnet as an address
+    ///     A class representing default gateway as an address
     /// </summary>
     public sealed class DefaultGateway : SpecialAddress
     {
         /// <inheritdoc />
-        protected override string AddressString => "Defaultgateway";
+        protected override string AddressString
+        {
+            get => @"Defaultgateway";
+        }
 
         /// <summary>
         ///     Determines whether a string is a valid default gateway address

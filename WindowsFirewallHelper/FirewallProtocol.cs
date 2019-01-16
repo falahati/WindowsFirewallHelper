@@ -7,8 +7,7 @@ namespace WindowsFirewallHelper
     ///     A class representing a FirewallProtocol
     /// </summary>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "IdentifierWordIsNotInDictionary")]
-    public class FirewallProtocol : IEquatable<FirewallProtocol>
+    public class FirewallProtocol : IEquatable<FirewallProtocol>, IEquatable<int>
     {
         /// <summary>
         ///     Any Protocol
@@ -115,36 +114,64 @@ namespace WindowsFirewallHelper
         /// </summary>
         /// <param name="other"> The object to compare with the current object.</param>
         /// <returns>
-        ///     true if the specified <see cref="FirewallProtocol" /> is equal to the current<see cref="FirewallProtocol" />;
+        ///     true if the specified <see cref="FirewallProtocol" /> is equal to the current <see cref="FirewallProtocol" />;
         ///     otherwise, false.
         /// </returns>
         public bool Equals(FirewallProtocol other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return ProtocolNumber == other.ProtocolNumber;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return Equals(other.ProtocolNumber);
         }
 
-
         /// <summary>
-        ///     Compares two <see cref="FirewallProtocol" /> objects for equality
+        ///     Determines whether the specified protocol number is equal to the current
+        ///     <see cref="FirewallProtocol" />.
         /// </summary>
-        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
-        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
-        /// <returns>true if two sides are equal; otherwise false</returns>
+        /// <param name="other"> The protocol number to compare with the current object.</param>
+        /// <returns>
+        ///     true if the specified protocol number is equal to the current <see cref="FirewallProtocol" />;
+        ///     otherwise, false.
+        /// </returns>
+        public bool Equals(int other)
+        {
+            return ProtocolNumber == other;
+        }
+
         public static bool operator ==(FirewallProtocol left, FirewallProtocol right)
         {
-            return (((object) left != null) && ((object) right != null) && left.Equals(right)) ||
-                   (((object) left == null) && ((object) right == null));
+            return Equals(left, right) || left?.Equals(right) == true;
         }
 
-        /// <summary>
-        ///     Compares two <see cref="FirewallProtocol" /> objects for inequality
-        /// </summary>
-        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
-        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
-        /// <returns>true if two sides are not equal; otherwise false</returns>
+        public static bool operator ==(FirewallProtocol left, int right)
+        {
+            return left?.Equals(right) == true;
+        }
+
+        public static bool operator ==(int left, FirewallProtocol right)
+        {
+            return right?.Equals(left) == true;
+        }
+
         public static bool operator !=(FirewallProtocol left, FirewallProtocol right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator !=(FirewallProtocol left, int right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator !=(int left, FirewallProtocol right)
         {
             return !(left == right);
         }
@@ -160,13 +187,15 @@ namespace WindowsFirewallHelper
         /// </returns>
         public static bool TryParse(string str, out FirewallProtocol firewallProtocol)
         {
-            int i;
-            if (int.TryParse(str, out i) && (i >= 0) && (i <= 256))
+            if (int.TryParse(str, out var i) && i >= 0 && i <= 256)
             {
                 firewallProtocol = new FirewallProtocol(i);
+
                 return true;
             }
+
             firewallProtocol = null;
+
             return false;
         }
 
@@ -181,14 +210,12 @@ namespace WindowsFirewallHelper
         /// <param name="obj">The object to compare with the current object. </param>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
-            if (obj is FirewallProtocol)
-                return Equals((FirewallProtocol) obj);
-            if (obj is int)
-                return ProtocolNumber.Equals((int) obj);
-            return Equals(this, obj);
+            if (obj is int i)
+            {
+                return ProtocolNumber.Equals(i);
+            }
+
+            return Equals(obj as FirewallProtocol);
         }
 
         /// <summary>

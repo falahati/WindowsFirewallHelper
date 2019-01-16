@@ -1,12 +1,16 @@
 ﻿namespace WindowsFirewallHelper.Addresses
 {
+    /// <inheritdoc />
     /// <summary>
     ///     A class representing a DHCP service as an address
     /// </summary>
     public sealed class DHCPService : SpecialAddress
     {
         /// <inheritdoc />
-        protected override string AddressString => "DHCP";
+        protected override string AddressString
+        {
+            get => @"DHCP";
+        }
 
         /// <summary>
         ///     Determines whether a string is a valid DHCP service

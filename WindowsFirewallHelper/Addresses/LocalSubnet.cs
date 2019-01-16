@@ -6,7 +6,10 @@
     public sealed class LocalSubnet : SpecialAddress
     {
         /// <inheritdoc />
-        protected override string AddressString => "LocalSubnet";
+        protected override string AddressString
+        {
+            get => @"LocalSubnet";
+        }
 
         /// <summary>
         ///     Determines whether a string is a valid local subnet address

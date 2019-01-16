@@ -2,17 +2,18 @@
 
 namespace WindowsFirewallHelper.Addresses
 {
+    /// <inheritdoc cref="IAddress" />
     /// <summary>
     ///     This class is the parent class of all special address values
     /// </summary>
-    public abstract class SpecialAddress : IAddress, IEquatable<SpecialAddress>
+    public abstract class SpecialAddress : IAddress, IEquatable<SpecialAddress>, IEquatable<string>
     {
         /// <summary>
         ///     Should returns the constant value of the special address
         /// </summary>
         protected abstract string AddressString { get; }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IAddress" />
         public override string ToString()
         {
             return AddressString;
@@ -21,7 +22,33 @@ namespace WindowsFirewallHelper.Addresses
         /// <inheritdoc />
         public bool Equals(SpecialAddress other)
         {
-            return (other != null) && AddressString.Equals(other.AddressString);
+            if (other == null)
+            {
+                return false;
+            }
+
+            return ReferenceEquals(this, other) || Equals(other.AddressString);
+        }
+
+        /// <inheritdoc />
+        public bool Equals(string other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return AddressString.Equals(other, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static bool operator ==(SpecialAddress left, SpecialAddress right)
+        {
+            return Equals(left, right) || left?.Equals(right) == true;
+        }
+
+        public static bool operator !=(SpecialAddress left, SpecialAddress right)
+        {
+            return !(left == right);
         }
 
         /// <summary>
@@ -35,9 +62,14 @@ namespace WindowsFirewallHelper.Addresses
         protected static bool TryParse<T>(string str, out T service) where T : SpecialAddress, new()
         {
             service = new T();
+
             if (str.Trim().Equals(service.AddressString, StringComparison.InvariantCultureIgnoreCase))
+            {
                 return true;
+            }
+
             service = null;
+
             return false;
         }
 
@@ -50,10 +82,7 @@ namespace WindowsFirewallHelper.Addresses
         /// <param name="obj">An <see cref="T:Object" /> instance to compare to the current instance. </param>
         public override bool Equals(object obj)
         {
-            // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
-            if (obj is SpecialAddress)
-                return Equals((SpecialAddress) obj);
-            return ReferenceEquals(this, obj);
+            return Equals(obj as SpecialAddress) || Equals(obj as string);
         }
 
         /// <summary>

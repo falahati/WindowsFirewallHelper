@@ -72,6 +72,7 @@
     <Compile Include="Helpers\ICMPHelper.cs" />
     <Compile Include="Helpers\NativeHelper.cs" />
     <Compile Include="Helpers\NetworkInterfaceHelper.cs" />
+    <Compile Include="Helpers\PortHelper.cs" />
     <Compile Include="IFirewall.cs" />
     <Compile Include="IAddress.cs" />
     <Compile Include="IProfile.cs" />

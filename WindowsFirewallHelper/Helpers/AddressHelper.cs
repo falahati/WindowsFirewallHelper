@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using WindowsFirewallHelper.Addresses;
 
 namespace WindowsFirewallHelper.Helpers
@@ -56,49 +55,22 @@ namespace WindowsFirewallHelper.Helpers
             }
             return val1;
         }
-
-
+        
         public static string PortsToString(ushort[] ports)
         {
-            var strList = new string[ports.Length];
-            for (var i = 0; i < ports.Length; i++)
-                strList[i] = ports[i].ToString();
-            //return strList.Length == 0 ? null : string.Join(",", strList);
-            return string.Join(",", PortsToGroups(ports).Select(r => PrettyRange(r)));
-        }
+            var portStrings = ports
+                .Distinct()
+                .OrderBy(port => port)
+                .Select((port, index) => new {PortNumber = port, GroupId = port - index})
+                .GroupBy(pair => pair.GroupId)
+                .Select(
+                    groups => groups.Count() >= 3
+                        ? groups.First().PortNumber + "-" + groups.Last().PortNumber
+                        : string.Join(", ", groups.Select(pair => pair.PortNumber.ToString("")).ToArray())
+                )
+                .ToArray();
 
-        public static IEnumerable<Tuple<ushort, ushort>> PortsToGroups(IEnumerable<ushort> numList)
-        {
-            Tuple<ushort, ushort> currentRange = null;
-            foreach (var num in numList)
-            {
-                if (currentRange == null)
-                    currentRange = Tuple.Create(num, num);
-                else if (currentRange.Item2 == num - 1)
-                    currentRange = Tuple.Create(currentRange.Item1, num);
-                else
-                {
-                    yield return currentRange;
-                    currentRange = Tuple.Create(num, num);
-                }
-            }
-            if (currentRange != null)
-                yield return currentRange;
-        }
-
-        /// <summary>
-        /// e.g. (1,1) becomes "1"
-        /// (1,3) becomes "1-3"
-        /// </summary>
-        /// <param name="range"></param>
-        /// <returns></returns>
-        public static string PrettyRange(Tuple<ushort, ushort> range)
-        {
-            if (range.Item1 == range.Item2)
-            {
-                return range.Item1.ToString();
-            }
-            return string.Format("{0}-{1}", range.Item1, range.Item2);
+            return string.Join(", ", portStrings);
         }
 
         public static IAddress[] StringToAddresses(string str)
@@ -133,30 +105,37 @@ namespace WindowsFirewallHelper.Helpers
             }
             return remoteAddresses.ToArray();
         }
+
         public static ushort[] StringToPorts(string str)
         {
             if (string.IsNullOrEmpty(str?.Trim()))
-                return new ushort[0];
-            var ports = new List<ushort>();
-            foreach (var port in str.Split(','))
             {
-                if (port.Contains('-'))
-                {
-                    var portParts = port.Split('-');
-                    ushort s, e;
-                    if (ushort.TryParse(portParts[0], out s) && ushort.TryParse(portParts[1], out e))
-                    {
-                        ports.AddRange(Enumerable.Range(s, e - s).Select(p => (ushort)p));
-                    }
-                }
-                else
-                {
-                    ushort p;
-                    if (ushort.TryParse(port, out p))
-                        ports.Add(p);
-                }
+                return new ushort[0];
             }
-            return ports.ToArray();
+
+            return str.Trim().Split(',')
+                .SelectMany(port =>
+                    {
+                        var portParts = port.Trim().Split('-');
+
+                        if (portParts.Length == 2 &&
+                            ushort.TryParse(portParts[0].Trim(), out var start) &&
+                            ushort.TryParse(portParts[1].Trim(), out var end))
+                        {
+                            return Enumerable.Range(start, end - start).Select(p => (ushort) p);
+                        }
+
+                        if (portParts.Length == 1 && ushort.TryParse(port.Trim(), out var portNumber))
+                        {
+                            return new[] {portNumber};
+                        }
+
+                        return new ushort[0];
+                    }
+                )
+                .Distinct()
+                .OrderBy(port => port)
+                .ToArray();
         }
     }
 }

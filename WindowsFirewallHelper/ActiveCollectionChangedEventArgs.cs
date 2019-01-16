@@ -3,7 +3,8 @@
 namespace WindowsFirewallHelper
 {
     /// <summary>
-    ///     ActiveCollectionChangedEventArgs is a class containing event data about the <see cref="ActiveCollectionChangeType" /> event.
+    ///     ActiveCollectionChangedEventArgs is a class containing event data about the
+    ///     <see cref="ActiveCollectionChangeType" /> event.
     /// </summary>
     public class ActiveCollectionChangedEventArgs<T> : EventArgs
     {

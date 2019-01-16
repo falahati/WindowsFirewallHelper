@@ -26,30 +26,20 @@ namespace WindowsFirewallHelper.Sample
                     default:
                         FirewallProtocol protocol;
                         if (FirewallProtocol.TryParse(cb_protocol.Text, out protocol))
-                        {
                             return protocol;
-                        }
                         return null;
                 }
             }
             set
             {
                 if (value == FirewallProtocol.Any)
-                {
                     cb_protocol.SelectedItem = "ALL";
-                }
                 else if (value == FirewallProtocol.TCP)
-                {
                     cb_protocol.SelectedItem = "TCP";
-                }
                 else if (value == FirewallProtocol.UDP)
-                {
                     cb_protocol.SelectedItem = "UDP";
-                }
                 else
-                {
                     cb_protocol.SelectedItem = FirewallProtocol.ProtocolNumber.ToString();
-                }
             }
         }
 

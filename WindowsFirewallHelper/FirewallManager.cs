@@ -14,45 +14,6 @@ namespace WindowsFirewallHelper
         private static readonly List<IFirewall> ThirdPartyFirewallsBackField = new List<IFirewall>();
 
         /// <summary>
-        ///     Returns the list of all registered third party firewalls management instances
-        /// </summary>
-        public static IFirewall[] ThirdPartyFirewalls => ThirdPartyFirewallsBackField.ToArray();
-
-        /// <summary>
-        ///     Returns the API version of the current active Windows Firewall
-        /// </summary>
-        public static APIVersion Version
-        {
-            get
-            {
-                foreach (var thirdPartyFirewall in ThirdPartyFirewallsBackField)
-                {
-                    if (thirdPartyFirewall.IsSupported)
-                    {
-                        return APIVersion.ThirdParty;
-                    }
-                }
-                if (Firewallv2.Instance.IsSupported)
-                {
-                    if (Firewallv2Rules.StandardRuleWin8.IsSupported)
-                    {
-                        return APIVersion.FirewallAPIv2Win8;
-                    }
-                    if (Firewallv2Rules.StandardRuleWin7.IsSupported)
-                    {
-                        return APIVersion.FirewallAPIv2Win7;
-                    }
-                    return APIVersion.FirewallAPIv2;
-                }
-                if (Firewallv1.Instance.IsSupported)
-                {
-                    return APIVersion.FirewallAPIv1;
-                }
-                return APIVersion.None;
-            }
-        }
-
-        /// <summary>
         ///     Returns a instance of the active firewall
         /// </summary>
         public static IFirewall Instance
@@ -69,15 +30,40 @@ namespace WindowsFirewallHelper
                         return Firewallv2.Instance;
                     case APIVersion.ThirdParty:
                         foreach (var thirdPartyFirewall in ThirdPartyFirewallsBackField)
-                        {
                             if (thirdPartyFirewall.IsSupported)
-                            {
                                 return thirdPartyFirewall;
-                            }
-                        }
                         break;
                 }
                 throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        ///     Returns the list of all registered third party firewalls management instances
+        /// </summary>
+        public static IFirewall[] ThirdPartyFirewalls => ThirdPartyFirewallsBackField.ToArray();
+
+        /// <summary>
+        ///     Returns the API version of the current active Windows Firewall
+        /// </summary>
+        public static APIVersion Version
+        {
+            get
+            {
+                foreach (var thirdPartyFirewall in ThirdPartyFirewallsBackField)
+                    if (thirdPartyFirewall.IsSupported)
+                        return APIVersion.ThirdParty;
+                if (Firewallv2.Instance.IsSupported)
+                {
+                    if (Firewallv2Rules.StandardRuleWin8.IsSupported)
+                        return APIVersion.FirewallAPIv2Win8;
+                    if (Firewallv2Rules.StandardRuleWin7.IsSupported)
+                        return APIVersion.FirewallAPIv2Win7;
+                    return APIVersion.FirewallAPIv2;
+                }
+                if (Firewallv1.Instance.IsSupported)
+                    return APIVersion.FirewallAPIv1;
+                return APIVersion.None;
             }
         }
 
@@ -88,9 +74,7 @@ namespace WindowsFirewallHelper
         public static void RegisterFirewall(IFirewall firewall)
         {
             if (!ThirdPartyFirewallsBackField.Contains(firewall))
-            {
                 ThirdPartyFirewallsBackField.Add(firewall);
-            }
         }
     }
 }

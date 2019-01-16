@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using WindowsFirewallHelper.Helpers;
+using System.Linq;
 
 namespace WindowsFirewallHelper
 {
@@ -10,12 +10,12 @@ namespace WindowsFirewallHelper
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     public class ActiveCollection<T> : Collection<T>
     {
-        private readonly object _syncLock = new object();
-
         /// <summary>
         ///     An event to be raised when an Item got removed or added to the collection
         /// </summary>
         public event EventHandler<ActiveCollectionChangedEventArgs<T>> ItemsModified;
+
+        private readonly object _syncLock = new object();
 
         /// <summary>
         ///     Syncs this ActiveCollection object with the provided <see cref="Array" />
@@ -25,22 +25,31 @@ namespace WindowsFirewallHelper
         {
             lock (_syncLock)
             {
-                foreach (var item in newItems)
-                {
-                    if (!EnumerableHelper.Contains(this, item))
-                    {
-                        Add(item);
-                    }
-                }
-                var array = ToArray();
-                foreach (var item in array)
-                {
-                    if (!EnumerableHelper.Contains(newItems, item))
-                    {
-                        Remove(item);
-                    }
-                }
+                var hashTable = this.Select(arg => new {Item = arg, HashCode = arg.GetHashCode()}).ToArray();
+                var newItemsHashTable = newItems.Select(arg => new {Item = arg, HashCode = arg.GetHashCode()}).ToArray();
+                foreach (
+                    var newItem in
+                    newItemsHashTable.Where(arg => hashTable.All(arg1 => arg1.HashCode != arg.HashCode))
+                        .Select(arg => arg.Item))
+                    Add(newItem);
+                foreach (
+                    var obj in
+                    hashTable.Where(arg => newItemsHashTable.All(arg1 => arg1.HashCode != arg.HashCode))
+                        .Select(arg => arg.Item))
+                    Remove(obj);
             }
+        }
+
+        /// <summary>
+        ///     Removes all elements from the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" />.
+        /// </summary>
+        protected override void ClearItems()
+        {
+            var items = this.ToArray();
+            base.ClearItems();
+            foreach (var item in items)
+                ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
+                    ActiveCollectionChangeType.Removed, item));
         }
 
         /// <summary>
@@ -55,27 +64,6 @@ namespace WindowsFirewallHelper
         protected override void InsertItem(int index, T item)
         {
             base.InsertItem(index, item);
-
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Added, item));
-        }
-
-        /// <summary>
-        ///     Replaces the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to replace.</param>
-        /// <param name="item">The new value for the element at the specified index. The value can be null for reference types.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        ///     <paramref name="index" /> is less than zero.-or-
-        ///     <paramref name="index" /> is greater than <see cref="P:WindowsFirewallHelper.Helpers.ActiveCollection.Count" />.
-        /// </exception>
-        protected override void SetItem(int index, T item)
-        {
-            var replaced = Items[index];
-            base.SetItem(index, item);
-
-            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                ActiveCollectionChangeType.Removed, replaced));
             ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
                 ActiveCollectionChangeType.Added, item));
         }
@@ -98,26 +86,22 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Removes all elements from the <see cref="T:WindowsFirewallHelper.Helpers.ActiveCollection" />.
+        ///     Replaces the element at the specified index.
         /// </summary>
-        protected override void ClearItems()
+        /// <param name="index">The zero-based index of the element to replace.</param>
+        /// <param name="item">The new value for the element at the specified index. The value can be null for reference types.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     <paramref name="index" /> is less than zero.-or-
+        ///     <paramref name="index" /> is greater than <see cref="P:WindowsFirewallHelper.Helpers.ActiveCollection.Count" />.
+        /// </exception>
+        protected override void SetItem(int index, T item)
         {
-            var items = ToArray();
-            base.ClearItems();
-            foreach (var item in items)
-            {
-                ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
-                    ActiveCollectionChangeType.Removed, item));
-            }
-        }
-
-        /// <summary>
-        ///     Creates an array from the current collection
-        /// </summary>
-        /// <returns>An array that contains the elements from the current collection.</returns>
-        public T[] ToArray()
-        {
-            return EnumerableHelper.EnumerableToArray(this);
+            var replaced = Items[index];
+            base.SetItem(index, item);
+            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
+                ActiveCollectionChangeType.Removed, replaced));
+            ItemsModified?.Invoke(this, new ActiveCollectionChangedEventArgs<T>(
+                ActiveCollectionChangeType.Added, item));
         }
     }
 }

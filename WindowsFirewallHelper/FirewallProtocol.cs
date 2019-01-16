@@ -125,6 +125,30 @@ namespace WindowsFirewallHelper
             return ProtocolNumber == other.ProtocolNumber;
         }
 
+
+        /// <summary>
+        ///     Compares two <see cref="FirewallProtocol" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
+        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
+        public static bool operator ==(FirewallProtocol left, FirewallProtocol right)
+        {
+            return (((object) left != null) && ((object) right != null) && left.Equals(right)) ||
+                   (((object) left == null) && ((object) right == null));
+        }
+
+        /// <summary>
+        ///     Compares two <see cref="FirewallProtocol" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
+        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
+        public static bool operator !=(FirewallProtocol left, FirewallProtocol right)
+        {
+            return !(left == right);
+        }
+
         /// <summary>
         ///     Tries to create a <see cref="FirewallProtocol" /> object from the the string
         /// </summary>
@@ -137,24 +161,13 @@ namespace WindowsFirewallHelper
         public static bool TryParse(string str, out FirewallProtocol firewallProtocol)
         {
             int i;
-            if (int.TryParse(str, out i) && i >= 0 && i <= 256)
+            if (int.TryParse(str, out i) && (i >= 0) && (i <= 256))
             {
                 firewallProtocol = new FirewallProtocol(i);
                 return true;
             }
             firewallProtocol = null;
             return false;
-        }
-
-        /// <summary>
-        ///     Returns a string that represents the current <see cref="FirewallProtocol" />.
-        /// </summary>
-        /// <returns>
-        ///     A string that represents the current <see cref="FirewallProtocol" />.
-        /// </returns>
-        public override string ToString()
-        {
-            return ProtocolNumber.ToString();
         }
 
         /// <summary>
@@ -172,13 +185,9 @@ namespace WindowsFirewallHelper
             if (ReferenceEquals(this, obj)) return true;
             // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
             if (obj is FirewallProtocol)
-            {
                 return Equals((FirewallProtocol) obj);
-            }
             if (obj is int)
-            {
                 return ProtocolNumber.Equals((int) obj);
-            }
             return Equals(this, obj);
         }
 
@@ -193,28 +202,15 @@ namespace WindowsFirewallHelper
             return ProtocolNumber.GetHashCode();
         }
 
-
         /// <summary>
-        ///     Compares two <see cref="FirewallProtocol" /> objects for equality
+        ///     Returns a string that represents the current <see cref="FirewallProtocol" />.
         /// </summary>
-        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
-        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
-        /// <returns>true if two sides are equal; otherwise false</returns>
-        public static bool operator ==(FirewallProtocol left, FirewallProtocol right)
+        /// <returns>
+        ///     A string that represents the current <see cref="FirewallProtocol" />.
+        /// </returns>
+        public override string ToString()
         {
-            return ((object) left != null && (object) right != null && left.Equals(right)) ||
-                   ((object) left == null && (object) right == null);
-        }
-
-        /// <summary>
-        ///     Compares two <see cref="FirewallProtocol" /> objects for inequality
-        /// </summary>
-        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
-        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
-        /// <returns>true if two sides are not equal; otherwise false</returns>
-        public static bool operator !=(FirewallProtocol left, FirewallProtocol right)
-        {
-            return !(left == right);
+            return ProtocolNumber.ToString();
         }
     }
 }

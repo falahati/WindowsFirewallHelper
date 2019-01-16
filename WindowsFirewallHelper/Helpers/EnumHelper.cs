@@ -6,10 +6,8 @@ namespace WindowsFirewallHelper.Helpers
     {
         public static bool HasFlag<T>(T value, T flag) where T : IConvertible
         {
-            if (!typeof (T).IsEnum)
-            {
+            if (!typeof(T).IsEnum)
                 throw new ArgumentException("T must be of enumerable type");
-            }
             switch (Convert.GetTypeCode(value))
             {
                 case TypeCode.Boolean:

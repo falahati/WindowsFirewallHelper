@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using WindowsFirewallHelper.Addresses;
 using WindowsFirewallHelper.Helpers;
 using NetFwTypeLib;
@@ -11,11 +13,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
     /// </summary>
     public class StandardRule : IRule, IEquatable<StandardRule>
     {
-        internal StandardRule(INetFwRule rule)
-        {
-            UnderlyingObject = rule;
-        }
-
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -25,11 +22,22 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
         public StandardRule(string name, string filename, FirewallAction action, FirewallDirection direction,
-            FirewallProfiles profiles)
+            FirewallProfiles profiles) : this(name, action, direction, profiles)
+        {
+            ApplicationName = filename;
+        }
+
+        /// <summary>
+        ///     Creates a new application rule for Windows Firewall with Advanced Security
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action that this rule defines</param>
+        /// <param name="direction">Data direction in which this rule applies to</param>
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        public StandardRule(string name, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles)
         {
             UnderlyingObject = (INetFwRule) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
             Name = name;
-            ApplicationName = filename;
             Action = action;
             Direction = direction;
             IsEnable = true;
@@ -45,31 +53,16 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
         public StandardRule(string name, ushort port, FirewallAction action, FirewallDirection direction,
-            FirewallProfiles profiles)
+            FirewallProfiles profiles) : this(name, action, direction, profiles)
         {
-            UnderlyingObject = (INetFwRule) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
-            Name = name;
-            Action = action;
-            Direction = direction;
             Protocol = FirewallProtocol.TCP;
-            IsEnable = true;
-            Profiles = profiles;
-            if (direction == FirewallDirection.Inbound)
-            {
-                LocalPorts = new[] {port};
-            }
-            else
-            {
-                RemotePorts = new[] {port};
-            }
+            LocalPorts = new[] {port};
         }
 
-        /// <summary>
-        ///     Returns a Boolean value indicating if these class is available in the current machine
-        /// </summary>
-        public static bool IsSupported => Type.GetTypeFromProgID(@"HNetCfg.FWRule") != null;
-
-        internal INetFwRule UnderlyingObject { get; }
+        internal StandardRule(INetFwRule rule)
+        {
+            UnderlyingObject = rule;
+        }
 
         /// <summary>
         ///     Gets or sets the address of the executable file that this rule is about
@@ -85,7 +78,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Description
         {
-            get { return UnderlyingObject.Description; }
+            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Description); }
             set { UnderlyingObject.Description = value; }
         }
 
@@ -103,8 +96,24 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Grouping
         {
-            get { return UnderlyingObject.Grouping; }
+            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Grouping); }
             set { UnderlyingObject.Grouping = value; }
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of the acceptable ICMP Messages with this rule
+        /// </summary>
+        public InternetControlMessage[] ICMPTypesAndCodes
+        {
+            get { return ICMPHelper.StringToICM(UnderlyingObject.IcmpTypesAndCodes); }
+            set
+            {
+                if ((value.Length > 0) && !Protocol.Equals(FirewallProtocol.ICMPv4) &&
+                    !Protocol.Equals(FirewallProtocol.ICMPv6))
+                    throw new FirewallAPIv2InvalidProtocolException(
+                        "ICMPTypesAndCodes property can only be specifid for the ICMP protocols.");
+                UnderlyingObject.IcmpTypesAndCodes = ICMPHelper.ICMToString(value);
+            }
         }
 
         /// <summary>
@@ -114,11 +123,11 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             get
             {
-                if (!(UnderlyingObject.Interfaces is string[]))
-                {
+                if (!(UnderlyingObject.Interfaces is object[]))
                     return new NetworkInterface[0];
-                }
-                return NetworkInterfaceHelper.StringToInterfaces((string[]) UnderlyingObject.Interfaces);
+                return
+                    NetworkInterfaceHelper.StringToInterfaces(
+                        ((object[]) UnderlyingObject.Interfaces).Select((o, i) => o?.ToString()).ToArray());
             }
             set { UnderlyingObject.Interfaces = NetworkInterfaceHelper.InterfacesToString(value); }
         }
@@ -133,6 +142,11 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <summary>
+        ///     Returns a Boolean value indicating if these class is available in the current machine
+        /// </summary>
+        public static bool IsSupported => Type.GetTypeFromProgID(@"HNetCfg.FWRule") != null;
+
+        /// <summary>
         ///     Gets or sets the name of the service that this rule is about
         /// </summary>
         public string ServiceName
@@ -142,13 +156,9 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <summary>
-        ///     Gets or sets the list of the acceptable ICMP Messages with this rule
+        ///     Returns the underlying Windows Firewall Object
         /// </summary>
-        public InternetControlMessage[] IcmpTypesAndCodes
-        {
-            get { return ICMPHelper.StringToICM(UnderlyingObject.IcmpTypesAndCodes); }
-            set { UnderlyingObject.IcmpTypesAndCodes = ICMPHelper.ICMToString(value); }
-        }
+        public INetFwRule UnderlyingObject { get; }
 
         /// <summary>
         ///     Determines whether the specified<see cref="StandardRule" /> is equal to the current
@@ -163,36 +173,28 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(UnderlyingObject.Name, other.UnderlyingObject.Name) &&
-                   UnderlyingObject.Profiles == other.UnderlyingObject.Profiles &&
-                   UnderlyingObject.Protocol == other.UnderlyingObject.Protocol &&
-                   UnderlyingObject.Action == other.UnderlyingObject.Action &&
-                   UnderlyingObject.Enabled == other.UnderlyingObject.Enabled &&
-                   UnderlyingObject.Direction == other.UnderlyingObject.Direction &&
-                   UnderlyingObject.Interfaces == other.UnderlyingObject.Interfaces &&
-                   UnderlyingObject.RemoteAddresses == other.UnderlyingObject.RemoteAddresses &&
-                   UnderlyingObject.RemotePorts == other.UnderlyingObject.RemotePorts &&
-                   UnderlyingObject.LocalAddresses == other.UnderlyingObject.LocalAddresses &&
-                   UnderlyingObject.LocalPorts == other.UnderlyingObject.LocalPorts;
-        }
-
-        /// <summary>
-        ///     Gets or sets the profiles that this rule belongs to
-        /// </summary>
-        public FirewallProfiles Profiles
-        {
-            get
-            {
-                return (FirewallProfiles) UnderlyingObject.Profiles &
-                       (FirewallProfiles.Domain | FirewallProfiles.Private |
-                        FirewallProfiles.Public);
-            }
-            set
-            {
-                UnderlyingObject.Profiles = (int) (value &
-                                                   (FirewallProfiles.Domain | FirewallProfiles.Private |
-                                                    FirewallProfiles.Public));
-            }
+            if (UnderlyingObject == other.UnderlyingObject) return true;
+            if (!(string.Equals(UnderlyingObject.Name, other.UnderlyingObject.Name) &&
+                  (UnderlyingObject.Profiles == other.UnderlyingObject.Profiles) &&
+                  (UnderlyingObject.Protocol == other.UnderlyingObject.Protocol) &&
+                  (UnderlyingObject.Action == other.UnderlyingObject.Action) &&
+                  (UnderlyingObject.Enabled == other.UnderlyingObject.Enabled) &&
+                  (UnderlyingObject.Direction == other.UnderlyingObject.Direction) &&
+                  (UnderlyingObject.RemoteAddresses == other.UnderlyingObject.RemoteAddresses) &&
+                  (UnderlyingObject.RemotePorts == other.UnderlyingObject.RemotePorts) &&
+                  (UnderlyingObject.LocalAddresses == other.UnderlyingObject.LocalAddresses) &&
+                  (UnderlyingObject.LocalPorts == other.UnderlyingObject.LocalPorts) &&
+                  (UnderlyingObject.ApplicationName == other.UnderlyingObject.ApplicationName)))
+                return false;
+            if (UnderlyingObject.Interfaces == other.UnderlyingObject.Interfaces)
+                return true;
+            if (UnderlyingObject.Interfaces is object[] != other.UnderlyingObject.Interfaces is object[])
+                return false;
+            if (!(UnderlyingObject.Interfaces is object[]))
+                return true;
+            return
+                ((object[]) UnderlyingObject.Interfaces).Select((o, i) => o?.ToString())
+                    .SequenceEqual(((object[]) other.UnderlyingObject.Interfaces).Select((o, i) => o?.ToString()));
         }
 
         /// <summary>
@@ -234,30 +236,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <summary>
-        ///     Gets or sets the local ports that rule applies to
+        ///     Gets or sets a Boolean value indicating if this rule is active
         /// </summary>
-        public ushort[] LocalPorts
+        public bool IsEnable
         {
-            get { return AddressHelper.StringToPorts(UnderlyingObject.LocalPorts); }
-            set { UnderlyingObject.LocalPorts = AddressHelper.PortsToString(value); }
-        }
-
-        /// <summary>
-        ///     Gets or sets the protocol that rule applies to
-        /// </summary>
-        public FirewallProtocol Protocol
-        {
-            get { return new FirewallProtocol(UnderlyingObject.Protocol); }
-            set { UnderlyingObject.Protocol = value.ProtocolNumber; }
-        }
-
-        /// <summary>
-        ///     Gets or sets the remote ports that rule applies to
-        /// </summary>
-        public ushort[] RemotePorts
-        {
-            get { return AddressHelper.StringToPorts(UnderlyingObject.RemotePorts); }
-            set { UnderlyingObject.RemotePorts = AddressHelper.PortsToString(value); }
+            get { return UnderlyingObject.Enabled; }
+            set { UnderlyingObject.Enabled = value; }
         }
 
         /// <summary>
@@ -266,7 +250,103 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         public IAddress[] LocalAddresses
         {
             get { return AddressHelper.StringToAddresses(UnderlyingObject.LocalAddresses); }
-            set { UnderlyingObject.LocalAddresses = AddressHelper.AddressesToString(value); }
+            set
+            {
+                try
+                {
+                    UnderlyingObject.LocalAddresses = AddressHelper.AddressesToString(value);
+                }
+                catch (COMException exception)
+                {
+                    if ((uint) exception.ErrorCode == 0xD000000D)
+                        throw new ArgumentException(
+                            "An unspecified, multicast, broadcast or loopback IPv6 address was specified.", exception);
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the local ports that rule applies to
+        /// </summary>
+        public ushort[] LocalPorts
+        {
+            get { return AddressHelper.StringToPorts(UnderlyingObject.LocalPorts); }
+            set
+            {
+                if ((value.Length > 0) && !Protocol.Equals(FirewallProtocol.TCP) &&
+                    !Protocol.Equals(FirewallProtocol.UDP))
+                    throw new FirewallAPIv2InvalidProtocolException(
+                        "Port number can only be specifid for the UDP and TCP protocols.");
+                UnderlyingObject.LocalPorts = AddressHelper.PortsToString(value);
+            }
+        }
+
+        /// <inheritdoc />
+        public FirewallPortType LocalPortType
+        {
+            get
+            {
+                if (LocalPorts.Length > 0)
+                    return FirewallPortType.Specific;
+                if (UnderlyingObject.LocalPorts?.StartsWith("RPC,", StringComparison.InvariantCultureIgnoreCase) == true)
+                    return FirewallPortType.RPCDynamicPorts;
+                if (
+                    UnderlyingObject.LocalPorts?.StartsWith("RPC-EPMap,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
+                    return FirewallPortType.RPCEndpointMapper;
+                if (UnderlyingObject.LocalPorts?.StartsWith("IPHTTPS,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
+                    return FirewallPortType.IPHTTPS;
+                if (UnderlyingObject.LocalPorts?.StartsWith("Teredo,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
+                    return FirewallPortType.EdgeTraversal;
+                if (UnderlyingObject.LocalPorts?.StartsWith("Ply2Disc,", StringComparison.InvariantCultureIgnoreCase) ==
+                    true)
+                    return FirewallPortType.PlayToDiscovery;
+                return FirewallPortType.All;
+            }
+            set
+            {
+                switch (value)
+                {
+                    case FirewallPortType.All:
+                        LocalPorts = new ushort[0];
+                        break;
+                    case FirewallPortType.RPCDynamicPorts:
+                        if (!Protocol.Equals(FirewallProtocol.TCP))
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "RPCDynamicPorts is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
+                        UnderlyingObject.LocalPorts = "RPC,";
+                        break;
+                    case FirewallPortType.RPCEndpointMapper:
+                        if (!Protocol.Equals(FirewallProtocol.TCP))
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "RPCEndpointMapper is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
+                        UnderlyingObject.LocalPorts = "RPC-EPMap,";
+                        break;
+                    case FirewallPortType.IPHTTPS:
+                        if (!Protocol.Equals(FirewallProtocol.TCP))
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "IPHTTPS is only valid fot TCP rules. Try setting the protocol to TCP before applying this value.");
+                        UnderlyingObject.LocalPorts = "IPHTTPS,";
+                        break;
+                    case FirewallPortType.EdgeTraversal:
+                        if (!Protocol.Equals(FirewallProtocol.UDP))
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "EdgeTraversal is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");
+                        UnderlyingObject.LocalPorts = "Teredo,";
+                        break;
+                    case FirewallPortType.PlayToDiscovery:
+                        if (!Protocol.Equals(FirewallProtocol.UDP))
+                            throw new FirewallAPIv2InvalidProtocolException(
+                                "PlayToDiscovery is only valid fot UDP rules. Try setting the protocol to TCP before applying this value.");
+                        UnderlyingObject.LocalPorts = "Ply2Disc,";
+                        break;
+                    default:
+                        throw new ArgumentException("Use the LocalPorts property to set the exact local ports.");
+                }
+            }
         }
 
 
@@ -275,17 +355,86 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Name
         {
-            get { return UnderlyingObject.Name; }
+            get { return NativeHelper.ResolveStringResource(UnderlyingObject.Name); }
             set { UnderlyingObject.Name = value; }
         }
 
         /// <summary>
-        ///     Gets or sets a Boolean value indicating if this rule is active
+        ///     Gets or sets the profiles that this rule belongs to
         /// </summary>
-        public bool IsEnable
+        public FirewallProfiles Profiles
         {
-            get { return UnderlyingObject.Enabled; }
-            set { UnderlyingObject.Enabled = value; }
+            get
+            {
+                return (FirewallProfiles) UnderlyingObject.Profiles &
+                       (FirewallProfiles.Domain | FirewallProfiles.Private |
+                        FirewallProfiles.Public);
+            }
+            set
+            {
+                UnderlyingObject.Profiles = (int) (value &
+                                                   (FirewallProfiles.Domain | FirewallProfiles.Private |
+                                                    FirewallProfiles.Public));
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the protocol that rule applies to
+        /// </summary>
+        public FirewallProtocol Protocol
+        {
+            get { return new FirewallProtocol(UnderlyingObject.Protocol); }
+            set
+            {
+                if ((Protocol.Equals(FirewallProtocol.TCP) || Protocol.Equals(FirewallProtocol.UDP)) &&
+                    !(value.Equals(FirewallProtocol.TCP) || value.Equals(FirewallProtocol.UDP)))
+                {
+                    LocalPorts = new ushort[0];
+                    RemotePorts = new ushort[0];
+                }
+                if ((Protocol.Equals(FirewallProtocol.ICMPv4) || Protocol.Equals(FirewallProtocol.ICMPv6)) &&
+                    !(value.Equals(FirewallProtocol.ICMPv4) || value.Equals(FirewallProtocol.ICMPv6)))
+                    ICMPTypesAndCodes = new InternetControlMessage[0];
+                UnderlyingObject.Protocol = value.ProtocolNumber;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the remote addresses that rule applies to
+        /// </summary>
+        public IAddress[] RemoteAddresses
+        {
+            get { return AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses); }
+            set
+            {
+                try
+                {
+                    UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value);
+                }
+                catch (COMException exception)
+                {
+                    if ((uint) exception.ErrorCode == 0xD000000D)
+                        throw new ArgumentException(
+                            "An unspecified, multicast, broadcast or loopback IPv6 address was specified.", exception);
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the remote ports that rule applies to
+        /// </summary>
+        public ushort[] RemotePorts
+        {
+            get { return AddressHelper.StringToPorts(UnderlyingObject.RemotePorts); }
+            set
+            {
+                if ((value.Length > 0) && !Protocol.Equals(FirewallProtocol.TCP) &&
+                    !Protocol.Equals(FirewallProtocol.UDP))
+                    throw new FirewallAPIv2InvalidProtocolException(
+                        "Port number can only be specifid for the UDP and TCP protocols.");
+                UnderlyingObject.RemotePorts = AddressHelper.PortsToString(value);
+            }
         }
 
         /// <summary>
@@ -296,19 +445,13 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             get
             {
                 if (RemoteAddresses.Length <= 1)
-                {
                     foreach (var address in RemoteAddresses)
                     {
                         if (SingleIP.Any.Equals(address))
-                        {
                             return FirewallScope.All;
-                        }
-                        if (NetworkAddress.LocalSubnet.Equals(address))
-                        {
+                        if (address is LocalSubnet)
                             return FirewallScope.LocalSubnet;
-                        }
                     }
-                }
                 return FirewallScope.Specific;
             }
             set
@@ -319,7 +462,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                         RemoteAddresses = new IAddress[] {SingleIP.Any};
                         break;
                     case FirewallScope.LocalSubnet:
-                        RemoteAddresses = new IAddress[] {NetworkAddress.LocalSubnet};
+                        RemoteAddresses = new IAddress[] {new LocalSubnet()};
                         break;
                     default:
                         throw new ArgumentException("Use the RemoteAddresses property to set the exact remote addresses");
@@ -328,23 +471,26 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <summary>
-        ///     Gets or sets the remote addresses that rule applies to
+        ///     Compares two <see cref="StandardRule" /> objects for equality
         /// </summary>
-        public IAddress[] RemoteAddresses
+        /// <param name="left">A <see cref="StandardRule" /> object</param>
+        /// <param name="right">A <see cref="StandardRule" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
+        public static bool operator ==(StandardRule left, StandardRule right)
         {
-            get { return AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses); }
-            set { UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value); }
+            return (((object) left != null) && ((object) right != null) && left.Equals(right)) ||
+                   (((object) left == null) && ((object) right == null));
         }
 
         /// <summary>
-        ///     Returns a string that represents the current object.
+        ///     Compares two <see cref="StandardRule" /> objects for inequality
         /// </summary>
-        /// <returns>
-        ///     A string that represents the current object.
-        /// </returns>
-        public override string ToString()
+        /// <param name="left">A <see cref="StandardRule" /> object</param>
+        /// <param name="right">A <see cref="StandardRule" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
+        public static bool operator !=(StandardRule left, StandardRule right)
         {
-            return Name;
+            return !(left == right);
         }
 
         /// <summary>
@@ -360,42 +506,51 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((StandardRule) obj);
+            return Equals(obj as StandardRule);
         }
 
-        /// <summary>
-        ///     Serves as a hash function for a particular type.
-        /// </summary>
-        /// <returns>
-        ///     A hash code for the current <see cref="StandardRule" />.
-        /// </returns>
+        /// <inheritdoc />
         public override int GetHashCode()
         {
-            return UnderlyingObject?.GetHashCode() ?? 0;
+            unchecked
+            {
+                var hashCode = 132619;
+                hashCode = hashCode*467 + (int) UnderlyingObject.Action;
+                hashCode = hashCode*467 + (int) UnderlyingObject.Direction;
+                hashCode = hashCode*467 + (UnderlyingObject.Name?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.RemoteAddresses?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.RemotePorts?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.LocalAddresses?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.LocalPorts?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.ApplicationName?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.Grouping?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.Description?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.IcmpTypesAndCodes?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.InterfaceTypes?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + (UnderlyingObject.serviceName?.GetHashCode() ?? 0);
+                hashCode = hashCode*467 + UnderlyingObject.Profiles;
+                hashCode = hashCode*467 + UnderlyingObject.Protocol;
+                hashCode = hashCode*467 + UnderlyingObject.Enabled.GetHashCode();
+                hashCode = hashCode*467 + UnderlyingObject.EdgeTraversal.GetHashCode();
+                var interfaces = UnderlyingObject.Interfaces as object[];
+                if (interfaces != null)
+                {
+                    var hash = 260671;
+                    foreach (var @interface in interfaces)
+                        hash = hash*727 + (@interface?.ToString().GetHashCode() ?? 0);
+                    hashCode = hashCode*467 + hash.GetHashCode();
+                }
+                else
+                    hashCode = hashCode*467;
+                return hashCode;
+            }
         }
 
-        /// <summary>
-        ///     Compares two <see cref="StandardRule" /> objects for equality
-        /// </summary>
-        /// <param name="left">A <see cref="StandardRule" /> object</param>
-        /// <param name="right">A <see cref="StandardRule" /> object</param>
-        /// <returns>true if two sides are equal; otherwise false</returns>
-        public static bool operator ==(StandardRule left, StandardRule right)
-        {
-            return ((object) left != null && (object) right != null && left.Equals(right)) ||
-                   ((object) left == null && (object) right == null);
-        }
 
-        /// <summary>
-        ///     Compares two <see cref="StandardRule" /> objects for inequality
-        /// </summary>
-        /// <param name="left">A <see cref="StandardRule" /> object</param>
-        /// <param name="right">A <see cref="StandardRule" /> object</param>
-        /// <returns>true if two sides are not equal; otherwise false</returns>
-        public static bool operator !=(StandardRule left, StandardRule right)
+        /// <inheritdoc />
+        public override string ToString()
         {
-            return !(left == right);
+            return Name;
         }
     }
 }

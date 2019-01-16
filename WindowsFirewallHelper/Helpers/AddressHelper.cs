@@ -104,9 +104,21 @@ namespace WindowsFirewallHelper.Helpers
             var ports = new List<ushort>();
             foreach (var port in str.Split(','))
             {
-                ushort p;
-                if (ushort.TryParse(port, out p))
-                    ports.Add(p);
+                if (port.Contains('-'))
+                {
+                    var portParts = port.Split('-');
+                    ushort s, e;
+                    if (ushort.TryParse(portParts[0], out s) && ushort.TryParse(portParts[1], out e))
+                    {
+                        ports.AddRange(Enumerable.Range(s, e).Select(p => (ushort)p));
+                    }
+                }
+                else
+                {
+                    ushort p;
+                    if (ushort.TryParse(port, out p))
+                        ports.Add(p);
+                }
             }
             return ports.ToArray();
         }

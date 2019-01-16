@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Linq;
+using System.Net;
+using System.Text;
 using WindowsFirewallHelper.Addresses;
 
 namespace WindowsFirewallHelper.Helpers
@@ -62,7 +63,42 @@ namespace WindowsFirewallHelper.Helpers
             var strList = new string[ports.Length];
             for (var i = 0; i < ports.Length; i++)
                 strList[i] = ports[i].ToString();
-            return strList.Length == 0 ? null : string.Join(",", strList);
+            //return strList.Length == 0 ? null : string.Join(",", strList);
+            return string.Join(",", PortsToGroups(ports).Select(r => PrettyRange(r)));
+        }
+
+        public static IEnumerable<Tuple<ushort, ushort>> PortsToGroups(IEnumerable<ushort> numList)
+        {
+            Tuple<ushort, ushort> currentRange = null;
+            foreach (var num in numList)
+            {
+                if (currentRange == null)
+                    currentRange = Tuple.Create(num, num);
+                else if (currentRange.Item2 == num - 1)
+                    currentRange = Tuple.Create(currentRange.Item1, num);
+                else
+                {
+                    yield return currentRange;
+                    currentRange = Tuple.Create(num, num);
+                }
+            }
+            if (currentRange != null)
+                yield return currentRange;
+        }
+
+        /// <summary>
+        /// e.g. (1,1) becomes "1"
+        /// (1,3) becomes "1-3"
+        /// </summary>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        public static string PrettyRange(Tuple<ushort, ushort> range)
+        {
+            if (range.Item1 == range.Item2)
+            {
+                return range.Item1.ToString();
+            }
+            return string.Format("{0}-{1}", range.Item1, range.Item2);
         }
 
         public static IAddress[] StringToAddresses(string str)
@@ -97,7 +133,6 @@ namespace WindowsFirewallHelper.Helpers
             }
             return remoteAddresses.ToArray();
         }
-
         public static ushort[] StringToPorts(string str)
         {
             if (string.IsNullOrEmpty(str?.Trim()))
@@ -111,7 +146,7 @@ namespace WindowsFirewallHelper.Helpers
                     ushort s, e;
                     if (ushort.TryParse(portParts[0], out s) && ushort.TryParse(portParts[1], out e))
                     {
-                        ports.AddRange(Enumerable.Range(s, e).Select(p => (ushort)p));
+                        ports.AddRange(Enumerable.Range(s, e - s).Select(p => (ushort)p));
                     }
                 }
                 else

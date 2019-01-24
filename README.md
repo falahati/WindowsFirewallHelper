@@ -1,11 +1,26 @@
 # Windows Firewall Helper Class Library
+[![](https://img.shields.io/github/license/falahati/WindowsFirewallHelper.svg?style=flat-square)](https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE)
+[![](https://img.shields.io/github/commit-activity/y/falahati/WindowsFirewallHelper.svg?style=flat-square)](https://github.com/falahati/WindowsFirewallHelper/commits/master)
+[![](https://img.shields.io/github/issues/falahati/WindowsFirewallHelper.svg?style=flat-square)](https://github.com/falahati/WindowsFirewallHelper/issues)
+
 A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list.
 
 ## WHERE TO FIND
+[![](https://img.shields.io/nuget/dt/WindowsFirewallHelper.svg?style=flat-square)](https://www.nuget.org/packages/WindowsFirewallHelper)
+[![](https://img.shields.io/nuget/v/WindowsFirewallHelper.svg?style=flat-square)](https://www.nuget.org/packages/WindowsFirewallHelper)
+
 This library is available as a NuGet package at [nuget.org](https://www.nuget.org/packages/WindowsFirewallHelper/).
 
 ## Donation
-[<img width="24" height="24" src="http://icons.iconarchive.com/icons/sonya/swarm/256/Coffee-icon.png"/>**Every coffee counts! :)**](https://www.coinpayments.net/index.php?cmd=_donate&reset=1&merchant=820707aded07845511b841f9c4c335cd&item_name=Donate&currency=USD&amountf=10.00000000&allow_amount=1&want_shipping=0&allow_extra=1)
+Donations assist development and are greatly appreciated; also always remember that [every coffee counts!](https://media.makeameme.org/created/one-simply-does-i9k8kx.jpg) :)
+
+[![](https://img.shields.io/badge/fiat-PayPal-8a00a3.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WR3KK2B6TYYQ4&item_name=Donation&currency_code=USD&source=url)
+[![](https://img.shields.io/badge/crypto-CoinPayments-8a00a3.svg?style=flat-square)](https://www.coinpayments.net/index.php?cmd=_donate&reset=1&merchant=820707aded07845511b841f9c4c335cd&item_name=Donate&currency=USD&amountf=20.00000000&allow_amount=1&want_shipping=0&allow_extra=1)
+[![](https://img.shields.io/badge/shetab-ZarinPal-8a00a3.svg?style=flat-square)](https://zarinp.al/@falahati)
+
+**--OR--**
+
+You can always donate your time by contributing to the project or by introducing it to others.
 
 ## HOW TO USE
 Starting point of this library is the `FirewallManager` static class which can be used to get the instance of the class managing the firewall currently on the system.

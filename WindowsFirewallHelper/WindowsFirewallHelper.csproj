@@ -15,7 +15,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <Copyright>Copyright (c) 2016 Soroush Falahati</Copyright>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <Title>Windows Firewall Helper (Win XP+ - .Net 3.5)</Title>
+    <Title>Windows Firewall Helper (Win XP+ - .Net 4.5)</Title>
   </PropertyGroup>
   <ItemGroup>
     <COMReference Include="NetFwTypeLib.dll">

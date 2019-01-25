@@ -134,7 +134,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
                 throw new NotSupportedException();
             }
 
-            if (!protocol.Equals(FirewallProtocol.TCP) && protocol.Equals(FirewallProtocol.UDP))
+            if (!protocol.Equals(FirewallProtocol.TCP) && !protocol.Equals(FirewallProtocol.UDP))
             {
                 throw new FirewallAPIv2InvalidProtocolException(
                     "Invalid protocol selected; rule's protocol should be TCP or UDP.");

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
     <PackageId>WindowsFirewallHelper</PackageId>
-    <Version>1.5.0.25</Version>
+    <Version>1.5.0.28</Version>
     <Authors>Soroush Falahati</Authors>
     <Description>A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list. Supporting Windows XP+.</Description>
     <PackageLicenseUrl>https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE</PackageLicenseUrl>

@@ -1,115 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5D71AD0C-A697-4CB1-B7A4-8395BA7D6D4C}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WindowsFirewallHelper</RootNamespace>
-    <AssemblyName>WindowsFirewallHelper</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\WindowsFirewallHelper.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <PackageId>WindowsFirewallHelper</PackageId>
+    <Version>1.5.0.25</Version>
+    <Authors>Soroush Falahati</Authors>
+    <Description>A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list. Supporting Windows XP+.</Description>
+    <PackageLicenseUrl>https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/falahati/WindowsFirewallHelper</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/falahati/WindowsFirewallHelper/blob/master/WindowsFirewallHelper/Icon.png?raw=true</PackageIconUrl>
+    <RepositoryUrl>https://github.com/falahati/WindowsFirewallHelper</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Copyright>Copyright (c) 2016 Soroush Falahati</Copyright>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Title>Windows Firewall Helper (Win XP+ - .Net 3.5)</Title>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Addresses\DefaultGateway.cs" />
-    <Compile Include="Addresses\DNSService.cs" />
-    <Compile Include="Addresses\LocalSubnet.cs" />
-    <Compile Include="Addresses\SpecialAddress.cs" />
-    <Compile Include="Addresses\WINSService.cs" />
-    <Compile Include="Addresses\DHCPService.cs" />
-    <Compile Include="Addresses\SingleIP.cs" />
-    <Compile Include="APIVersion.cs" />
-    <Compile Include="FirewallAPIv2\EdgeTraversalAction.cs" />
-    <Compile Include="FirewallAction.cs" />
-    <Compile Include="FirewallAPIv2\FirewallAPIv2InvalidProtocolException.cs" />
-    <Compile Include="FirewallDirection.cs" />
-    <Compile Include="FirewallAPIv2\FirewallInterfaceTypes.cs" />
-    <Compile Include="FirewallProfiles.cs" />
-    <Compile Include="FirewallAPIv2\IPSecSecurityLevel.cs" />
-    <Compile Include="FirewallAPIv1\FirewallAPIv1NotSupportedException.cs" />
-    <Compile Include="FirewallAPIv2\Firewall.cs" />
-    <Compile Include="FirewallAPIv2\FirewallAPIv2NotSupportedException.cs" />
-    <Compile Include="FirewallAPIv2\FirewallProfile.cs" />
-    <Compile Include="FirewallAPIv2\InternetControlMessageKnownTypes.cs" />
-    <Compile Include="FirewallAPIv2\InternetControlMessageKnownTypesV6.cs" />
-    <Compile Include="FirewallAPIv2\Rules\StandardRule.cs" />
-    <Compile Include="FirewallAPIv2\Rules\StandardRuleWin7.cs" />
-    <Compile Include="FirewallAPIv2\Rules\StandardRuleWin8.cs" />
-    <Compile Include="FirewallManager.cs" />
-    <Compile Include="FirewallPortType.cs" />
-    <Compile Include="Helpers\EnumHelper.cs" />
-    <Compile Include="FirewallAPIv2\InternetControlMessage.cs" />
-    <Compile Include="Helpers\ICMPHelper.cs" />
-    <Compile Include="Helpers\NativeHelper.cs" />
-    <Compile Include="Helpers\NetworkInterfaceHelper.cs" />
-    <Compile Include="Helpers\PortHelper.cs" />
-    <Compile Include="IFirewall.cs" />
-    <Compile Include="IAddress.cs" />
-    <Compile Include="IProfile.cs" />
-    <Compile Include="FirewallAPIv1\FirewallProfile.cs" />
-    <Compile Include="FirewallAPIv1\Firewall.cs" />
-    <Compile Include="FirewallProtocol.cs" />
-    <Compile Include="FirewallAPIv1\Rules\PortRule.cs" />
-    <Compile Include="FirewallAPIv1\Rules\ApplicationRule.cs" />
-    <Compile Include="FirewallScope.cs" />
-    <Compile Include="ActiveCollectionChangedEventArgs.cs" />
-    <Compile Include="ActiveCollectionChangeType.cs" />
-    <Compile Include="Helpers\AddressHelper.cs" />
-    <Compile Include="Addresses\IPRange.cs" />
-    <Compile Include="Addresses\NetworkAddress.cs" />
-    <Compile Include="ActiveCollection.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IRule.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icon.png" />
-    <None Include="readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="WindowsFirewallHelper.nuspec" />
-    <None Include="WindowsFirewallHelper.targets" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="NetFwTypeLib">
-      <Guid>{58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08}</Guid>
+    <COMReference Include="NetFwTypeLib.dll">
+      <Guid>58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="../NuGet.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference PrivateAssets="all" Include="MSBump" Version="2.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icon.png">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+    <Content Include="readme.txt">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\Debug</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <BumpRevision>True</BumpRevision>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <OutputPath>..\Release</OutputPath>
+  </PropertyGroup>
 </Project>

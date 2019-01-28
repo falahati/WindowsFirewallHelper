@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv2.Rules;
+using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.FirewallAPIv2
 {
@@ -292,32 +294,31 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             SyncRules();
         }
 
-
         // ReSharper disable once ExcessiveIndentation
         private void SyncRules()
         {
             lock (_rules)
             {
-                var rules = new List<IRule>();
-
-                foreach (var rule in UnderlyingObject.Rules)
-                {
-                    switch (rule)
+                var rules = UnderlyingObject
+                    .Rules
+                    .GetEnumeratorVariant()
+                    .ToEnumerable<INetFwRule>()
+                    .Select(rule =>
                     {
-                        case INetFwRule3 rule3:
-                            rules.Add(new StandardRuleWin8(rule3));
+                        switch (rule)
+                        {
+                            case INetFwRule3 rule3:
 
-                            break;
-                        case INetFwRule2 rule2:
-                            rules.Add(new StandardRuleWin7(rule2));
+                                return new StandardRuleWin8(rule3);
+                            case INetFwRule2 rule2:
 
-                            break;
-                        case INetFwRule rule1:
-                            rules.Add(new StandardRule(rule1));
+                                return new StandardRuleWin7(rule2);
+                            default:
 
-                            break;
-                    }
-                }
+                                return new StandardRule(rule);
+                        }
+                    })
+                    .Cast<IRule>();
 
                 _rules.ItemsModified -= RulesOnItemsModified;
                 _rules.Sync(rules.ToArray());

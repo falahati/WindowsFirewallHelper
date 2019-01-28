@@ -400,24 +400,28 @@ namespace WindowsFirewallHelper.FirewallAPIv1
 
                 foreach (var profile in Profiles)
                 {
-                    if (profile is FirewallProfile pro)
+                    if (!(profile is FirewallProfile firewallProfile))
                     {
-                        foreach (var application in pro.UnderlyingObject.AuthorizedApplications)
-                        {
-                            if (application is INetFwAuthorizedApplication authorizedApplication)
-                            {
-                                rules.Add(new ApplicationRule(authorizedApplication, pro.Type));
-                            }
-                        }
-
-                        foreach (var port in pro.UnderlyingObject.GloballyOpenPorts)
-                        {
-                            if (port is INetFwOpenPort openPort)
-                            {
-                                rules.Add(new PortRule(openPort, pro.Type));
-                            }
-                        }
+                        continue;
                     }
+
+                    rules.AddRange(
+                        firewallProfile
+                            .UnderlyingObject
+                            .AuthorizedApplications
+                            .GetEnumeratorVariant()
+                            .ToEnumerable<INetFwAuthorizedApplication>()
+                            .Select(application => new ApplicationRule(application, firewallProfile.Type))
+                    );
+
+                    rules.AddRange(
+                        firewallProfile
+                            .UnderlyingObject
+                            .GloballyOpenPorts
+                            .GetEnumeratorVariant()
+                            .ToEnumerable<INetFwOpenPort>()
+                            .Select(port => new PortRule(port, firewallProfile.Type))
+                    );
                 }
 
                 _rules.ItemsModified -= RulesOnItemsModified;

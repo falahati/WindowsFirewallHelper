@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using WindowsFirewallHelper.Helpers;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace WindowsFirewallHelper.COMInterop
 {
@@ -35,8 +35,6 @@ namespace WindowsFirewallHelper.COMInterop
         INetFwOpenPort Item([In] int portNumber, [In] NET_FW_IP_PROTOCOL ipProtocol);
 
         [DispId(-4)]
-        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(EnumeratorToEnumVariantMarshaler))]
-        new IEnumerator GetEnumerator();
+        IEnumVARIANT GetEnumeratorVariant();
     }
 }

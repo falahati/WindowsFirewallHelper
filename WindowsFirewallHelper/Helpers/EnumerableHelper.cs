@@ -11,15 +11,16 @@ namespace WindowsFirewallHelper.Helpers
         {
             enumVariant.Reset();
             int bufferLength;
+
             do
             {
                 var buffer = new object[1];
-                var bufferLengthPointer = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(Int32)));
+                var bufferLengthPointer = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(int)));
                 enumVariant.Next(buffer.Length, buffer, bufferLengthPointer);
                 bufferLength = Marshal.ReadInt32(bufferLengthPointer);
                 Marshal.FreeCoTaskMem(bufferLengthPointer);
 
-                for (int i = 0; i < Math.Min(bufferLength, buffer.Length); i++)
+                for (var i = 0; i < Math.Min(bufferLength, buffer.Length); i++)
                 {
                     yield return (T) buffer[i];
                 }
@@ -31,16 +32,15 @@ namespace WindowsFirewallHelper.Helpers
             enumVariant.Reset();
 
             var buffer = new object[count];
-            var bufferLengthPointer = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(Int32)));
+            var bufferLengthPointer = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(int)));
             enumVariant.Next(buffer.Length, buffer, bufferLengthPointer);
             var bufferLength = Marshal.ReadInt32(bufferLengthPointer);
             Marshal.FreeCoTaskMem(bufferLengthPointer);
 
-            for (int i = 0; i < Math.Min(bufferLength, count); i++)
+            for (var i = 0; i < Math.Min(bufferLength, count); i++)
             {
-                yield return (T)buffer[i];
+                yield return (T) buffer[i];
             }
         }
-
     }
 }

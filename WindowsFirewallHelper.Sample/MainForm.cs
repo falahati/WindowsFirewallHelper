@@ -37,6 +37,7 @@ namespace WindowsFirewallHelper.Sample
             try
             {
                 var portDialog = new EditPortForm();
+
                 if (portDialog.ShowDialog() == DialogResult.OK)
                 {
                     var rule = FirewallManager.Instance.CreatePortRule(
@@ -58,6 +59,7 @@ namespace WindowsFirewallHelper.Sample
             try
             {
                 var rule = treeView.SelectedNode.Tag as IRule;
+
                 if (rule != null)
                 {
                     FirewallManager.Instance.Rules.Remove(rule);
@@ -80,7 +82,9 @@ namespace WindowsFirewallHelper.Sample
         private void ItemClicked(object sender, EventArgs e)
         {
             if (treeView.SelectedNode != null)
+            {
                 NodeDiscovery(treeView.SelectedNode);
+            }
         }
 
         private void ItemSelected(object sender, TreeViewEventArgs e)
@@ -97,21 +101,36 @@ namespace WindowsFirewallHelper.Sample
         private void NodeDiscovery(TreeNode node)
         {
             var o = node.Tag;
+
             if (o == null)
+            {
                 return;
+            }
+
             node.Nodes.Clear();
+
             if (o.GetType().GetInterfaces().Contains(typeof(IEnumerable)))
+            {
                 foreach (var item in (IEnumerable) o)
+                {
                     node.Nodes.Add(new TreeNode(item.ToString()) {Tag = item});
+                }
+            }
             else if (!o.GetType().IsValueType)
+            {
                 foreach (var propertyInfo in o.GetType().GetProperties())
+                {
                     if (propertyInfo.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)) &&
-                        (propertyInfo.PropertyType != typeof(string)))
+                        propertyInfo.PropertyType != typeof(string))
+                    {
                         if (!propertyInfo.GetGetMethod().IsStatic)
                         {
                             var value = propertyInfo.GetValue(o, null);
                             node.Nodes.Add(new TreeNode("[" + propertyInfo.Name + "] ") {Tag = value});
                         }
+                    }
+                }
+            }
         }
 
         private void RefreshTreeView()

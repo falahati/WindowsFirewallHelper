@@ -93,7 +93,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             {
                 if (!Enum.IsDefined(typeof(EdgeTraversalAction), UnderlyingObjectV2.EdgeTraversalOptions))
                 {
-                    throw new NotSupportedException();;
+                    throw new NotSupportedException();
+                    ;
                 }
 
                 return (EdgeTraversalAction) UnderlyingObjectV2.EdgeTraversalOptions;

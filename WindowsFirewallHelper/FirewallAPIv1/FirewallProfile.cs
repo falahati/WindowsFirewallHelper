@@ -31,7 +31,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         /// <summary>
         ///     Gets the global default behavior regarding inbound traffic
         /// </summary>
-        /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
+        /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
+        ///     Setting a value for this
+        ///     property is not supported
+        /// </exception>
         public FirewallAction DefaultInboundAction
         {
             get => FirewallAction.Block;
@@ -42,7 +45,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         /// <summary>
         ///     Gets the global default behavior regarding outbound traffic
         /// </summary>
-        /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
+        /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
+        ///     Setting a value for this
+        ///     property is not supported
+        /// </exception>
         public FirewallAction DefaultOutboundAction
         {
             get => FirewallAction.Allow;

@@ -1,10 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFirewallHelper", "WindowsFirewallHelper\WindowsFirewallHelper.csproj", "{5D71AD0C-A697-4CB1-B7A4-8395BA7D6D4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsFirewallHelper", "WindowsFirewallHelper\WindowsFirewallHelper.csproj", "{5D71AD0C-A697-4CB1-B7A4-8395BA7D6D4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFirewallHelper.Sample", "WindowsFirewallHelper.Sample\WindowsFirewallHelper.Sample.csproj", "{A16AB986-7576-4BC5-ACBF-7728A55A6E13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConWindowsFirewallHelper.NetCoreSample", "ConWindowsFirewallHelper.NetCoreSample\ConWindowsFirewallHelper.NetCoreSample.csproj", "{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,8 +22,15 @@ Global
 		{A16AB986-7576-4BC5-ACBF-7728A55A6E13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A16AB986-7576-4BC5-ACBF-7728A55A6E13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A16AB986-7576-4BC5-ACBF-7728A55A6E13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C39D722-F354-443C-8C16-8FB8FA156042}
 	EndGlobalSection
 EndGlobal

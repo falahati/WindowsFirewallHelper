@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsFirewallHelper", "Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFirewallHelper.Sample", "WindowsFirewallHelper.Sample\WindowsFirewallHelper.Sample.csproj", "{A16AB986-7576-4BC5-ACBF-7728A55A6E13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConWindowsFirewallHelper.NetCoreSample", "ConWindowsFirewallHelper.NetCoreSample\ConWindowsFirewallHelper.NetCoreSample.csproj", "{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsFirewallHelper.NetCoreSample", "WindowsFirewallHelper.NetCoreSample\WindowsFirewallHelper.NetCoreSample.csproj", "{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

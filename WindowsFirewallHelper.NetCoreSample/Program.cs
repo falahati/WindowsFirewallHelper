@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using WindowsFirewallHelper;
 using ConsoleUtilities;
 
-namespace ConWindowsFirewallHelper.NetCoreSample
+namespace WindowsFirewallHelper.NetCoreSample
 {
     internal class Program
     {

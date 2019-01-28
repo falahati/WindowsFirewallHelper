@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using WindowsFirewallHelper.Addresses;
+using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.Helpers;
-using NetFwTypeLib;
 
 namespace WindowsFirewallHelper.FirewallAPIv2.Rules
 {
@@ -265,12 +265,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public FirewallAction Action
         {
-            get => UnderlyingObject.Action == NET_FW_ACTION_.NET_FW_ACTION_ALLOW
+            get => UnderlyingObject.Action == NET_FW_ACTION.NET_FW_ACTION_ALLOW
                 ? FirewallAction.Allow
                 : FirewallAction.Block;
             set => UnderlyingObject.Action = value == FirewallAction.Allow
-                ? NET_FW_ACTION_.NET_FW_ACTION_ALLOW
-                : NET_FW_ACTION_.NET_FW_ACTION_BLOCK;
+                ? NET_FW_ACTION.NET_FW_ACTION_ALLOW
+                : NET_FW_ACTION.NET_FW_ACTION_BLOCK;
         }
 
         /// <inheritdoc />
@@ -279,12 +279,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public FirewallDirection Direction
         {
-            get => UnderlyingObject.Direction == NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN
+            get => UnderlyingObject.Direction == NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_IN
                 ? FirewallDirection.Inbound
                 : FirewallDirection.Outbound;
             set => UnderlyingObject.Direction = value == FirewallDirection.Inbound
-                ? NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN
-                : NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_OUT;
+                ? NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_IN
+                : NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_OUT;
         }
 
         /// <inheritdoc />

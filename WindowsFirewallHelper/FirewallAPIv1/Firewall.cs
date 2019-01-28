@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv1.Rules;
 using WindowsFirewallHelper.Helpers;
-using NetFwTypeLib;
 
 namespace WindowsFirewallHelper.FirewallAPIv1
 {
@@ -29,9 +29,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             Profiles = new IProfile[]
             {
                 new FirewallProfile(
-                    UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN)),
+                    UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)),
                 new FirewallProfile(
-                    UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD))
+                    UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD))
             };
         }
 
@@ -319,13 +319,13 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     {
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
                                 .AuthorizedApplications.Add(((ApplicationRule) e.Item).UnderlyingObject);
                         }
 
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
                                 .AuthorizedApplications.Add(((ApplicationRule) e.Item).UnderlyingObject);
                         }
                     }
@@ -333,13 +333,13 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     {
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
                                 .GloballyOpenPorts.Add(((PortRule) e.Item).UnderlyingObject);
                         }
 
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
                                 .GloballyOpenPorts.Add(((PortRule) e.Item).UnderlyingObject);
                         }
                     }
@@ -356,14 +356,14 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     {
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
                                 .AuthorizedApplications.Remove(
                                     ((ApplicationRule) e.Item).UnderlyingObject.ProcessImageFileName);
                         }
 
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
                                 .AuthorizedApplications.Remove(
                                     ((ApplicationRule) e.Item).UnderlyingObject.ProcessImageFileName);
                         }
@@ -372,14 +372,14 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     {
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
                                 .GloballyOpenPorts.Remove(((PortRule) e.Item).UnderlyingObject.Port,
                                     ((PortRule) e.Item).UnderlyingObject.Protocol);
                         }
 
                         if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
                         {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD)
+                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
                                 .GloballyOpenPorts.Remove(((PortRule) e.Item).UnderlyingObject.Port,
                                     ((PortRule) e.Item).UnderlyingObject.Protocol);
                         }

@@ -1,5 +1,5 @@
 ﻿using System;
-using NetFwTypeLib;
+using WindowsFirewallHelper.COMInterop;
 
 namespace WindowsFirewallHelper.FirewallAPIv2.Rules
 {

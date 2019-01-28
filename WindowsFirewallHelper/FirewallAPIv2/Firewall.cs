@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv2.Rules;
-using NetFwTypeLib;
 
 namespace WindowsFirewallHelper.FirewallAPIv2
 {
@@ -25,9 +25,9 @@ namespace WindowsFirewallHelper.FirewallAPIv2
                     (INetFwPolicy2) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2"));
                 Profiles = new IProfile[]
                 {
-                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2_.NET_FW_PROFILE2_DOMAIN),
-                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2_.NET_FW_PROFILE2_PRIVATE),
-                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2_.NET_FW_PROFILE2_PUBLIC)
+                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_DOMAIN),
+                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PRIVATE),
+                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PUBLIC)
                 };
             }
         }

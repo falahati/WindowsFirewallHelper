@@ -18,17 +18,6 @@
     <Title>Windows Firewall Helper (Win XP+ - .Net 4.5)</Title>
   </PropertyGroup>
   <ItemGroup>
-    <COMReference Include="NetFwTypeLib.dll">
-      <Guid>58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference PrivateAssets="all" Include="MSBump" Version="2.3.2">
       <PrivateAssets>all</PrivateAssets>

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using WindowsFirewallHelper.Addresses;
+using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.Helpers;
-using NetFwTypeLib;
 
 namespace WindowsFirewallHelper.FirewallAPIv1.Rules
 {
@@ -213,7 +213,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                     throw new NotSupportedException("Acceptable values are UDP, TCP and Any");
                 }
 
-                UnderlyingObject.Protocol = (NET_FW_IP_PROTOCOL_) value.ProtocolNumber;
+                UnderlyingObject.Protocol = (NET_FW_IP_PROTOCOL) value.ProtocolNumber;
             }
         }
 
@@ -238,7 +238,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <inheritdoc />
         public FirewallScope Scope
         {
-            get => UnderlyingObject.Scope == NET_FW_SCOPE_.NET_FW_SCOPE_LOCAL_SUBNET
+            get => UnderlyingObject.Scope == NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET
                 ? FirewallScope.LocalSubnet
                 : FirewallScope.All;
             set
@@ -251,12 +251,12 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                 if (value == FirewallScope.LocalSubnet)
                 {
                     RemoteAddresses = new IAddress[] {new LocalSubnet()};
-                    UnderlyingObject.Scope = NET_FW_SCOPE_.NET_FW_SCOPE_LOCAL_SUBNET;
+                    UnderlyingObject.Scope = NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET;
                 }
                 else
                 {
                     RemoteAddresses = new IAddress[] {SingleIP.Any};
-                    UnderlyingObject.Scope = NET_FW_SCOPE_.NET_FW_SCOPE_ALL;
+                    UnderlyingObject.Scope = NET_FW_SCOPE.NET_FW_SCOPE_ALL;
                 }
             }
         }

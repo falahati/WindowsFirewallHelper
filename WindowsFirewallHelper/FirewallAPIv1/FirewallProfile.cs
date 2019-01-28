@@ -1,5 +1,5 @@
 ﻿using System;
-using NetFwTypeLib;
+using WindowsFirewallHelper.COMInterop;
 
 namespace WindowsFirewallHelper.FirewallAPIv1
 {
@@ -88,10 +88,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             {
                 switch (UnderlyingObject.Type)
                 {
-                    case NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_DOMAIN:
+                    case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN:
 
                         return FirewallProfiles.Domain;
-                    case NET_FW_PROFILE_TYPE_.NET_FW_PROFILE_STANDARD:
+                    case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD:
 
                         return FirewallProfiles.Private;
                     default:

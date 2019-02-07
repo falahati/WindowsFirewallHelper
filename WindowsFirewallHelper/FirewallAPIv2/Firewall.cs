@@ -34,6 +34,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             }
         }
 
+
         /// <summary>
         ///     Gets the current singleton instance of this class
         /// </summary>
@@ -74,7 +75,22 @@ namespace WindowsFirewallHelper.FirewallAPIv2
                 throw new NotSupportedException();
             }
 
-            return new StandardRule(name, filename, action, FirewallDirection.Inbound, profiles) {Protocol = protocol};
+            if (StandardRuleWin8.IsSupported)
+            {
+                return new StandardRuleWin8(name, filename, action, FirewallDirection.Inbound, profiles) { Protocol = protocol };
+            }
+
+            if (StandardRuleWin7.IsSupported)
+            {
+                return new StandardRuleWin7(name, filename, action, FirewallDirection.Inbound, profiles) { Protocol = protocol };
+            }
+
+            if (StandardRule.IsSupported)
+            {
+                return new StandardRule(name, filename, action, FirewallDirection.Inbound, profiles) { Protocol = protocol };
+            }
+
+            throw new NotSupportedException();
         }
 
         /// <inheritdoc />
@@ -142,8 +158,28 @@ namespace WindowsFirewallHelper.FirewallAPIv2
                     "Invalid protocol selected; rule's protocol should be TCP or UDP.");
             }
 
-            return new StandardRule(name, portNumber, action, FirewallDirection.Inbound,
-                profiles) {Protocol = protocol};
+            if (StandardRuleWin8.IsSupported)
+            {
+                return new StandardRuleWin8(name, portNumber, action, FirewallDirection.Inbound,
+                        profiles)
+                    {Protocol = protocol};
+            }
+
+            if (StandardRuleWin7.IsSupported)
+            {
+                return new StandardRuleWin7(name, portNumber, action, FirewallDirection.Inbound,
+                        profiles)
+                    {Protocol = protocol};
+            }
+
+            if (StandardRule.IsSupported)
+            {
+                return new StandardRule(name, portNumber, action, FirewallDirection.Inbound,
+                        profiles)
+                    {Protocol = protocol};
+            }
+
+            throw new NotSupportedException();
         }
 
         /// <inheritdoc />

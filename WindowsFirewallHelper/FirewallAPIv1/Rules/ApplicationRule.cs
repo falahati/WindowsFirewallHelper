@@ -138,12 +138,17 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         }
 
         /// <inheritdoc />
-        public string Name
+        public string FriendlyName
         {
-            get => NativeHelper.ResolveStringResource(UnderlyingObject.Name);
-            set => UnderlyingObject.Name = value;
+            get => NativeHelper.ResolveStringResource(Name);
         }
 
+        /// <inheritdoc />
+        public string Name
+        {
+            get => UnderlyingObject.Name;
+            set => UnderlyingObject.Name = value;
+        }
 
         /// <inheritdoc />
         /// <exception cref="NotSupportedException">Public profile or multiple profile registration is not supported</exception>
@@ -297,7 +302,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </returns>
         public override string ToString()
         {
-            return Name;
+            return FriendlyName;
         }
     }
 }

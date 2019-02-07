@@ -459,21 +459,20 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             }
         }
 
+        /// <inheritdoc />
+        public string FriendlyName
+        {
+            get => NativeHelper.ResolveStringResource(Name);
+        }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the name of the rule
-        /// </summary>
         public string Name
         {
-            get => NativeHelper.ResolveStringResource(UnderlyingObject.Name);
+            get => UnderlyingObject.Name;
             set => UnderlyingObject.Name = value;
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the profiles that this rule belongs to
-        /// </summary>
         public FirewallProfiles Profiles
         {
             get => (FirewallProfiles) UnderlyingObject.Profiles &
@@ -492,9 +491,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the protocol that rule applies to
-        /// </summary>
         public FirewallProtocol Protocol
         {
             get => new FirewallProtocol(UnderlyingObject.Protocol);
@@ -519,13 +515,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
 
         // ReSharper disable once ExceptionNotThrown
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the remote addresses that rule applies to
-        /// </summary>
-        /// <exception cref="ArgumentException" accessor="set">
-        ///     An unspecified, multicast, broadcast or loopback IPv6 address was
-        ///     specified.
-        /// </exception>
         public IAddress[] RemoteAddresses
         {
             get => AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses);
@@ -551,9 +540,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the remote ports that rule applies to
-        /// </summary>
         /// <exception cref="FirewallAPIv2InvalidProtocolException" accessor="set">
         ///     Port number can only be specified for the UDP
         ///     and TCP protocols.
@@ -577,9 +563,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the scope that this rule applies to
-        /// </summary>
         /// <exception cref="ArgumentException" accessor="set">Use the RemoteAddresses property to set the exact remote addresses</exception>
         public FirewallScope Scope
         {
@@ -709,7 +692,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <inheritdoc />
         public override string ToString()
         {
-            return Name;
+            return FriendlyName;
         }
     }
 }

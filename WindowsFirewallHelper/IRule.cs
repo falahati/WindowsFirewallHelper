@@ -38,6 +38,11 @@
         /// <summary>
         ///     Gets or sets the name of the rule
         /// </summary>
+        string FriendlyName { get; }
+        
+        /// <summary>
+        ///     Gets or sets the name of the rule in native format w/o auto string resolving
+        /// </summary>
         string Name { get; set; }
 
         /// <summary>

@@ -147,6 +147,12 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         }
 
         /// <inheritdoc />
+        public string FriendlyName
+        {
+            get => NativeHelper.ResolveStringResource(Name);
+        }
+
+        /// <inheritdoc />
         public string Name
         {
             get => NativeHelper.ResolveStringResource(UnderlyingObject.Name);
@@ -315,7 +321,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </returns>
         public override string ToString()
         {
-            return Name;
+            return FriendlyName;
         }
     }
 }

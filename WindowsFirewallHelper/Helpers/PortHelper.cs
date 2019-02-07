@@ -17,11 +17,11 @@ namespace WindowsFirewallHelper.Helpers
                 .Select(
                     groups => groups.Count() >= 3
                         ? groups.First().PortNumber + "-" + groups.Last().PortNumber
-                        : string.Join(", ", groups.Select(pair => pair.PortNumber.ToString("")).ToArray())
+                        : string.Join(",", groups.Select(pair => pair.PortNumber.ToString("")).ToArray())
                 )
                 .ToArray();
 
-            return string.Join(", ", portStrings);
+            return string.Join(",", portStrings);
         }
 
         // ReSharper disable once TooManyDeclarations

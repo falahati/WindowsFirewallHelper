@@ -94,7 +94,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             FirewallAction action,
             string filename)
         {
-            return CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.Any);
+            return CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.TCP);
         }
 
         /// <inheritdoc />

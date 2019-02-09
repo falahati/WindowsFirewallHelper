@@ -53,20 +53,6 @@ namespace WindowsFirewallHelper.Helpers
             return str;
         }
 
-        // ReSharper disable once StringLiteralTypo
-        [DllImport(@"shlwapi",
-            CharSet = CharSet.Auto,
-            SetLastError = true,
-            BestFitMapping = false,
-            ThrowOnUnmappableChar = true)]
-        // ReSharper disable once TooManyArguments
-        public static extern int SHLoadIndirectString(
-            string resourceString,
-            StringBuilder buffer,
-            int bufferSize,
-            IntPtr reserved
-        );
-
         [DllImport(@"kernel32")]
         private static extern int FreeLibrary(IntPtr libraryHandle);
 
@@ -88,6 +74,20 @@ namespace WindowsFirewallHelper.Helpers
             uint resourceId,
             StringBuilder buffer,
             int bufferSize
+        );
+
+        // ReSharper disable once StringLiteralTypo
+        [DllImport(@"shlwapi",
+            CharSet = CharSet.Auto,
+            SetLastError = true,
+            BestFitMapping = false,
+            ThrowOnUnmappableChar = true)]
+        // ReSharper disable once TooManyArguments
+        private static extern int SHLoadIndirectString(
+            string resourceString,
+            StringBuilder buffer,
+            int bufferSize,
+            IntPtr reserved
         );
     }
 }

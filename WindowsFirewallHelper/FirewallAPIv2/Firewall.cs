@@ -338,9 +338,18 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             }
         }
 
+        /// <summary>
+        ///     Restores the local firewall configuration to its default state.
+        /// </summary>
+        public void ResetDefault()
         {
+            if (!IsSupported)
             {
+                throw new NotSupportedException();
             }
+
+            UnderlyingObject.RestoreLocalFirewallDefaults();
         }
+
     }
 }

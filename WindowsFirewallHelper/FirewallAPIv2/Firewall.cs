@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv2.Rules;
 using WindowsFirewallHelper.Helpers;
@@ -143,7 +140,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             FirewallAction action,
             string filename)
         {
-            return CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.Any);
+            return CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.TCP);
         }
 
         /// <inheritdoc />
@@ -350,6 +347,5 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
             UnderlyingObject.RestoreLocalFirewallDefaults();
         }
-
     }
 }

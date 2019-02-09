@@ -255,7 +255,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             get => new FirewallProtocol((int) UnderlyingObjects.Values.First().Protocol);
             set
             {
-                if (!value.Equals(FirewallProtocol.Any) &&
+                if (!value.Equals(FirewallProtocol.FirewallV1_TCP_UDP) &&
                     !value.Equals(FirewallProtocol.TCP) &&
                     !value.Equals(FirewallProtocol.UDP))
                 {

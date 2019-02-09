@@ -55,11 +55,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
             get => GetInstance();
         }
+
+        /// <summary>
+        ///     Gets a value indicating if adding or setting a rule or group of rules will take effect in the current firewall
+        ///     profile
+        /// </summary>
+        public FirewallModifyStatePolicy LocalModifyStatePolicy
         {
             get
             {
+                if (!IsSupported)
                 {
+                    throw new NotSupportedException();
                 }
+
+                return (FirewallModifyStatePolicy) UnderlyingObject.LocalPolicyModifyState;
             }
         }
 

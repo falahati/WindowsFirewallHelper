@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceProcess;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv2.Rules;
 using WindowsFirewallHelper.Helpers;
@@ -34,24 +33,20 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             };
         }
 
-        public IEnumerable<FirewallRuleGroup> RuleGroups
-        {
-            get
-            {
-                return Rules
-                    .Select(rule => rule.Grouping)
-                    .Where(s => !string.IsNullOrWhiteSpace(s))
-                    .Distinct()
-                    .Select(s => new FirewallRuleGroup(this, s));
-            }
-        }
-
         /// <summary>
         ///     Gets the current singleton instance of this class
         /// </summary>
         public static Firewall Instance
         {
             get => GetInstance();
+        }
+
+        /// <summary>
+        ///     Gets a Boolean value showing if the firewall is supported in this environment.
+        /// </summary>
+        public static bool IsSupported
+        {
+            get => Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2", false) != null;
         }
 
         /// <summary>
@@ -70,9 +65,22 @@ namespace WindowsFirewallHelper.FirewallAPIv2
                 return (FirewallModifyStatePolicy) UnderlyingObject.LocalPolicyModifyState;
             }
         }
-        public static bool IsServiceRunning
+
+        public IEnumerable<FirewallRuleGroup> RuleGroups
         {
-            get => new ServiceController("MpsSvc").Status == ServiceControllerStatus.Running;
+            get
+            {
+                return Rules
+                    .Select(rule => rule.Grouping)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Distinct()
+                    .Select(s => new FirewallRuleGroup(this, s));
+            }
+        }
+
+        public ICollection<StandardRule> Rules
+        {
+            get => new FirewallRulesCollection<StandardRule>(UnderlyingObject.Rules);
         }
 
         internal INetFwPolicy2 UnderlyingObject { get; }
@@ -249,6 +257,32 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
         /// <inheritdoc />
         /// <summary>
+        ///     Returns the active firewall profile, if any
+        /// </summary>
+        /// <returns>
+        ///     The active firewall profile object implementing <see cref="IProfile" /> interface or null if no firewall
+        ///     profile is currently active
+        /// </returns>
+        public IProfile GetActiveProfile()
+        {
+            if (!IsSupported)
+            {
+                throw new NotSupportedException();
+            }
+
+            foreach (var p in Profiles)
+            {
+                if (p.IsActive)
+                {
+                    return p;
+                }
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
         ///     Returns a specific firewall profile
         /// </summary>
         /// <param name="profile">Requested firewall profile</param>
@@ -276,40 +310,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the active firewall profile, if any
-        /// </summary>
-        /// <returns>
-        ///     The active firewall profile object implementing <see cref="IProfile" /> interface or null if no firewall
-        ///     profile is currently active
-        /// </returns>
-        public IProfile GetActiveProfile()
-        {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            foreach (var p in Profiles)
-            {
-                if (p.IsActive)
-                {
-                    return p;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        ///     Gets a Boolean value showing if the firewall is supported in this environment.
-        /// </summary>
-        public static bool IsSupported
-        {
-            get => Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2", false) != null;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
         ///     Gets the name of the firewall
         /// </summary>
         public string Name
@@ -326,18 +326,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <inheritdoc />
         ICollection<IRule> IFirewall.Rules
         {
-            get
-            {
-                return new FirewallRulesCollection<IRule>(UnderlyingObject.Rules);
-            }
-        }
-
-        public ICollection<StandardRule> Rules
-        {
-            get
-            {
-                return new FirewallRulesCollection<StandardRule>(UnderlyingObject.Rules);
-            }
+            get => new FirewallRulesCollection<IRule>(UnderlyingObject.Rules);
         }
 
         /// <summary>

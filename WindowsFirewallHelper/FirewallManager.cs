@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ServiceProcess;
 using FirewallVersion2 = WindowsFirewallHelper.FirewallAPIv2.Firewall;
 using FirewallVersion1 = WindowsFirewallHelper.FirewallAPIv1.Firewall;
 using FirewallVersion2Rules = WindowsFirewallHelper.FirewallAPIv2.Rules;
@@ -34,13 +35,26 @@ namespace WindowsFirewallHelper
             }
         }
 
-        /// <summary>
-        ///     Returns the list of all registered third party firewalls management instances
-        /// </summary>
-        public static IFirewall[] ThirdPartyFirewalls
+        public static bool IsServiceRunning
         {
-            get => new IFirewall[0];
+            get
+            {
+                switch (Version)
+                {
+                    case APIVersion.FirewallAPIv1:
+
+                        return new ServiceController("SharedAccess").Status == ServiceControllerStatus.Running;
+                    case APIVersion.FirewallAPIv2:
+                    case APIVersion.FirewallAPIv2Win7:
+                    case APIVersion.FirewallAPIv2Win8:
+
+                        return new ServiceController("MpsSvc").Status == ServiceControllerStatus.Running;
+                }
+
+                return false;
+            }
         }
+
 
         /// <summary>
         ///     Returns the API version of the current active Windows Firewall
@@ -71,14 +85,6 @@ namespace WindowsFirewallHelper
 
                 return APIVersion.None;
             }
-        }
-
-        /// <summary>
-        ///     Register an instance of a third party firewall management class
-        /// </summary>
-        /// <param name="firewall">An instance of the firewall management class</param>
-        public static void RegisterFirewall(IFirewall firewall)
-        {
         }
     }
 }

@@ -11,10 +11,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1
     {
         private readonly Firewall _firewall;
 
-        internal FirewallProfile(Firewall firewall, NET_FW_PROFILE_TYPE profileType)
+        internal FirewallProfile(Firewall firewall, FirewallProfiles profileType)
         {
             var localPolicy = firewall.UnderlyingObject.LocalPolicy;
-            UnderlyingObject = localPolicy.GetProfileByType(profileType);
+            UnderlyingObject = localPolicy.GetProfileByType(GetNativeProfileType(profileType));
             _firewall = firewall;
         }
 
@@ -86,21 +86,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         /// </summary>
         public FirewallProfiles Type
         {
-            get
-            {
-                switch (UnderlyingObject.Type)
-                {
-                    case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN:
-
-                        return FirewallProfiles.Domain;
-                    case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD:
-
-                        return FirewallProfiles.Private;
-                    default:
-
-                        throw new FirewallAPIv1NotSupportedException();
-                }
-            }
+            get => GetManagedProfileType(UnderlyingObject.Type);
         }
 
         /// <inheritdoc />
@@ -111,6 +97,38 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         {
             get => !UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled;
             set => UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled = !value;
+        }
+
+        private static FirewallProfiles GetManagedProfileType(NET_FW_PROFILE_TYPE profile)
+        {
+            switch (profile)
+            {
+                case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN:
+
+                    return FirewallProfiles.Domain;
+                case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD:
+
+                    return FirewallProfiles.Private;
+                default:
+
+                    throw new FirewallAPIv1NotSupportedException();
+            }
+        }
+
+        private static NET_FW_PROFILE_TYPE GetNativeProfileType(FirewallProfiles profile)
+        {
+            switch (profile)
+            {
+                case FirewallProfiles.Domain:
+
+                    return NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN;
+                case FirewallProfiles.Private:
+
+                    return NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD;
+                default:
+
+                    throw new FirewallAPIv1NotSupportedException();
+            }
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using WindowsFirewallHelper.COMInterop;
 
 namespace WindowsFirewallHelper
 {
@@ -11,16 +12,16 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Domain Profile
         /// </summary>
-        Domain = 1,
+        Domain = NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_DOMAIN,
 
         /// <summary>
         ///     Private Profile
         /// </summary>
-        Private = 2,
+        Private = NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PRIVATE,
 
         /// <summary>
         ///     Public Profile
         /// </summary>
-        Public = 4
+        Public = NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PUBLIC
     }
 }

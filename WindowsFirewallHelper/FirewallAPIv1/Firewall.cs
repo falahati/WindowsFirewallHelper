@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceProcess;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv1.Rules;
 using WindowsFirewallHelper.Helpers;
@@ -27,8 +26,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1
 
             Profiles = new[]
             {
-                new FirewallProfile(this, NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN),
-                new FirewallProfile(this, NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
+                new FirewallProfile(this, FirewallProfiles.Domain),
+                new FirewallProfile(this, FirewallProfiles.Private)
             };
         }
 
@@ -45,10 +44,6 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             get => Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false) == null;
         }
 
-        public static bool IsServiceRunning
-        {
-            get => new ServiceController("SharedAccess").Status == ServiceControllerStatus.Running;
-        }
 
         public FirewallProfile[] Profiles { get; }
 
@@ -113,7 +108,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             FirewallAction action,
             string filename)
         {
-            return ((IFirewall) this).CreateApplicationRule(profile, name, action, filename, FirewallProtocol.FirewallV1_TCP_UDP);
+            return ((IFirewall) this).CreateApplicationRule(profile, name, action, filename,
+                FirewallProtocol.FirewallV1_TCP_UDP);
         }
 
         /// <inheritdoc />
@@ -188,7 +184,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         // ReSharper disable once TooManyArguments
         IRule IFirewall.CreatePortRule(FirewallProfiles profile, string name, FirewallAction action, ushort portNumber)
         {
-            return ((IFirewall) this).CreatePortRule(profile, name, action, portNumber, FirewallProtocol.FirewallV1_TCP_UDP);
+            return ((IFirewall) this).CreatePortRule(profile, name, action, portNumber,
+                FirewallProtocol.FirewallV1_TCP_UDP);
         }
 
         /// <inheritdoc />
@@ -210,6 +207,16 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         }
 
         /// <inheritdoc />
+        /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
+        ///     The asked profile is not
+        ///     supported with this class
+        /// </exception>
+        IProfile IFirewall.GetActiveProfile()
+        {
+            return GetProfile();
+        }
+
+        /// <inheritdoc />
         /// <exception cref="T:System.NotSupportedException">This class is not supported on this machine</exception>
         /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
         ///     The asked profile is not
@@ -219,16 +226,6 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         IProfile IFirewall.GetProfile(FirewallProfiles profile)
         {
             return GetProfile(profile);
-        }
-
-        /// <inheritdoc />
-        /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
-        ///     The asked profile is not
-        ///     supported with this class
-        /// </exception>
-        IProfile IFirewall.GetActiveProfile()
-        {
-            return GetProfile();
         }
 
         /// <inheritdoc />

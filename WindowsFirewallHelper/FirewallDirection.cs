@@ -1,4 +1,6 @@
-﻿namespace WindowsFirewallHelper
+﻿using WindowsFirewallHelper.COMInterop;
+
+namespace WindowsFirewallHelper
 {
     /// <summary>
     ///     Firewall rule direction
@@ -8,11 +10,11 @@
         /// <summary>
         ///     Inbound data
         /// </summary>
-        Inbound,
+        Inbound = NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_IN,
 
         /// <summary>
         ///     Outbound data
         /// </summary>
-        Outbound
+        Outbound = NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_OUT
     }
 }

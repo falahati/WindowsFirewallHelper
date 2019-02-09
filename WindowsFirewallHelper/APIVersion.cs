@@ -11,11 +11,6 @@
         None,
 
         /// <summary>
-        ///     Third Party API
-        /// </summary>
-        ThirdParty,
-
-        /// <summary>
         ///     Windows Firewall API v1 (Win XP+)
         /// </summary>
         // ReSharper disable once InconsistentNaming

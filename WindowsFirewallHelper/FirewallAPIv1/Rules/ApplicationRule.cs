@@ -270,9 +270,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <inheritdoc />
         public FirewallScope Scope
         {
-            get => UnderlyingObjects.Values.First().Scope == NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET
-                ? FirewallScope.LocalSubnet
-                : FirewallScope.All;
+            get => (FirewallScope)UnderlyingObjects.Values.First().Scope;
             set
             {
                 if (value == FirewallScope.Specific)

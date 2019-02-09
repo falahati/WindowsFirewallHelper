@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using WindowsFirewallHelper.COMInterop;
 
 namespace WindowsFirewallHelper
 {
@@ -14,7 +15,8 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Matches both TCP and UDP protocols; only available for FirewallV1 (WinXP)
         /// </summary>
-        public static readonly FirewallProtocol FirewallV1_TCP_UDP = new FirewallProtocol(256);
+        public static readonly FirewallProtocol FirewallV1_TCP_UDP =
+            new FirewallProtocol((int) NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_ANY);
 
         /// <summary>
         ///     Generic Routing Encapsulation Protocol

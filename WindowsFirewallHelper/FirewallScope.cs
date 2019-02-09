@@ -1,4 +1,6 @@
-﻿namespace WindowsFirewallHelper
+﻿using WindowsFirewallHelper.COMInterop;
+
+namespace WindowsFirewallHelper
 {
     /// <summary>
     ///     Firewall rule scope
@@ -8,16 +10,16 @@
         /// <summary>
         ///     All scopes
         /// </summary>
-        All,
+        All = NET_FW_SCOPE.NET_FW_SCOPE_ALL,
 
         /// <summary>
         ///     Local subnet only
         /// </summary>
-        LocalSubnet,
+        LocalSubnet = NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET,
 
         /// <summary>
         ///     Specific list of addresses
         /// </summary>
-        Specific
+        Specific = NET_FW_SCOPE.NET_FW_SCOPE_CUSTOM
     }
 }

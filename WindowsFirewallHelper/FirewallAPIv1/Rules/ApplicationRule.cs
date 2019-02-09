@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using WindowsFirewallHelper.Addresses;
 using WindowsFirewallHelper.COMInterop;
-using WindowsFirewallHelper.FirewallAPIv1.COMCollectionProxy;
 using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.FirewallAPIv1.Rules
@@ -356,17 +355,6 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             if (UnderlyingObjects.ContainsKey(profile))
             {
                 return UnderlyingObjects[profile];
-            }
-
-            return null;
-        }
-
-        // ReSharper disable once FlagArgument
-        internal COMApplicationCollectionKey GetCOMKey(FirewallProfiles profile)
-        {
-            if (UnderlyingObjects.ContainsKey(profile))
-            {
-                return new COMApplicationCollectionKey(UnderlyingObjects[profile].ProcessImageFileName);
             }
 
             return null;

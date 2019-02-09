@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using WindowsFirewallHelper.COMInterop;
-using WindowsFirewallHelper.FirewallAPIv1.COMCollectionProxy;
 using WindowsFirewallHelper.FirewallAPIv1.Rules;
 
 namespace WindowsFirewallHelper.FirewallAPIv1
@@ -18,24 +16,17 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         {
             _firewallPortCollections = profiles.ToDictionary(
                 profile => profile.Type,
-                profile => new COMPortCollection(
-                    profile.UnderlyingObject.GloballyOpenPorts,
-                    profile.Type
-                )
+                profile => new COMPortCollection(profile.UnderlyingObject.GloballyOpenPorts)
             );
+
             _firewallApplicationCollections = profiles.ToDictionary(
                 profile => profile.Type,
-                profile => new COMApplicationCollection(
-                    profile.UnderlyingObject.AuthorizedApplications,
-                    profile.Type
-                )
+                profile => new COMApplicationCollection(profile.UnderlyingObject.AuthorizedApplications)
             );
+
             _firewallServiceCollections = profiles.ToDictionary(
                 profile => profile.Type,
-                profile => new COMServiceCollection(
-                    profile.UnderlyingObject.Services,
-                    profile.Type
-                )
+                profile => new COMServiceCollection(profile.UnderlyingObject.Services)
             );
         }
 
@@ -52,10 +43,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     if (applicationRule.Profiles.HasFlag(firewallProfile))
                     {
                         _firewallApplicationCollections[firewallProfile].Add(
-                            new Tuple<FirewallProfiles, INetFwAuthorizedApplication>(
-                                firewallProfile,
-                                applicationRule.GetCOMObject(firewallProfile)
-                            )
+                            applicationRule.GetCOMObject(firewallProfile)
                         );
                     }
                 }
@@ -67,10 +55,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     if (portRule.Profiles.HasFlag(firewallProfile))
                     {
                         _firewallPortCollections[firewallProfile].Add(
-                            new Tuple<FirewallProfiles, INetFwOpenPort>(
-                                firewallProfile,
-                                portRule.GetCOMObject(firewallProfile)
-                            )
+                            portRule.GetCOMObject(firewallProfile)
                         );
                     }
                 }
@@ -125,9 +110,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                 {
                     if (applicationRule.Profiles.HasFlag(firewallProfile))
                     {
-                        _firewallApplicationCollections[firewallProfile].Remove(
-                            applicationRule.GetCOMKey(firewallProfile)
-                        );
+                        _firewallApplicationCollections[firewallProfile]
+                            .Remove(applicationRule.GetCOMObject(firewallProfile));
                     }
                 }
             }
@@ -137,9 +121,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                 {
                     if (portRule.Profiles.HasFlag(firewallProfile))
                     {
-                        _firewallPortCollections[firewallProfile].Remove(
-                            portRule.GetCOMKey(firewallProfile)
-                        );
+                        _firewallPortCollections[firewallProfile].Remove(portRule.GetCOMObject(firewallProfile));
                     }
                 }
             }
@@ -157,34 +139,35 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         // ReSharper disable once TooManyDeclarations
         public IEnumerator<IRule> GetEnumerator()
         {
-            var services = _firewallServiceCollections.SelectMany(pair => pair.Value).ToArray();
-
             var applicationRules = _firewallApplicationCollections
-                .SelectMany(pair => pair.Value)
-                .GroupBy(t => Tuple.Create(
-                        t.Item2.ProcessImageFileName,
-                        t.Item2.RemoteAddresses,
-                        t.Item2.Scope
+                .SelectMany(pair => pair.Value.Select(rule => new {Profile = pair.Key, Rule = rule}))
+                .GroupBy(
+                    arg => Tuple.Create(
+                        arg.Rule.ProcessImageFileName,
+                        arg.Rule.RemoteAddresses,
+                        arg.Rule.Scope,
+                        arg.Rule.IpVersion
                     )
                 )
                 .Select(
-                    group => new ApplicationRule(group.ToDictionary(t => t.Item1, t => t.Item2))
+                    group => new ApplicationRule(group.ToDictionary(t => t.Profile, t => t.Rule))
                 )
                 .OfType<IRule>();
 
             var portRules = _firewallPortCollections
-                .SelectMany(pair => pair.Value)
+                .SelectMany(pair => pair.Value.Select(rule => new {Profile = pair.Key, Rule = rule}))
                 .GroupBy(
-                    t => Tuple.Create(
-                        t.Item2.Port,
-                        t.Item2.Protocol,
-                        t.Item2.Scope,
-                        t.Item2.RemoteAddresses,
-                        t.Item2.BuiltIn
+                    arg => Tuple.Create(
+                        arg.Rule.Port,
+                        arg.Rule.Protocol,
+                        arg.Rule.Scope,
+                        arg.Rule.RemoteAddresses,
+                        arg.Rule.BuiltIn,
+                        arg.Rule.IpVersion
                     )
                 )
                 .Select(
-                    group => new PortRule(group.ToDictionary(t => t.Item1, t => t.Item2))
+                    group => new PortRule(group.ToDictionary(t => t.Profile, t => t.Rule))
                 )
                 .OfType<IRule>();
 

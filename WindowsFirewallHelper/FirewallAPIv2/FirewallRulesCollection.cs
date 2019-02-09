@@ -7,7 +7,7 @@ using WindowsFirewallHelper.Helpers;
 namespace WindowsFirewallHelper.FirewallAPIv2
 {
     internal class
-        FirewallRulesCollection<TManaged> : COMCollection<INetFwRules, INetFwRule, FirewallRuleCollectionKey, TManaged>
+        FirewallRulesCollection<TManaged> : COMCollection<INetFwRules, INetFwRule, string, TManaged>
         where TManaged : class, IRule
     {
         /// <inheritdoc />
@@ -78,15 +78,39 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         }
 
         /// <inheritdoc />
-        protected override FirewallRuleCollectionKey GetCollectionKey(TManaged managed)
+        protected override string GetCollectionKey(TManaged managed)
         {
-            return new FirewallRuleCollectionKey(ConvertManagedToNative(managed).Name);
+            return ConvertManagedToNative(managed).Name;
         }
 
         /// <inheritdoc />
-        protected override IEnumVARIANT GetEnumVariant(INetFwRules sourceCollection)
+        protected override IEnumVARIANT GetEnumVariant()
         {
-            return sourceCollection.GetEnumeratorVariant();
+            return NativeEnumerable.GetEnumeratorVariant();
+        }
+
+        /// <inheritdoc />
+        protected override void InternalAdd(INetFwRule native)
+        {
+            NativeEnumerable.Add(native);
+        }
+
+        /// <inheritdoc />
+        protected override int InternalCount()
+        {
+            return NativeEnumerable.Count;
+        }
+
+        /// <inheritdoc />
+        protected override INetFwRule InternalItem(string key)
+        {
+            return NativeEnumerable.Item(key);
+        }
+
+        /// <inheritdoc />
+        protected override void InternalRemove(string key)
+        {
+            NativeEnumerable.Remove(key);
         }
     }
 }

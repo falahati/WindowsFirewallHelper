@@ -10,7 +10,6 @@ namespace WindowsFirewallHelper.Helpers
     // ReSharper disable once PossibleInterfaceMemberAmbiguity
     public interface ICOMCollection<in TKey, TValue> : ICollection<TValue>, ICollection
         where TValue : class
-        where TKey : COMCollectionKey
     {
         /// <summary>Gets or sets the element with the specified key.</summary>
         /// <param name="key">The key of the element to get or set.</param>

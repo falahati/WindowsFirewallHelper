@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
@@ -13,34 +12,25 @@ namespace WindowsFirewallHelper.Helpers
         where TCollection : IEnumerable
         where TNative : class
         where TManaged : class
-        where TKey : COMCollectionKey
     {
-        private const string AddMethodName = "Add";
-        private const string CountPropertyName = "Count";
-        private const string ItemMethodName = "Item";
-        private const string RemoveMethodName = "Remove";
+        protected readonly TCollection NativeEnumerable;
 
-        private readonly TCollection _sourceEnumerable;
-        private readonly Type _sourceEnumerableRuntimeType;
-
-        protected COMCollection(TCollection sourceEnumerable)
+        protected COMCollection(TCollection nativeEnumerable)
         {
-            if (sourceEnumerable == null)
+            if (nativeEnumerable == null)
             {
-                throw new ArgumentNullException(nameof(sourceEnumerable));
+                throw new ArgumentNullException(nameof(nativeEnumerable));
             }
 
-            _sourceEnumerableRuntimeType = sourceEnumerable.GetType();
-
-            if (!_sourceEnumerableRuntimeType.IsCOMObject)
+            if (!nativeEnumerable.GetType().IsCOMObject)
             {
                 throw new ArgumentException(
                     "Passed argument is not a valid COM Enumerable object.",
-                    nameof(sourceEnumerable)
+                    nameof(nativeEnumerable)
                 );
             }
 
-            _sourceEnumerable = sourceEnumerable;
+            NativeEnumerable = nativeEnumerable;
         }
 
         /// <inheritdoc />
@@ -62,7 +52,7 @@ namespace WindowsFirewallHelper.Helpers
         /// <inheritdoc cref="ICollection.SyncRoot" />
         object ICollection.SyncRoot
         {
-            get => _sourceEnumerable;
+            get => NativeEnumerable;
         }
 
         /// <inheritdoc />
@@ -86,15 +76,10 @@ namespace WindowsFirewallHelper.Helpers
                 return;
             }
 
+
             try
             {
-                _sourceEnumerableRuntimeType.InvokeMember(
-                    AddMethodName,
-                    BindingFlags.InvokeMethod,
-                    null,
-                    _sourceEnumerable,
-                    new object[] {nativeObject}
-                );
+                InternalAdd(nativeObject);
             }
             catch (COMException e)
             {
@@ -127,9 +112,7 @@ namespace WindowsFirewallHelper.Helpers
             {
                 try
                 {
-                    return (int) _sourceEnumerableRuntimeType.InvokeMember(CountPropertyName, BindingFlags.GetProperty,
-                        null,
-                        _sourceEnumerable, null);
+                    return InternalCount();
                 }
                 catch (COMException e)
                 {
@@ -179,25 +162,13 @@ namespace WindowsFirewallHelper.Helpers
 
                 try
                 {
-                    var result = _sourceEnumerableRuntimeType.InvokeMember(
-                        ItemMethodName,
-                        BindingFlags.InvokeMethod,
-                        null,
-                        _sourceEnumerable,
-                        key.Values
-                    );
+                    var native = InternalItem(key);
 
-                    if (result == null)
+                    if (native == null)
                     {
                         return null;
                     }
 
-                    if (!(result is TNative native))
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(key));
-                    }
-
-                    // ReSharper disable once EventExceptionNotDocumented
                     return ConvertNativeToManaged(native);
                 }
                 catch (COMException e)
@@ -222,13 +193,7 @@ namespace WindowsFirewallHelper.Helpers
 
             try
             {
-                _sourceEnumerableRuntimeType.InvokeMember(
-                    RemoveMethodName,
-                    BindingFlags.InvokeMethod,
-                    null,
-                    _sourceEnumerable,
-                    key.Values
-                );
+                InternalRemove(key);
 
                 return true;
             }
@@ -248,7 +213,7 @@ namespace WindowsFirewallHelper.Helpers
         public virtual IEnumerator<TManaged> GetEnumerator()
         {
             // ReSharper disable once EventExceptionNotDocumented
-            var enumVariant = GetEnumVariant(_sourceEnumerable);
+            var enumVariant = GetEnumVariant();
 
             if (enumVariant == null)
             {
@@ -261,7 +226,10 @@ namespace WindowsFirewallHelper.Helpers
         protected abstract TNative ConvertManagedToNative(TManaged managed);
         protected abstract TManaged ConvertNativeToManaged(TNative native);
         protected abstract TKey GetCollectionKey(TManaged managed);
-
-        protected abstract IEnumVARIANT GetEnumVariant(TCollection sourceCollection);
+        protected abstract IEnumVARIANT GetEnumVariant();
+        protected abstract void InternalAdd(TNative native);
+        protected abstract int InternalCount();
+        protected abstract TNative InternalItem(TKey key);
+        protected abstract void InternalRemove(TKey key);
     }
 }

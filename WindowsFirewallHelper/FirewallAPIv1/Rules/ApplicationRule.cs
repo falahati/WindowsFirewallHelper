@@ -141,6 +141,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             return true;
         }
 
+        public bool Equals(IRule other)
+        {
+            return Equals(other as ApplicationRule);
+        }
 
         /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
@@ -328,7 +332,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <inheritdoc />
         public override bool Equals(object other)
         {
-            return Equals(other as ApplicationRule);
+            return Equals(other as IRule);
         }
 
         /// <inheritdoc />

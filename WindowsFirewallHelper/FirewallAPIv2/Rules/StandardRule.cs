@@ -203,6 +203,11 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public INetFwRule UnderlyingObject { get; }
 
+        public bool Equals(IRule other)
+        {
+            return Equals(other as StandardRule);
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Determines whether the specified<see cref="StandardRule" /> is equal to the current
@@ -653,7 +658,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <param name="obj">The <see cref="T:System.Object" /> to compare with the current <see cref="StandardRule" />. </param>
         public override bool Equals(object obj)
         {
-            return Equals(obj as StandardRule);
+            return Equals(obj as IRule);
         }
 
         /// <inheritdoc />

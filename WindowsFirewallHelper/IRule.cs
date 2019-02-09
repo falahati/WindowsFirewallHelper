@@ -1,9 +1,11 @@
-﻿namespace WindowsFirewallHelper
+﻿using System;
+
+namespace WindowsFirewallHelper
 {
     /// <summary>
     ///     Defines expected properties of a firewall rule
     /// </summary>
-    public interface IRule
+    public interface IRule : IEquatable<IRule>
     {
         /// <summary>
         ///     Gets or sets the action that the rules defines

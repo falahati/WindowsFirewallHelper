@@ -92,6 +92,11 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </summary>
         private Dictionary<FirewallProfiles, INetFwOpenPort> UnderlyingObjects { get; }
 
+        public bool Equals(IRule other)
+        {
+            return Equals(other as PortRule);
+        }
+
         /// <summary>
         ///     Determines whether the specified<see cref="PortRule" /> is equal to the current
         ///     <see cref="PortRule" />.
@@ -351,17 +356,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             return !(left == right);
         }
 
-        /// <summary>
-        ///     Determines whether the specified <see cref="T:System.Object" /> is equal to the current <see cref="PortRule" />.
-        /// </summary>
-        /// <returns>
-        ///     true if the specified <see cref="T:System.Object" /> is equal to the current <see cref="PortRule" />; otherwise,
-        ///     false.
-        /// </returns>
-        /// <param name="obj">The <see cref="T:System.Object" /> to compare with the current <see cref="PortRule" />. </param>
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return Equals(obj as PortRule);
+            return Equals(obj as IRule);
         }
 
         /// <inheritdoc />

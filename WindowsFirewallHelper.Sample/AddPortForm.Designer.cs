@@ -1,6 +1,6 @@
 ﻿namespace WindowsFirewallHelper.Sample
 {
-    partial class EditPortForm
+    partial class AddPortForm
     {
         /// <summary>
         /// Required designer variable.
@@ -40,7 +40,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(12, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(69, 13);
             this.label1.TabIndex = 0;
@@ -49,7 +49,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 36);
+            this.label2.Location = new System.Drawing.Point(12, 43);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(49, 13);
             this.label2.TabIndex = 1;
@@ -57,7 +57,7 @@
             // 
             // nud_port
             // 
-            this.nud_port.Location = new System.Drawing.Point(87, 7);
+            this.nud_port.Location = new System.Drawing.Point(103, 14);
             this.nud_port.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -69,53 +69,52 @@
             0,
             0});
             this.nud_port.Name = "nud_port";
-            this.nud_port.Size = new System.Drawing.Size(123, 20);
+            this.nud_port.Size = new System.Drawing.Size(172, 20);
             this.nud_port.TabIndex = 2;
             this.nud_port.Value = new decimal(new int[] {
-            80,
+            8080,
             0,
             0,
             0});
             // 
             // cb_protocol
             // 
+            this.cb_protocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_protocol.FormattingEnabled = true;
-            this.cb_protocol.Items.AddRange(new object[] {
-            "TCP",
-            "UDP",
-            "ALL"});
-            this.cb_protocol.Location = new System.Drawing.Point(87, 33);
+            this.cb_protocol.Location = new System.Drawing.Point(103, 40);
             this.cb_protocol.Name = "cb_protocol";
-            this.cb_protocol.Size = new System.Drawing.Size(123, 21);
+            this.cb_protocol.Size = new System.Drawing.Size(172, 21);
             this.cb_protocol.TabIndex = 3;
             // 
             // btn_ok
             // 
-            this.btn_ok.Location = new System.Drawing.Point(155, 60);
+            this.btn_ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_ok.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btn_ok.Location = new System.Drawing.Point(197, 67);
             this.btn_ok.Name = "btn_ok";
-            this.btn_ok.Size = new System.Drawing.Size(55, 23);
+            this.btn_ok.Size = new System.Drawing.Size(78, 23);
             this.btn_ok.TabIndex = 4;
             this.btn_ok.Text = "Ok";
             this.btn_ok.UseVisualStyleBackColor = true;
-            this.btn_ok.Click += new System.EventHandler(this.FormSubmit);
             // 
             // btn_cancel
             // 
+            this.btn_cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btn_cancel.Location = new System.Drawing.Point(94, 60);
+            this.btn_cancel.Location = new System.Drawing.Point(113, 67);
             this.btn_cancel.Name = "btn_cancel";
-            this.btn_cancel.Size = new System.Drawing.Size(55, 23);
+            this.btn_cancel.Size = new System.Drawing.Size(78, 23);
             this.btn_cancel.TabIndex = 5;
             this.btn_cancel.Text = "Cancel";
             this.btn_cancel.UseVisualStyleBackColor = true;
             // 
-            // EditPortForm
+            // AddPortForm
             // 
             this.AcceptButton = this.btn_ok;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btn_cancel;
-            this.ClientSize = new System.Drawing.Size(222, 91);
+            this.ClientSize = new System.Drawing.Size(287, 99);
             this.ControlBox = false;
             this.Controls.Add(this.btn_cancel);
             this.Controls.Add(this.btn_ok);
@@ -126,11 +125,11 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "EditPortForm";
+            this.Name = "AddPortForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Port";
+            this.Text = "Add Port Rule";
             this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.nud_port)).EndInit();
             this.ResumeLayout(false);

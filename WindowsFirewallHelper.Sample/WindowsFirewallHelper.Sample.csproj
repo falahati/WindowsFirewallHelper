@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WindowsFirewallHelper.Sample</RootNamespace>
     <AssemblyName>WindowsFirewallHelper.Sample</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -46,11 +46,17 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EditPortForm.cs">
+    <Compile Include="AddPortForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditPortForm.Designer.cs">
-      <DependentUpon>EditPortForm.cs</DependentUpon>
+    <Compile Include="AddPortForm.Designer.cs">
+      <DependentUpon>AddPortForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditRuleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditRuleForm.Designer.cs">
+      <DependentUpon>EditRuleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -60,8 +66,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="EditPortForm.resx">
-      <DependentUpon>EditPortForm.cs</DependentUpon>
+    <EmbeddedResource Include="AddPortForm.resx">
+      <DependentUpon>AddPortForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditRuleForm.resx">
+      <DependentUpon>EditRuleForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -76,6 +85,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

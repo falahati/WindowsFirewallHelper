@@ -12,11 +12,8 @@ namespace WindowsFirewallHelper.NetCoreSample
 
             ConsoleWriter.Default.PrintMessage($"Firewall Version: {FirewallManager.Version}");
             ConsoleWriter.Default.PrintMessage($"Firewall Name: {firewallInstance?.Name ?? "[NULL]"}");
-            ConsoleWriter.Default.PrintMessage(
-                $"Firewall Status: {(firewallInstance?.IsSupported == true ? "Supported" : "NotSupported")}"
-            );
 
-            if (firewallInstance?.IsSupported != true)
+            if (firewallInstance == null)
             {
                 ConsoleWriter.Default.PrintMessage("Press any key to exit.");
                 Console.ReadKey();

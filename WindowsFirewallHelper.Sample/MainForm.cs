@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using WindowsFirewallHelper.FirewallAPIv2.Rules;
 
 namespace WindowsFirewallHelper.Sample
 {
@@ -12,93 +14,9 @@ namespace WindowsFirewallHelper.Sample
             InitializeComponent();
         }
 
-        private void AddApplicationRule(object sender, EventArgs e)
-        {
-            try
-            {
-                if (ofd_app.ShowDialog() == DialogResult.OK)
-                {
-                    var rule = FirewallManager.Instance.CreateApplicationRule(
-                        FirewallManager.Instance.GetProfile().Type, ofd_app.SafeFileName, FirewallAction.Allow,
-                        ofd_app.FileName);
-                    rule.Direction = FirewallDirection.Outbound;
-                    FirewallManager.Instance.Rules.Add(rule);
-                    RefreshTreeView();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void AddPortRule(object sender, EventArgs e)
-        {
-            try
-            {
-                var portDialog = new EditPortForm();
-
-                if (portDialog.ShowDialog() == DialogResult.OK)
-                {
-                    var rule = FirewallManager.Instance.CreatePortRule(
-                        FirewallManager.Instance.GetProfile().Type,
-                        $"Port {portDialog.PortNumber} - Protocol #{portDialog.FirewallProtocol}",
-                        FirewallAction.Allow, portDialog.PortNumber, portDialog.FirewallProtocol);
-                    FirewallManager.Instance.Rules.Add(rule);
-                    RefreshTreeView();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void DeleteRule(object sender, EventArgs e)
-        {
-            try
-            {
-                var rule = treeView.SelectedNode.Tag as IRule;
-
-                if (rule != null)
-                {
-                    FirewallManager.Instance.Rules.Remove(rule);
-                    RefreshTreeView();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void FormLoad(object sender, EventArgs e)
-        {
-            Text =
-                $"{FirewallManager.Instance.Name} ({FirewallManager.Version})";
-            RefreshTreeView();
-        }
-
-        private void ItemClicked(object sender, EventArgs e)
-        {
-            if (treeView.SelectedNode != null)
-            {
-                NodeDiscovery(treeView.SelectedNode);
-            }
-        }
-
-        private void ItemSelected(object sender, TreeViewEventArgs e)
-        {
-            propertyGrid.SelectedObject =
-                !treeView.SelectedNode.Tag.GetType().GetInterfaces().Contains(typeof(IEnumerable))
-                    ? treeView.SelectedNode.Tag
-                    : null;
-            btn_delete.Enabled = treeView.SelectedNode.Tag.GetType().GetInterfaces().Contains(typeof(IRule));
-            btn_port.Enabled = treeView.SelectedNode.Tag is ActiveCollection<IRule>;
-            btn_app.Enabled = treeView.SelectedNode.Tag is ActiveCollection<IRule>;
-        }
-
-        private void NodeDiscovery(TreeNode node)
+        // ReSharper disable once MethodTooLong
+        // ReSharper disable once ExcessiveIndentation
+        private static void NodeDiscovery(TreeNode node)
         {
             var o = node.Tag;
 
@@ -109,7 +27,14 @@ namespace WindowsFirewallHelper.Sample
 
             node.Nodes.Clear();
 
-            if (o.GetType().GetInterfaces().Contains(typeof(IEnumerable)))
+            if (o is ICollection<StandardRule> || o is ICollection<IRule>)
+            {
+                foreach (var item in ((IEnumerable) o).Cast<IRule>().OrderBy(rule => rule.FriendlyName))
+                {
+                    node.Nodes.Add(new TreeNode(item.ToString()) {Tag = item});
+                }
+            }
+            else if (o.GetType().GetInterfaces().Contains(typeof(IEnumerable)))
             {
                 foreach (var item in (IEnumerable) o)
                 {
@@ -131,6 +56,129 @@ namespace WindowsFirewallHelper.Sample
                     }
                 }
             }
+        }
+
+        private void AddApplicationRule(object sender, EventArgs e)
+        {
+            try
+            {
+                var profileType = (treeView.SelectedNode.Tag as IProfile)?.Type;
+
+                if (profileType == null)
+                {
+                    return;
+                }
+
+                if (ofd_app.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+
+                var newAppRule = FirewallManager.Instance.CreateApplicationRule(
+                    profileType.Value,
+                    "!!TETS!! " + Guid.NewGuid().ToString("B"),
+                    FirewallAction.Allow,
+                    ofd_app.FileName
+                );
+
+                newAppRule.Direction = FirewallDirection.Outbound;
+
+                var editDialog = new EditRuleForm(newAppRule);
+
+                if (editDialog.ShowDialog() == DialogResult.OK)
+                {
+                    FirewallManager.Instance.Rules.Add(newAppRule);
+                    RefreshTreeView();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void AddPortRule(object sender, EventArgs e)
+        {
+            try
+            {
+                var profileType = (treeView.SelectedNode.Tag as IProfile)?.Type;
+
+                if (profileType == null)
+                {
+                    return;
+                }
+
+                var addPortDialog = new AddPortForm();
+
+                if (addPortDialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+
+                var newPortRule = FirewallManager.Instance.CreatePortRule(
+                    profileType.Value,
+                    "!!TETS!! " + Guid.NewGuid().ToString("B"),
+                    FirewallAction.Allow,
+                    addPortDialog.PortNumber,
+                    addPortDialog.FirewallProtocol
+                );
+
+                var editDialog = new EditRuleForm(newPortRule);
+
+                if (editDialog.ShowDialog() == DialogResult.OK)
+                {
+                    FirewallManager.Instance.Rules.Add(newPortRule);
+                    RefreshTreeView();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void DeleteRule(object sender, EventArgs e)
+        {
+            try
+            {
+                if (treeView.SelectedNode.Tag is IRule rule)
+                {
+                    FirewallManager.Instance.Rules.Remove(rule);
+                    RefreshTreeView();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void FormLoad(object sender, EventArgs e)
+        {
+            Text =
+                $@"{FirewallManager.Instance.Name} ({FirewallManager.Version})";
+            RefreshTreeView();
+        }
+
+        private void ItemClicked(object sender, EventArgs e)
+        {
+            if (treeView.SelectedNode != null)
+            {
+                NodeDiscovery(treeView.SelectedNode);
+                treeView.SelectedNode.Expand();
+            }
+        }
+
+        private void ItemSelected(object sender, TreeViewEventArgs e)
+        {
+            propertyGrid.SelectedObject =
+                !treeView.SelectedNode.Tag.GetType().GetInterfaces().Contains(typeof(IEnumerable))
+                    ? treeView.SelectedNode.Tag
+                    : null;
+            btn_delete.Enabled = treeView.SelectedNode.Tag.GetType().GetInterfaces().Contains(typeof(IRule));
+            btn_port.Enabled = treeView.SelectedNode.Tag is IProfile;
+            btn_app.Enabled = treeView.SelectedNode.Tag is IProfile;
         }
 
         private void RefreshTreeView()

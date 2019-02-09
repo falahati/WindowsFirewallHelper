@@ -268,7 +268,7 @@ namespace WindowsFirewallHelper.Addresses
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return ToIPAddress().GetHashCode();
+            return base.GetHashCode();
         }
 
         /// <summary>

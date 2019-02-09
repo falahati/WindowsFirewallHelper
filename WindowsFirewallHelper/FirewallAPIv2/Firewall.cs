@@ -10,15 +10,14 @@ using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.FirewallAPIv2
 {
-    /// <inheritdoc />
+    /// <inheritdoc cref="IFirewall" />
     /// <summary>
     ///     Contains properties and methods of Windows Firewall with Advanced Security
     /// </summary>
-    public class Firewall : IFirewall
+    public class Firewall : ThreadedSingleton<Firewall>, IFirewall
     {
-        private static Firewall _instance;
         /// <inheritdoc />
-        private Firewall()
+        public Firewall()
         {
             if (!IsSupported)
             {
@@ -43,11 +42,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public static Firewall Instance
         {
+            get => GetInstance();
+        }
+        {
             get
             {
-                lock (InstanceLock)
                 {
-                    return _instance ?? (_instance = new Firewall());
                 }
             }
         }

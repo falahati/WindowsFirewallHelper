@@ -7,14 +7,13 @@ using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.FirewallAPIv1
 {
+    /// <inheritdoc cref="IFirewall" />
     /// <summary>
     ///     Contains properties and methods of Windows Firewall v1
     /// </summary>
-    public class Firewall : IFirewall
+    public class Firewall : ThreadedSingleton<Firewall>, IFirewall
     {
-        private static Firewall _instance;
-
-        private Firewall()
+        public Firewall()
         {
             if (!IsSupported)
             {
@@ -37,13 +36,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         /// </summary>
         public static Firewall Instance
         {
-            get
-            {
-                lock (InstanceLock)
-                {
-                    return _instance ?? (_instance = new Firewall());
-                }
-            }
+            get => GetInstance();
+        }
+
         public static bool IsSupported
         {
             get => Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false) == null;

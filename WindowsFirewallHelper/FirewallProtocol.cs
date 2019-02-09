@@ -10,84 +10,84 @@ namespace WindowsFirewallHelper
     public class FirewallProtocol : IEquatable<FirewallProtocol>, IEquatable<int>
     {
         /// <summary>
-        ///     Any Protocol
+        ///     Matches both TCP and UDP protocols; only available for FirewallV1 (WinXP)
         /// </summary>
-        public static FirewallProtocol Any = new FirewallProtocol(256);
+        public static readonly FirewallProtocol FirewallV1_TCP_UDP = new FirewallProtocol(256);
 
         /// <summary>
         ///     Generic Routing Encapsulation Protocol
         /// </summary>
-        public static FirewallProtocol GRE = new FirewallProtocol(47);
+        public static readonly FirewallProtocol GRE = new FirewallProtocol(47);
 
         /// <summary>
         ///     Hop-by-Hop Option Protocol
         /// </summary>
-        public static FirewallProtocol HOPOPT = new FirewallProtocol(0);
+        public static readonly FirewallProtocol HOPOPT = new FirewallProtocol(0);
 
         /// <summary>
         ///     Internet Control Message Protocol for IPv4
         /// </summary>
-        public static FirewallProtocol ICMPv4 = new FirewallProtocol(1);
+        public static readonly FirewallProtocol ICMPv4 = new FirewallProtocol(1);
 
         /// <summary>
         ///     Internet Control Message Protocol for IPv6
         /// </summary>
-        public static FirewallProtocol ICMPv6 = new FirewallProtocol(58);
+        public static readonly FirewallProtocol ICMPv6 = new FirewallProtocol(58);
 
         /// <summary>
         ///     Internet Group Management Protocol
         /// </summary>
-        public static FirewallProtocol IGMP = new FirewallProtocol(2);
+        public static readonly FirewallProtocol IGMP = new FirewallProtocol(2);
 
         /// <summary>
         ///     Internet Protocol Version 6
         /// </summary>
-        public static FirewallProtocol IPv6 = new FirewallProtocol(41);
+        public static readonly FirewallProtocol IPv6 = new FirewallProtocol(41);
 
         /// <summary>
         ///     Internet Protocol Version 6 Fragmentation Header
         /// </summary>
-        public static FirewallProtocol IPv6Frag = new FirewallProtocol(44);
+        public static readonly FirewallProtocol IPv6Frag = new FirewallProtocol(44);
 
         /// <summary>
         ///     Internet Protocol Version 6 No Next Header
         /// </summary>
-        public static FirewallProtocol IPv6NoNxt = new FirewallProtocol(59);
+        public static readonly FirewallProtocol IPv6NoNxt = new FirewallProtocol(59);
 
         /// <summary>
         ///     Internet Protocol Version 6 Options Header
         /// </summary>
-        public static FirewallProtocol IPv6Opts = new FirewallProtocol(60);
+        public static readonly FirewallProtocol IPv6Opts = new FirewallProtocol(60);
 
         /// <summary>
         ///     Internet Protocol Version 6 Route Header
         /// </summary>
-        public static FirewallProtocol IPv6Route = new FirewallProtocol(43);
+        public static readonly FirewallProtocol IPv6Route = new FirewallProtocol(43);
 
         /// <summary>
         ///     Layer 2 Tunneling Protocol
         /// </summary>
-        public static FirewallProtocol L2TP = new FirewallProtocol(115);
+        public static readonly FirewallProtocol L2TP = new FirewallProtocol(115);
 
         /// <summary>
         ///     Pragmatic General Multicast Protocol
         /// </summary>
-        public static FirewallProtocol PGM = new FirewallProtocol(113);
+        public static readonly FirewallProtocol PGM = new FirewallProtocol(113);
 
         /// <summary>
         ///     Transmission Control Protocol
         /// </summary>
-        public static FirewallProtocol TCP = new FirewallProtocol(6);
+        public static readonly FirewallProtocol TCP = new FirewallProtocol(6);
 
         /// <summary>
         ///     User Datagram Protocol
         /// </summary>
-        public static FirewallProtocol UDP = new FirewallProtocol(17);
+        public static readonly FirewallProtocol UDP = new FirewallProtocol(17);
 
         /// <summary>
         ///     Virtual Router Redundancy Protocol
         /// </summary>
-        public static FirewallProtocol VRRP = new FirewallProtocol(112);
+        public static readonly FirewallProtocol VRRP = new FirewallProtocol(112);
 
         /// <summary>
         ///     Creates a new <see cref="FirewallProtocol" /> based on the protocol number

@@ -11,7 +11,7 @@ namespace WindowsFirewallHelper
     {
         public FirewallProduct(string name)
         {
-            if (IsSupported)
+            if (!IsSupported)
             {
                 throw new NotSupportedException();
             }
@@ -79,7 +79,7 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Returns the list of all registered third party firewalls management instances
         /// </summary>
-        public static ICollection<FirewallProduct> ThirdPartyFirewalls
+        public static ICollection<FirewallProduct> RegisteredProducts
         {
             get => new FirewallProductsCollection(GetProducts());
         }

@@ -282,7 +282,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         ///     The active firewall profile object implementing <see cref="IProfile" /> interface or null if no firewall
         ///     profile is currently active
         /// </returns>
-        public IProfile GetProfile()
+        public IProfile GetActiveProfile()
         {
             if (!IsSupported)
             {

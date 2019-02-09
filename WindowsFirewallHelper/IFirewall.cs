@@ -113,6 +113,6 @@ namespace WindowsFirewallHelper
         ///     The active firewall profile object implementing <see cref="IProfile" /> interface or null if no firewall
         ///     profile is currently active
         /// </returns>
-        IProfile GetProfile();
+        IProfile GetActiveProfile();
     }
 }

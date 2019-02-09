@@ -226,7 +226,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         ///     The asked profile is not
         ///     supported with this class
         /// </exception>
-        IProfile IFirewall.GetProfile()
+        IProfile IFirewall.GetActiveProfile()
         {
             return GetProfile();
         }

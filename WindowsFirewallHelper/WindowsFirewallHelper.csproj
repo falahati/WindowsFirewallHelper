@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2;net4</TargetFrameworks>
     <PackageId>WindowsFirewallHelper</PackageId>
     <Version>1.6.0.33</Version>
     <Authors>Soroush Falahati</Authors>
@@ -15,10 +15,9 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <Copyright>Copyright (c) 2016 Soroush Falahati</Copyright>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <Title>Windows Firewall Helper (Win XP+ - .Net 4.5)</Title>
+    <Title>Windows Firewall Helper (Win XP+)</Title>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference PrivateAssets="all" Include="MSBump" Version="2.3.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

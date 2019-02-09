@@ -8,6 +8,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFirewallHelper.Sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsFirewallHelper.NetCoreSample", "WindowsFirewallHelper.NetCoreSample\WindowsFirewallHelper.NetCoreSample.csproj", "{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{741FC1E3-8A15-401E-BBA9-EFFF09F50036}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+		screenshot.jpg = screenshot.jpg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

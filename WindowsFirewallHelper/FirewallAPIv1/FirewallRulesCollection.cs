@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv1.COMCollectionProxy;
@@ -9,7 +8,6 @@ using WindowsFirewallHelper.FirewallAPIv1.Rules;
 
 namespace WindowsFirewallHelper.FirewallAPIv1
 {
-    
     public class FirewallRulesCollection : ICollection<IRule>
     {
         private readonly Dictionary<FirewallProfiles, COMApplicationCollection> _firewallApplicationCollections;
@@ -21,9 +19,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             _firewallPortCollections = profiles.ToDictionary(
                 profile => profile.Type,
                 profile => new COMPortCollection(
-                    profile.UnderlyingObject.GloballyOpenPorts, 
+                    profile.UnderlyingObject.GloballyOpenPorts,
                     profile.Type
-                    )
+                )
             );
             _firewallApplicationCollections = profiles.ToDictionary(
                 profile => profile.Type,

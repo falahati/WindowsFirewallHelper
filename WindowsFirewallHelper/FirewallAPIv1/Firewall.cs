@@ -16,9 +16,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1
 
         private Firewall()
         {
-            if (Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false) == null)
+            if (!IsSupported)
             {
-                return;
+                throw new NotSupportedException();
             }
 
             UnderlyingObject = (INetFwMgr) Activator.CreateInstance(
@@ -44,6 +44,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     return _instance ?? (_instance = new Firewall());
                 }
             }
+        public static bool IsSupported
+        {
+            get => Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false) == null;
+        }
 
         public FirewallProfile[] Profiles { get; }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using FirewallVersion2 = WindowsFirewallHelper.FirewallAPIv2.Firewall;
 using FirewallVersion1 = WindowsFirewallHelper.FirewallAPIv1.Firewall;
 using FirewallVersion2Rules = WindowsFirewallHelper.FirewallAPIv2.Rules;
@@ -12,8 +11,6 @@ namespace WindowsFirewallHelper
     // ReSharper disable once HollowTypeName
     public static class FirewallManager
     {
-        private static readonly List<IFirewall> ThirdPartyFirewallsBackField = new List<IFirewall>();
-
         /// <summary>
         ///     Returns a instance of the active firewall
         /// </summary>
@@ -31,17 +28,6 @@ namespace WindowsFirewallHelper
                     case APIVersion.FirewallAPIv2Win8:
 
                         return FirewallVersion2.Instance;
-                    case APIVersion.ThirdParty:
-
-                        foreach (var thirdPartyFirewall in ThirdPartyFirewallsBackField)
-                        {
-                            if (thirdPartyFirewall.IsSupported)
-                            {
-                                return thirdPartyFirewall;
-                            }
-                        }
-
-                        break;
                 }
 
                 throw new NotSupportedException();
@@ -53,7 +39,7 @@ namespace WindowsFirewallHelper
         /// </summary>
         public static IFirewall[] ThirdPartyFirewalls
         {
-            get => ThirdPartyFirewallsBackField.ToArray();
+            get => new IFirewall[0];
         }
 
         /// <summary>
@@ -63,15 +49,7 @@ namespace WindowsFirewallHelper
         {
             get
             {
-                foreach (var thirdPartyFirewall in ThirdPartyFirewallsBackField)
-                {
-                    if (thirdPartyFirewall.IsSupported)
-                    {
-                        return APIVersion.ThirdParty;
-                    }
-                }
-
-                if (FirewallVersion2.Instance.IsSupported)
+                if (FirewallVersion2.IsSupported)
                 {
                     if (FirewallVersion2Rules.StandardRuleWin8.IsSupported)
                     {
@@ -86,7 +64,7 @@ namespace WindowsFirewallHelper
                     return APIVersion.FirewallAPIv2;
                 }
 
-                if (FirewallVersion1.Instance.IsSupported)
+                if (FirewallVersion1.IsSupported)
                 {
                     return APIVersion.FirewallAPIv1;
                 }
@@ -101,10 +79,6 @@ namespace WindowsFirewallHelper
         /// <param name="firewall">An instance of the firewall management class</param>
         public static void RegisterFirewall(IFirewall firewall)
         {
-            if (!ThirdPartyFirewallsBackField.Contains(firewall))
-            {
-                ThirdPartyFirewallsBackField.Add(firewall);
-            }
         }
     }
 }

@@ -17,14 +17,14 @@ namespace WindowsFirewallHelper.FirewallAPIv2
     public class Firewall : IFirewall
     {
         private static Firewall _instance;
-        private static readonly object InstanceLock = new object();
-
         /// <inheritdoc />
         private Firewall()
         {
-            if (Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2", false) != null)
+            if (!IsSupported)
             {
+                throw new NotSupportedException();
             }
+
             UnderlyingObject = (INetFwPolicy2) Activator.CreateInstance(
                 Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2")
             );
@@ -277,13 +277,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             return null;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets a Boolean value showing if the firewall is supported in this environment.
         /// </summary>
-        public bool IsSupported
+        public static bool IsSupported
         {
-            get => UnderlyingObject != null;
+            get => Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2", false) != null;
         }
 
         /// <inheritdoc />

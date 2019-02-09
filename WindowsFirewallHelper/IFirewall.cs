@@ -8,11 +8,6 @@ namespace WindowsFirewallHelper
     public interface IFirewall
     {
         /// <summary>
-        ///     Gets a Boolean value showing if the firewall is supported in this environment.
-        /// </summary>
-        bool IsSupported { get; }
-
-        /// <summary>
         ///     Gets the name of the firewall
         /// </summary>
         string Name { get; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceProcess;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv2.Rules;
 using WindowsFirewallHelper.Helpers;
@@ -68,6 +69,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
                 return (FirewallModifyStatePolicy) UnderlyingObject.LocalPolicyModifyState;
             }
+        }
+        public static bool IsServiceRunning
+        {
+            get => new ServiceController("MpsSvc").Status == ServiceControllerStatus.Running;
         }
 
         internal INetFwPolicy2 UnderlyingObject { get; }

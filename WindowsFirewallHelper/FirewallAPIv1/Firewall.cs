@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceProcess;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv1.Rules;
 using WindowsFirewallHelper.Helpers;
@@ -42,6 +43,11 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         public static bool IsSupported
         {
             get => Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false) == null;
+        }
+
+        public static bool IsServiceRunning
+        {
+            get => new ServiceController("SharedAccess").Status == ServiceControllerStatus.Running;
         }
 
         public FirewallProfile[] Profiles { get; }

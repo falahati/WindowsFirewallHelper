@@ -22,6 +22,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <Reference Condition="'$(TargetFramework)'=='net4'" Include="System.ServiceProcess"></Reference>
+    <PackageReference Condition="'$(TargetFramework)'=='netstandard2'" Include="System.ServiceProcess.ServiceController" Version="4.5.0"></PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.png">

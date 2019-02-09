@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection;
 
 namespace WindowsFirewallHelper
 {
@@ -235,9 +237,29 @@ namespace WindowsFirewallHelper
         /// <returns>
         ///     A string that represents the current <see cref="FirewallProtocol" />.
         /// </returns>
+        // ReSharper disable once TooManyDeclarations
         public override string ToString()
         {
-            return ProtocolNumber.ToString();
+            try
+            {
+                var knownNames = typeof(FirewallProtocol).GetFields(BindingFlags.Static | BindingFlags.Public)
+                    .Where(info => info.FieldType == typeof(FirewallProtocol))
+                    .ToDictionary(
+                        info => ((FirewallProtocol) info.GetValue(null)).ProtocolNumber,
+                        info => info.Name
+                    );
+
+                if (knownNames.ContainsKey(ProtocolNumber))
+                {
+                    return knownNames[ProtocolNumber];
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return $"Protocol #{ProtocolNumber}";
         }
     }
 }

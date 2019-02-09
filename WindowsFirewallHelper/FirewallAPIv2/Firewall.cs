@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv2.Rules;
 using WindowsFirewallHelper.Helpers;
@@ -16,22 +19,22 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         private static Firewall _instance;
         private static readonly object InstanceLock = new object();
 
-        private readonly ActiveCollection<IRule> _rules = new ActiveCollection<IRule>();
-
         /// <inheritdoc />
         private Firewall()
         {
             if (Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2", false) != null)
             {
-                UnderlyingObject =
-                    (INetFwPolicy2) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2"));
-                Profiles = new IProfile[]
-                {
-                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_DOMAIN),
-                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PRIVATE),
-                    new FirewallProfile(UnderlyingObject, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PUBLIC)
-                };
             }
+            UnderlyingObject = (INetFwPolicy2) Activator.CreateInstance(
+                Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2")
+            );
+
+            Profiles = new IProfile[]
+            {
+                new FirewallProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_DOMAIN),
+                new FirewallProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PRIVATE),
+                new FirewallProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PUBLIC)
+            };
         }
 
 
@@ -77,17 +80,26 @@ namespace WindowsFirewallHelper.FirewallAPIv2
 
             if (StandardRuleWin8.IsSupported)
             {
-                return new StandardRuleWin8(name, filename, action, FirewallDirection.Inbound, profiles) { Protocol = protocol };
+                return new StandardRuleWin8(name, filename, action, FirewallDirection.Inbound, profiles)
+                {
+                    Protocol = protocol
+                };
             }
 
             if (StandardRuleWin7.IsSupported)
             {
-                return new StandardRuleWin7(name, filename, action, FirewallDirection.Inbound, profiles) { Protocol = protocol };
+                return new StandardRuleWin7(name, filename, action, FirewallDirection.Inbound, profiles)
+                {
+                    Protocol = protocol
+                };
             }
 
             if (StandardRule.IsSupported)
             {
-                return new StandardRule(name, filename, action, FirewallDirection.Inbound, profiles) { Protocol = protocol };
+                return new StandardRule(name, filename, action, FirewallDirection.Inbound, profiles)
+                {
+                    Protocol = protocol
+                };
             }
 
             throw new NotSupportedException();
@@ -290,75 +302,24 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         public IProfile[] Profiles { get; }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the list of all registered rules of the firewall
-        /// </summary>
-        public IList<IRule> Rules
+        ICollection<IRule> IFirewall.Rules
         {
             get
             {
-                SyncRules();
-
-                return _rules;
+                return new FirewallRulesCollection<IRule>(UnderlyingObject.Rules);
             }
         }
 
-        private void RulesOnItemsModified(object sender, ActiveCollectionChangedEventArgs<IRule> e)
+        public ICollection<StandardRule> Rules
         {
-            lock (_rules)
+            get
             {
-                if (e.ActionType == ActiveCollectionChangeType.Added)
-                {
-                    var rule = e.Item as StandardRule;
-
-                    if (rule != null)
-                    {
-                        UnderlyingObject.Rules.Add(rule.UnderlyingObject);
-                    }
-                }
-                else if (e.ActionType == ActiveCollectionChangeType.Removed)
-                {
-                    var rule = e.Item as StandardRule;
-
-                    if (rule != null)
-                    {
-                        UnderlyingObject.Rules.Remove(rule.UnderlyingObject.Name);
-                    }
-                }
+                return new FirewallRulesCollection<StandardRule>(UnderlyingObject.Rules);
             }
-
-            SyncRules();
         }
 
-        // ReSharper disable once ExcessiveIndentation
-        private void SyncRules()
         {
-            lock (_rules)
             {
-                var rules = UnderlyingObject
-                    .Rules
-                    .GetEnumeratorVariant()
-                    .ToEnumerable<INetFwRule>()
-                    .Select(rule =>
-                    {
-                        switch (rule)
-                        {
-                            case INetFwRule3 rule3:
-
-                                return new StandardRuleWin8(rule3);
-                            case INetFwRule2 rule2:
-
-                                return new StandardRuleWin7(rule2);
-                            default:
-
-                                return new StandardRule(rule);
-                        }
-                    })
-                    .Cast<IRule>();
-
-                _rules.ItemsModified -= RulesOnItemsModified;
-                _rules.Sync(rules.ToArray());
-                _rules.ItemsModified += RulesOnItemsModified;
             }
         }
     }

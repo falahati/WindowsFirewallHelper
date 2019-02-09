@@ -11,22 +11,22 @@ namespace WindowsFirewallHelper.FirewallAPIv2
     {
         private readonly NET_FW_PROFILE_TYPE2 _profile;
 
-        internal FirewallProfile(INetFwPolicy2 underlyingObject, NET_FW_PROFILE_TYPE2 profile)
+        internal FirewallProfile(Firewall firewall, NET_FW_PROFILE_TYPE2 profile)
         {
             _profile = profile;
-            UnderlyingObject = underlyingObject;
+            Firewall = firewall;
         }
 
-        internal INetFwPolicy2 UnderlyingObject { get; }
-
+        private Firewall Firewall { get; }
+        
         /// <inheritdoc />
         /// <summary>
         ///     Gets or sets a Boolean value that blocks all inbound traffic completely regardless of any rules in this profile
         /// </summary>
         public bool BlockAllInboundTraffic
         {
-            get => UnderlyingObject.get_BlockAllInboundTraffic(_profile);
-            set => UnderlyingObject.set_BlockAllInboundTraffic(_profile, value);
+            get => Firewall.UnderlyingObject.get_BlockAllInboundTraffic(_profile);
+            set => Firewall.UnderlyingObject.set_BlockAllInboundTraffic(_profile, value);
         }
 
         /// <inheritdoc />
@@ -35,10 +35,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public FirewallAction DefaultInboundAction
         {
-            get => UnderlyingObject.get_DefaultInboundAction(_profile) == NET_FW_ACTION.NET_FW_ACTION_ALLOW
+            get => Firewall.UnderlyingObject.get_DefaultInboundAction(_profile) == NET_FW_ACTION.NET_FW_ACTION_ALLOW
                 ? FirewallAction.Allow
                 : FirewallAction.Block;
-            set => UnderlyingObject.set_DefaultInboundAction(
+            set => Firewall.UnderlyingObject.set_DefaultInboundAction(
                 _profile,
                 value == FirewallAction.Allow
                     ? NET_FW_ACTION.NET_FW_ACTION_ALLOW
@@ -52,10 +52,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public FirewallAction DefaultOutboundAction
         {
-            get => UnderlyingObject.get_DefaultOutboundAction(_profile) == NET_FW_ACTION.NET_FW_ACTION_ALLOW
+            get => Firewall.UnderlyingObject.get_DefaultOutboundAction(_profile) == NET_FW_ACTION.NET_FW_ACTION_ALLOW
                 ? FirewallAction.Allow
                 : FirewallAction.Block;
-            set => UnderlyingObject.set_DefaultOutboundAction(
+            set => Firewall.UnderlyingObject.set_DefaultOutboundAction(
                 _profile,
                 value == FirewallAction.Allow
                     ? NET_FW_ACTION.NET_FW_ACTION_ALLOW
@@ -69,8 +69,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public bool Enable
         {
-            get => UnderlyingObject.get_FirewallEnabled(_profile);
-            set => UnderlyingObject.set_FirewallEnabled(_profile, value);
+            get => Firewall.UnderlyingObject.get_FirewallEnabled(_profile);
+            set => Firewall.UnderlyingObject.set_FirewallEnabled(_profile, value);
         }
 
         /// <inheritdoc />
@@ -79,10 +79,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public bool IsActive
         {
-            get => (NET_FW_PROFILE_TYPE2) UnderlyingObject.CurrentProfileTypes ==
+            get => (NET_FW_PROFILE_TYPE2)Firewall.UnderlyingObject.CurrentProfileTypes ==
                    NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_ALL ||
                    // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-                   ((NET_FW_PROFILE_TYPE2) UnderlyingObject.CurrentProfileTypes & _profile) == _profile;
+                   ((NET_FW_PROFILE_TYPE2)Firewall.UnderlyingObject.CurrentProfileTypes & _profile) == _profile;
         }
 
         /// <inheritdoc />
@@ -91,8 +91,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public bool ShowNotifications
         {
-            get => !UnderlyingObject.get_NotificationsDisabled(_profile);
-            set => UnderlyingObject.set_NotificationsDisabled(_profile, !value);
+            get => !Firewall.UnderlyingObject.get_NotificationsDisabled(_profile);
+            set => Firewall.UnderlyingObject.set_NotificationsDisabled(_profile, !value);
         }
 
         /// <inheritdoc />
@@ -119,8 +119,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public bool UnicastResponsesToMulticastBroadcast
         {
-            get => !UnderlyingObject.get_UnicastResponsesToMulticastBroadcastDisabled(_profile);
-            set => UnderlyingObject.set_UnicastResponsesToMulticastBroadcastDisabled(_profile, !value);
+            get => !Firewall.UnderlyingObject.get_UnicastResponsesToMulticastBroadcastDisabled(_profile);
+            set => Firewall.UnderlyingObject.set_UnicastResponsesToMulticastBroadcastDisabled(_profile, !value);
         }
 
         /// <summary>

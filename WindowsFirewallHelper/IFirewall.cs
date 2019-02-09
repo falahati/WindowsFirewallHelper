@@ -25,7 +25,7 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Gets the list of all registered rules of the firewall
         /// </summary>
-        IList<IRule> Rules { get; }
+        ICollection<IRule> Rules { get; }
 
 
         /// <summary>

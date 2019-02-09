@@ -94,8 +94,13 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Description
         {
-            get => NativeHelper.ResolveStringResource(UnderlyingObject.Description);
+            get => UnderlyingObject.Description;
             set => UnderlyingObject.Description = value;
+        }
+
+        public string FriendlyDescription
+        {
+            get => NativeHelper.ResolveStringResource(Description);
         }
 
         /// <summary>
@@ -112,8 +117,16 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string Grouping
         {
-            get => NativeHelper.ResolveStringResource(UnderlyingObject.Grouping);
+            get => UnderlyingObject.Grouping;
             set => UnderlyingObject.Grouping = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the rule grouping string
+        /// </summary>
+        public string FriendlyGrouping
+        {
+            get => NativeHelper.ResolveStringResource(Grouping);
         }
 
         /// <summary>

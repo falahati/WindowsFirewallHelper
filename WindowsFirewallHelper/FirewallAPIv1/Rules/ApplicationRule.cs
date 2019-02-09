@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using WindowsFirewallHelper.Addresses;
 using WindowsFirewallHelper.COMInterop;
+using WindowsFirewallHelper.FirewallAPIv1.COMCollectionProxy;
 using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.FirewallAPIv1.Rules
@@ -12,30 +14,46 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
     /// </summary>
     public class ApplicationRule : IRule, IEquatable<ApplicationRule>
     {
-        private FirewallProfiles _profiles;
-
         /// <summary>
         ///     Creates a new application rule for Windows Firewall v1
         /// </summary>
         /// <param name="name">Name of the rule</param>
         /// <param name="processAddress">Address of the executable file</param>
-        /// <param name="profile">The profile that this rule belongs to</param>
-        public ApplicationRule(string name, string processAddress, FirewallProfiles profile)
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        public ApplicationRule(string name, string processAddress, FirewallProfiles profiles)
         {
-            UnderlyingObject = (INetFwAuthorizedApplication) Activator.CreateInstance(
-                Type.GetTypeFromProgID(@"HNetCfg.FwAuthorizedApplication"));
+            if (EnumHelper.HasFlag(profiles, FirewallProfiles.Public))
+            {
+                throw new NotSupportedException("Public profile is not supported.");
+            }
+
+            foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
+            {
+                if (profiles.HasFlag(profile))
+                {
+                    UnderlyingObjects.Add(
+                        profile,
+                        (INetFwAuthorizedApplication) Activator.CreateInstance(
+                            Type.GetTypeFromProgID(@"HNetCfg.FwAuthorizedApplication"))
+                    );
+                }
+            }
+
+            if (UnderlyingObjects.Count == 0)
+            {
+                throw new ArgumentException("At least one profile is required.", nameof(profiles));
+            }
+
             Name = name;
             ExecutableAddress = processAddress;
             IsEnable = true;
             Scope = FirewallScope.All;
-            Profiles = profile;
             IsEnable = true;
         }
 
-        internal ApplicationRule(INetFwAuthorizedApplication application, FirewallProfiles profile)
+        internal ApplicationRule(Dictionary<FirewallProfiles, INetFwAuthorizedApplication> authorizedApplications)
         {
-            UnderlyingObject = application;
-            _profiles = profile;
+            UnderlyingObjects = authorizedApplications;
         }
 
         /// <summary>
@@ -43,8 +61,14 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </summary>
         public string ExecutableAddress
         {
-            get => UnderlyingObject.ProcessImageFileName;
-            set => UnderlyingObject.ProcessImageFileName = value;
+            get => UnderlyingObjects.Values.First().ProcessImageFileName;
+            set
+            {
+                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                {
+                    authorizedApplication.ProcessImageFileName = value;
+                }
+            }
         }
 
         /// <summary>
@@ -55,10 +79,22 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             get => Type.GetTypeFromProgID(@"HNetCfg.FwAuthorizedApplication") != null;
         }
 
+        public FirewallProfiles Profiles
+        {
+            get
+            {
+                return UnderlyingObjects.Keys.ToArray()
+                    .Aggregate(
+                        (FirewallProfiles) 0,
+                        (profiles, profile) => profiles & profile
+                    );
+            }
+        }
+
         /// <summary>
         ///     Returns the underlying Windows Firewall Object
         /// </summary>
-        public INetFwAuthorizedApplication UnderlyingObject { get; }
+        private Dictionary<FirewallProfiles, INetFwAuthorizedApplication> UnderlyingObjects { get; }
 
         /// <summary>
         ///     Determines whether the specified<see cref="ApplicationRule" /> is equal to the current
@@ -81,14 +117,34 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                 return true;
             }
 
-            return Profiles == other.Profiles &&
-                   string.Equals(UnderlyingObject.ProcessImageFileName, other.UnderlyingObject.ProcessImageFileName);
+            if (UnderlyingObjects.Count != other.UnderlyingObjects.Count)
+            {
+                return false;
+            }
+
+            if (!UnderlyingObjects.Keys.SequenceEqual(other.UnderlyingObjects.Keys))
+            {
+                return false;
+            }
+
+            foreach (var profile in UnderlyingObjects.Keys)
+            {
+                var thisPort = UnderlyingObjects[profile];
+                var otherPort = other.UnderlyingObjects[profile];
+
+                if (!string.Equals(thisPort.ProcessImageFileName, otherPort.ProcessImageFileName))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
 
         /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
-        public FirewallAction Action
+        FirewallAction IRule.Action
         {
             get => FirewallAction.Allow;
             set => throw new FirewallAPIv1NotSupportedException();
@@ -97,43 +153,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
 
         /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
-        public FirewallDirection Direction
+        FirewallDirection IRule.Direction
         {
             get => FirewallDirection.Inbound;
-            set => throw new FirewallAPIv1NotSupportedException();
-        }
-
-
-        /// <inheritdoc />
-        public bool IsEnable
-        {
-            get => UnderlyingObject.Enabled;
-            set => UnderlyingObject.Enabled = value;
-        }
-
-
-        /// <inheritdoc />
-        /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
-        public IAddress[] LocalAddresses
-        {
-            get => new IAddress[] {SingleIP.Any};
-            set => throw new FirewallAPIv1NotSupportedException();
-        }
-
-
-        /// <inheritdoc />
-        /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
-        public ushort[] LocalPorts
-        {
-            get => new ushort[0];
-            set => throw new FirewallAPIv1NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
-        public FirewallPortType LocalPortType
-        {
-            get => FirewallPortType.All;
             set => throw new FirewallAPIv1NotSupportedException();
         }
 
@@ -143,52 +165,16 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             get => NativeHelper.ResolveStringResource(Name);
         }
 
-        /// <inheritdoc />
-        public string Name
-        {
-            get => UnderlyingObject.Name;
-            set => UnderlyingObject.Name = value;
-        }
 
         /// <inheritdoc />
-        /// <exception cref="NotSupportedException">Public profile or multiple profile registration is not supported</exception>
-        public FirewallProfiles Profiles
+        public bool IsEnable
         {
-            get => _profiles;
+            get => UnderlyingObjects.Values.All(port => port.Enabled);
             set
             {
-                if (EnumHelper.HasFlag(value, FirewallProfiles.Public))
+                foreach (var authorizedApplication in UnderlyingObjects.Values)
                 {
-                    throw new NotSupportedException("Public profile is not supported.");
-                }
-
-                if (value != FirewallProfiles.Private && value != FirewallProfiles.Domain)
-                {
-                    throw new NotSupportedException("Multiple profile per each rule is not supported.");
-                }
-
-                var rules = Firewall.Instance.Rules;
-                var rulesArray = rules.ToArray();
-
-                if (_profiles != 0 && value != _profiles && rulesArray.Contains(this))
-                {
-                    foreach (var rule in rulesArray)
-                    {
-                        if (Equals(rule) ||
-                            string.IsNullOrEmpty(ExecutableAddress?.Trim()) &&
-                            string.Equals((rule as ApplicationRule)?.ExecutableAddress, ExecutableAddress,
-                                StringComparison.OrdinalIgnoreCase))
-                        {
-                            rules.Remove(rule);
-                        }
-                    }
-
-                    _profiles = value;
-                    rules.Add(this);
-                }
-                else
-                {
-                    _profiles = value;
+                    authorizedApplication.Enabled = value;
                 }
             }
         }
@@ -196,7 +182,56 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
 
         /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
-        public FirewallProtocol Protocol
+        IAddress[] IRule.LocalAddresses
+        {
+            get => new IAddress[] {SingleIP.Any};
+            set => throw new FirewallAPIv1NotSupportedException();
+        }
+
+
+        /// <inheritdoc />
+        /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
+        ushort[] IRule.LocalPorts
+        {
+            get => new ushort[0];
+            set => throw new FirewallAPIv1NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
+        FirewallPortType IRule.LocalPortType
+        {
+            get => FirewallPortType.All;
+            set => throw new FirewallAPIv1NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        public string Name
+        {
+            get => UnderlyingObjects.Values.First().Name;
+            set
+            {
+                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                {
+                    authorizedApplication.Name = value;
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        /// <exception cref="FirewallAPIv1NotSupportedException">Changing the profile of a rule is not supported in FirewallAPIv1.</exception>
+        FirewallProfiles IRule.Profiles
+        {
+            get => Profiles;
+            set => throw new FirewallAPIv1NotSupportedException(
+                "Changing the profile of a rule is not supported in FirewallAPIv1. Consider creating another rule."
+            );
+        }
+
+
+        /// <inheritdoc />
+        /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
+        FirewallProtocol IRule.Protocol
         {
             get => FirewallProtocol.Any;
             set => throw new FirewallAPIv1NotSupportedException();
@@ -206,14 +241,23 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <inheritdoc />
         public IAddress[] RemoteAddresses
         {
-            get => AddressHelper.StringToAddresses(UnderlyingObject.RemoteAddresses);
-            set => UnderlyingObject.RemoteAddresses = AddressHelper.AddressesToString(value);
+            get => UnderlyingObjects.Values
+                .SelectMany(application => AddressHelper.StringToAddresses(application.RemoteAddresses))
+                .Distinct()
+                .ToArray();
+            set
+            {
+                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                {
+                    authorizedApplication.RemoteAddresses = AddressHelper.AddressesToString(value);
+                }
+            }
         }
 
 
         /// <inheritdoc />
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
-        public ushort[] RemotePorts
+        ushort[] IRule.RemotePorts
         {
             get => new ushort[0];
             set => throw new FirewallAPIv1NotSupportedException();
@@ -223,7 +267,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <inheritdoc />
         public FirewallScope Scope
         {
-            get => UnderlyingObject.Scope == NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET
+            get => UnderlyingObjects.Values.First().Scope == NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET
                 ? FirewallScope.LocalSubnet
                 : FirewallScope.All;
             set
@@ -236,12 +280,24 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                 if (value == FirewallScope.LocalSubnet)
                 {
                     RemoteAddresses = new IAddress[] {new LocalSubnet()};
-                    UnderlyingObject.Scope = NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET;
+
+                    foreach (var authorizedApplication in UnderlyingObjects.Values)
+                    {
+                        authorizedApplication.Scope = NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET;
+                    }
+                }
+                else if (value == FirewallScope.All)
+                {
+                    RemoteAddresses = new IAddress[] {SingleIP.Any};
+
+                    foreach (var authorizedApplication in UnderlyingObjects.Values)
+                    {
+                        authorizedApplication.Scope = NET_FW_SCOPE.NET_FW_SCOPE_ALL;
+                    }
                 }
                 else
                 {
-                    RemoteAddresses = new IAddress[] {SingleIP.Any};
-                    UnderlyingObject.Scope = NET_FW_SCOPE.NET_FW_SCOPE_ALL;
+                    throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -269,40 +325,47 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             return !(left == right);
         }
 
-        /// <summary>
-        ///     Determines whether the specified <see cref="T:System.Object" /> is equal to the current
-        ///     <see cref="ApplicationRule" />.
-        /// </summary>
-        /// <returns>
-        ///     true if the specified <see cref="T:System.Object" /> is equal to the current <see cref="ApplicationRule" />;
-        ///     otherwise, false.
-        /// </returns>
-        /// <param name="other">The <see cref="T:System.Object" /> to compare with the current <see cref="ApplicationRule" />. </param>
+        /// <inheritdoc />
         public override bool Equals(object other)
         {
             return Equals(other as ApplicationRule);
         }
 
-        /// <summary>
-        ///     Serves as a hash function for a particular type.
-        /// </summary>
-        /// <returns>
-        ///     A hash code for the current <see cref="ApplicationRule" />.
-        /// </returns>
+        /// <inheritdoc />
         public override int GetHashCode()
         {
-            return UnderlyingObject?.GetHashCode() ?? 0;
+            unchecked
+            {
+                return UnderlyingObjects.Values.Aggregate(0, (hashCode, port) => hashCode + port.GetHashCode());
+            }
         }
 
-        /// <summary>
-        ///     Returns a string that represents the current <see cref="ApplicationRule" /> object.
-        /// </summary>
-        /// <returns>
-        ///     A string that represents the current <see cref="ApplicationRule" /> object.
-        /// </returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             return FriendlyName;
+        }
+
+        // ReSharper disable once FlagArgument
+        public INetFwAuthorizedApplication GetCOMObject(FirewallProfiles profile)
+        {
+            if (UnderlyingObjects.ContainsKey(profile))
+            {
+                return UnderlyingObjects[profile];
+            }
+
+            return null;
+        }
+
+        // ReSharper disable once FlagArgument
+        internal COMApplicationCollectionKey GetCOMKey(FirewallProfiles profile)
+        {
+            if (UnderlyingObjects.ContainsKey(profile))
+            {
+                return new COMApplicationCollectionKey(UnderlyingObjects[profile].ProcessImageFileName);
+            }
+
+            return null;
         }
     }
 }

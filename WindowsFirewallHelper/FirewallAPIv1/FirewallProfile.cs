@@ -9,56 +9,52 @@ namespace WindowsFirewallHelper.FirewallAPIv1
     /// </summary>
     public class FirewallProfile : IProfile
     {
-        internal FirewallProfile(INetFwProfile underlyingObject)
+        private readonly Firewall _firewall;
+
+        internal FirewallProfile(Firewall firewall, NET_FW_PROFILE_TYPE profileType)
         {
-            UnderlyingObject = underlyingObject;
+            var localPolicy = firewall.UnderlyingObject.LocalPolicy;
+            UnderlyingObject = localPolicy.GetProfileByType(profileType);
+            _firewall = firewall;
+        }
+
+        public FirewallRulesCollection Rules
+        {
+            get => new FirewallRulesCollection(new[] {this});
         }
 
         internal INetFwProfile UnderlyingObject { get; }
 
-
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets a Boolean value that blocks all inbound traffic completely regardless of any rules in this profile
-        /// </summary>
-        public bool BlockAllInboundTraffic
+        bool IProfile.BlockAllInboundTraffic
         {
             get => UnderlyingObject.ExceptionsNotAllowed;
             set => UnderlyingObject.ExceptionsNotAllowed = value;
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the global default behavior regarding inbound traffic
-        /// </summary>
         /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
         ///     Setting a value for this
         ///     property is not supported
         /// </exception>
-        public FirewallAction DefaultInboundAction
+        FirewallAction IProfile.DefaultInboundAction
         {
             get => FirewallAction.Block;
             set => throw new FirewallAPIv1NotSupportedException();
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the global default behavior regarding outbound traffic
-        /// </summary>
         /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
         ///     Setting a value for this
         ///     property is not supported
         /// </exception>
-        public FirewallAction DefaultOutboundAction
+        FirewallAction IProfile.DefaultOutboundAction
         {
             get => FirewallAction.Allow;
             set => throw new FirewallAPIv1NotSupportedException();
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets a Boolean value showing if this firewall profile is enable and available
-        /// </summary>
         public bool Enable
         {
             get => UnderlyingObject.FirewallEnabled;
@@ -71,7 +67,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         /// </summary>
         public bool IsActive
         {
-            get => Firewall.Instance.UnderlyingObject?.CurrentProfileType == UnderlyingObject.Type;
+            get => _firewall?.UnderlyingObject?.CurrentProfileType == UnderlyingObject.Type;
         }
 
         /// <inheritdoc />

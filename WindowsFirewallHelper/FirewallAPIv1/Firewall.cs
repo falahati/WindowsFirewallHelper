@@ -13,9 +13,6 @@ namespace WindowsFirewallHelper.FirewallAPIv1
     public class Firewall : IFirewall
     {
         private static Firewall _instance;
-        private static readonly object InstanceLock = new object();
-
-        private readonly ActiveCollection<IRule> _rules = new ActiveCollection<IRule>();
 
         private Firewall()
         {
@@ -24,14 +21,14 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                 return;
             }
 
-            UnderlyingObject =
-                (INetFwMgr) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false));
-            Profiles = new IProfile[]
+            UnderlyingObject = (INetFwMgr) Activator.CreateInstance(
+                Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false)
+            );
+
+            Profiles = new[]
             {
-                new FirewallProfile(
-                    UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)),
-                new FirewallProfile(
-                    UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD))
+                new FirewallProfile(this, NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN),
+                new FirewallProfile(this, NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
             };
         }
 
@@ -47,27 +44,24 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                     return _instance ?? (_instance = new Firewall());
                 }
             }
+
+        public FirewallProfile[] Profiles { get; }
+
+        public FirewallRulesCollection Rules
+        {
+            get => new FirewallRulesCollection(Profiles);
         }
 
         internal INetFwMgr UnderlyingObject { get; }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Creates a rule about an executable file (application) to be registered to a firewall profile
-        /// </summary>
-        /// <param name="profile">The profile that the rule belongs to</param>
-        /// <param name="name">Name of the rule</param>
-        /// <param name="action">Action of the rule</param>
-        /// <param name="filename">Address of the executable file that the rule applies to</param>
-        /// <param name="protocol">Protocol that the rule applies to</param>
-        /// <returns>Returns the newly created rule object implementing <see cref="T:WindowsFirewallHelper.IRule" /> interface</returns>
         /// <exception cref="T:System.NotSupportedException">This class is not supported on this machine</exception>
         /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
         ///     The asked setting is not
         ///     supported with this class
         /// </exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreateApplicationRule(
+        IRule IFirewall.CreateApplicationRule(
             FirewallProfiles profile,
             string name,
             // ReSharper disable once FlagArgument
@@ -108,13 +102,13 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         ///     supported with this class
         /// </exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreateApplicationRule(
+        IRule IFirewall.CreateApplicationRule(
             FirewallProfiles profile,
             string name,
             FirewallAction action,
             string filename)
         {
-            return CreateApplicationRule(profile, name, action, filename, FirewallProtocol.Any);
+            return ((IFirewall) this).CreateApplicationRule(profile, name, action, filename, FirewallProtocol.Any);
         }
 
         /// <inheritdoc />
@@ -130,9 +124,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         ///     The asked setting is not
         ///     supported with this class
         /// </exception>
-        public IRule CreateApplicationRule(FirewallProfiles profile, string name, string filename)
+        IRule IFirewall.CreateApplicationRule(FirewallProfiles profile, string name, string filename)
         {
-            return CreateApplicationRule(profile, name, FirewallAction.Allow, filename);
+            return ((IFirewall) this).CreateApplicationRule(profile, name, FirewallAction.Allow, filename);
         }
 
         /// <inheritdoc />
@@ -151,7 +145,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         ///     supported with this class
         /// </exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreatePortRule(
+        IRule IFirewall.CreatePortRule(
             FirewallProfiles profile,
             string name,
             // ReSharper disable once FlagArgument
@@ -187,9 +181,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         ///     supported with this class
         /// </exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreatePortRule(FirewallProfiles profile, string name, FirewallAction action, ushort portNumber)
+        IRule IFirewall.CreatePortRule(FirewallProfiles profile, string name, FirewallAction action, ushort portNumber)
         {
-            return CreatePortRule(profile, name, action, portNumber, FirewallProtocol.Any);
+            return ((IFirewall) this).CreatePortRule(profile, name, action, portNumber, FirewallProtocol.Any);
         }
 
         /// <inheritdoc />
@@ -205,229 +199,69 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         ///     The asked setting is not
         ///     supported with this class
         /// </exception>
-        public IRule CreatePortRule(FirewallProfiles profile, string name, ushort portNumber)
+        IRule IFirewall.CreatePortRule(FirewallProfiles profile, string name, ushort portNumber)
         {
-            return CreatePortRule(profile, name, FirewallAction.Allow, portNumber);
+            return ((IFirewall) this).CreatePortRule(profile, name, FirewallAction.Allow, portNumber);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Returns a specific firewall profile
-        /// </summary>
-        /// <param name="profile">Requested firewall profile</param>
-        /// <returns>Firewall profile object implementing <see cref="T:WindowsFirewallHelper.IProfile" /> interface</returns>
         /// <exception cref="T:System.NotSupportedException">This class is not supported on this machine</exception>
         /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
         ///     The asked profile is not
         ///     supported with this class
         /// </exception>
         // ReSharper disable once FlagArgument
-        public IProfile GetProfile(FirewallProfiles profile)
+        IProfile IFirewall.GetProfile(FirewallProfiles profile)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            foreach (var p in Profiles)
-            {
-                if (p.Type == profile)
-                {
-                    return p;
-                }
-            }
-
-            throw new FirewallAPIv1NotSupportedException();
+            return GetProfile(profile);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Returns the active firewall profile, if any
-        /// </summary>
-        /// <returns>
-        ///     The active firewall profile object implementing <see cref="T:WindowsFirewallHelper.IProfile" /> interface or null
-        ///     if no firewall
-        ///     profile is currently active
-        /// </returns>
         /// <exception cref="T:WindowsFirewallHelper.FirewallAPIv1.FirewallAPIv1NotSupportedException">
         ///     The asked profile is not
         ///     supported with this class
         /// </exception>
-        public IProfile GetProfile()
+        IProfile IFirewall.GetProfile()
         {
-            if (!IsSupported)
-            {
-                throw new FirewallAPIv1NotSupportedException();
-            }
-
-            return Profiles.FirstOrDefault(p => p.IsActive);
+            return GetProfile();
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets a Boolean value showing if the firewall is supported in this environment.
-        /// </summary>
-        public bool IsSupported
-        {
-            get => UnderlyingObject != null;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Gets the name of the firewall
-        /// </summary>
         public string Name
         {
             get => "Windows Firewall";
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the list of all available profiles of the firewall
-        /// </summary>
-        public IProfile[] Profiles { get; }
+        IProfile[] IFirewall.Profiles
+        {
+            get => Profiles.Cast<IProfile>().ToArray();
+        }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the list of all registered rules of the firewall
-        /// </summary>
-        public IList<IRule> Rules
+        ICollection<IRule> IFirewall.Rules
         {
-            get
-            {
-                SyncRules();
-
-                return _rules;
-            }
+            get => Rules;
         }
 
-        // ReSharper disable once ExcessiveIndentation
-        // ReSharper disable once MethodTooLong
-        private void RulesOnItemsModified(object sender, ActiveCollectionChangedEventArgs<IRule> e)
+        public FirewallProfile GetProfile(FirewallProfiles profile)
         {
-            lock (_rules)
+            if (!IsSupported)
             {
-                if (e.ActionType == ActiveCollectionChangeType.Added)
-                {
-                    if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Public))
-                    {
-                        throw new FirewallAPIv1NotSupportedException();
-                    }
-
-                    // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
-                    if (e.Item is ApplicationRule)
-                    {
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
-                                .AuthorizedApplications.Add(((ApplicationRule) e.Item).UnderlyingObject);
-                        }
-
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
-                                .AuthorizedApplications.Add(((ApplicationRule) e.Item).UnderlyingObject);
-                        }
-                    }
-                    else if (e.Item is PortRule)
-                    {
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
-                                .GloballyOpenPorts.Add(((PortRule) e.Item).UnderlyingObject);
-                        }
-
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
-                                .GloballyOpenPorts.Add(((PortRule) e.Item).UnderlyingObject);
-                        }
-                    }
-                }
-                else if (e.ActionType == ActiveCollectionChangeType.Removed)
-                {
-                    if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Public))
-                    {
-                        throw new FirewallAPIv1NotSupportedException();
-                    }
-
-                    // ReSharper disable once CanBeReplacedWithTryCastAndCheckForNull
-                    if (e.Item is ApplicationRule)
-                    {
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
-                                .AuthorizedApplications.Remove(
-                                    ((ApplicationRule) e.Item).UnderlyingObject.ProcessImageFileName);
-                        }
-
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
-                                .AuthorizedApplications.Remove(
-                                    ((ApplicationRule) e.Item).UnderlyingObject.ProcessImageFileName);
-                        }
-                    }
-                    else if (e.Item is PortRule)
-                    {
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Domain))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN)
-                                .GloballyOpenPorts.Remove(((PortRule) e.Item).UnderlyingObject.Port,
-                                    ((PortRule) e.Item).UnderlyingObject.Protocol);
-                        }
-
-                        if (EnumHelper.HasFlag(e.Item.Profiles, FirewallProfiles.Private))
-                        {
-                            UnderlyingObject.LocalPolicy.GetProfileByType(NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD)
-                                .GloballyOpenPorts.Remove(((PortRule) e.Item).UnderlyingObject.Port,
-                                    ((PortRule) e.Item).UnderlyingObject.Protocol);
-                        }
-                    }
-                }
+                throw new NotSupportedException();
             }
 
-            SyncRules();
+            return Profiles.FirstOrDefault(p => p.Type == profile) ?? throw new FirewallAPIv1NotSupportedException();
         }
 
-        // ReSharper disable once ExcessiveIndentation
-        // ReSharper disable once MethodTooLong
-        private void SyncRules()
+        public FirewallProfile GetProfile()
         {
-            lock (_rules)
+            if (!IsSupported)
             {
-                var rules = new List<IRule>();
-
-                foreach (var profile in Profiles)
-                {
-                    if (!(profile is FirewallProfile firewallProfile))
-                    {
-                        continue;
-                    }
-
-                    rules.AddRange(
-                        firewallProfile
-                            .UnderlyingObject
-                            .AuthorizedApplications
-                            .GetEnumeratorVariant()
-                            .ToEnumerable<INetFwAuthorizedApplication>()
-                            .Select(application => new ApplicationRule(application, firewallProfile.Type))
-                    );
-
-                    rules.AddRange(
-                        firewallProfile
-                            .UnderlyingObject
-                            .GloballyOpenPorts
-                            .GetEnumeratorVariant()
-                            .ToEnumerable<INetFwOpenPort>()
-                            .Select(port => new PortRule(port, firewallProfile.Type))
-                    );
-                }
-
-                _rules.ItemsModified -= RulesOnItemsModified;
-                _rules.Sync(rules.ToArray());
-                _rules.ItemsModified += RulesOnItemsModified;
+                throw new NotSupportedException();
             }
+
+            return Profiles.FirstOrDefault(p => p.IsActive);
         }
     }
 }

@@ -36,6 +36,17 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             };
         }
 
+        public IEnumerable<FirewallRuleGroup> RuleGroups
+        {
+            get
+            {
+                return Rules
+                    .Select(rule => rule.Grouping)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Distinct()
+                    .Select(s => new FirewallRuleGroup(this, s));
+            }
+        }
 
         /// <summary>
         ///     Gets the current singleton instance of this class

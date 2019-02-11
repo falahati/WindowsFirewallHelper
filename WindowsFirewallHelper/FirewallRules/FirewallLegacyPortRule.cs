@@ -75,6 +75,7 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
+        /// <inheritdoc />
         public FirewallProfiles Profiles
         {
             get
@@ -235,17 +236,6 @@ namespace WindowsFirewallHelper.FirewallRules
                     openPort.Name = value;
                 }
             }
-        }
-
-
-        /// <inheritdoc />
-        /// <exception cref="FirewallLegacyNotSupportedException">Changing the profile of a rule is not supported in FirewallAPIv1.</exception>
-        FirewallProfiles IFirewallRule.Profiles
-        {
-            get => Profiles;
-            set => throw new FirewallLegacyNotSupportedException(
-                "Changing the profile of a rule is not supported in FirewallAPIv1. Consider creating another rule."
-            );
         }
 
 

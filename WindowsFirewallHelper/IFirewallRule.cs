@@ -48,9 +48,9 @@ namespace WindowsFirewallHelper
         string Name { get; set; }
 
         /// <summary>
-        ///     Gets or sets the profiles that this rule belongs to
+        ///     Gets the profiles that this rule belongs to
         /// </summary>
-        FirewallProfiles Profiles { get; set; }
+        FirewallProfiles Profiles { get; }
 
         /// <summary>
         ///     Gets or sets the protocol that the rule applies to

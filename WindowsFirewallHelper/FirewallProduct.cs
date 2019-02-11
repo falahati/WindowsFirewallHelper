@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using WindowsFirewallHelper.COMInterop;
-using WindowsFirewallHelper.InternalCollections;
 using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
@@ -42,13 +41,6 @@ namespace WindowsFirewallHelper
             set => UnderlyingObject.DisplayName = value;
         }
 
-        /// <summary>
-        ///     Returns the list of all registered third party firewalls management instances
-        /// </summary>
-        public static ICollection<FirewallProduct> RegisteredProducts
-        {
-            get => new FirewallProductsCollection(GetProducts());
-        }
 
         public FirewallRuleCategory[] RuleCategories
         {
@@ -85,28 +77,10 @@ namespace WindowsFirewallHelper
 
         private INetFwProduct UnderlyingObject { get; }
 
-        private static INetFwProducts GetProducts()
-        {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            return ComHelper.CreateInstance<INetFwProducts>();
-        }
-
 
         public INetFwProduct GetCOMObject()
         {
             return UnderlyingObject;
-        }
-
-        /// <summary>
-        ///     Register an instance of a third party firewall management class
-        /// </summary>
-        public FirewallProductRegistrationHandle Register()
-        {
-            return new FirewallProductRegistrationHandle(GetProducts().Register(GetCOMObject()));
         }
     }
 }

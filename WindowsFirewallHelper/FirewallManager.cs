@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ServiceProcess;
+using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallRules;
+using WindowsFirewallHelper.InternalCollections;
+using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
 {
@@ -55,6 +59,15 @@ namespace WindowsFirewallHelper
 
 
         /// <summary>
+        ///     Returns the list of all registered third party firewalls
+        /// </summary>
+        public static ICollection<FirewallProduct> RegisteredProducts
+        {
+            get => new FirewallProductsCollection(GetProducts());
+        }
+
+
+        /// <summary>
         ///     Returns the API version of the current active Windows Firewall
         /// </summary>
         public static FirewallAPIVersion Version
@@ -83,6 +96,24 @@ namespace WindowsFirewallHelper
 
                 return FirewallAPIVersion.None;
             }
+        }
+
+        /// <summary>
+        ///     Register an instance of a third party firewall management class
+        /// </summary>
+        public static FirewallProductRegistrationHandle RegisterProduct(FirewallProduct product)
+        {
+            return new FirewallProductRegistrationHandle(GetProducts().Register(product.GetCOMObject()));
+        }
+
+        private static INetFwProducts GetProducts()
+        {
+            if (!FirewallProduct.IsSupported)
+            {
+                throw new NotSupportedException();
+            }
+
+            return ComHelper.CreateInstance<INetFwProducts>();
         }
     }
 }

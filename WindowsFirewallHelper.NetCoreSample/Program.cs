@@ -8,18 +8,18 @@ namespace WindowsFirewallHelper.NetCoreSample
     {
         private static void Main()
         {
-            var firewallInstance = FirewallManager.Instance;
-
+            ConsoleWriter.Default.PrintMessage($"Firewall Service Running: {FirewallManager.IsServiceRunning}");
             ConsoleWriter.Default.PrintMessage($"Firewall Version: {FirewallManager.Version}");
-            ConsoleWriter.Default.PrintMessage($"Firewall Name: {firewallInstance?.Name ?? "[NULL]"}");
 
-            if (firewallInstance == null)
+            if (FirewallManager.Version == FirewallAPIVersion.None)
             {
                 ConsoleWriter.Default.PrintMessage("Press any key to exit.");
                 Console.ReadKey();
 
                 return;
             }
+            
+            var firewallInstance = FirewallManager.Instance;
 
             ConsoleWriter.Default.PrintCaption(firewallInstance.Name);
 
@@ -27,7 +27,7 @@ namespace WindowsFirewallHelper.NetCoreSample
             {
                 new ConsoleNavigationItem("Profiles", (i, item) =>
                 {
-                    ConsoleNavigation.Default.PrintNavigation(firewallInstance.Profiles, (i1, profile) =>
+                    ConsoleNavigation.Default.PrintNavigation(firewallInstance.Profiles.ToArray(), (i1, profile) =>
                     {
                         ConsoleWriter.Default.WriteObject(profile);
                         ConsoleWriter.Default.PrintMessage("Press any key to get one step back.");
@@ -36,7 +36,7 @@ namespace WindowsFirewallHelper.NetCoreSample
                 }),
                 new ConsoleNavigationItem("Rules", (i, item) =>
                 {
-                    ConsoleNavigation.Default.PrintNavigation(firewallInstance.Rules.ToArray(), (i1, rule) =>
+                    ConsoleNavigation.Default.PrintNavigation(firewallInstance.Rules.OrderBy(rule => rule.FriendlyName).ToArray(), (i1, rule) =>
                     {
                         ConsoleWriter.Default.WriteObject(rule);
                         ConsoleWriter.Default.PrintMessage("Press any key to get one step back.");

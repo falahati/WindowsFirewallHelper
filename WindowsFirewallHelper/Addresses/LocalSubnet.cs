@@ -1,4 +1,6 @@
-﻿namespace WindowsFirewallHelper.Addresses
+﻿using System;
+
+namespace WindowsFirewallHelper.Addresses
 {
     /// <summary>
     ///     A class representing local subnet as an address
@@ -9,6 +11,22 @@
         protected override string AddressString
         {
             get => @"LocalSubnet";
+        }
+
+        /// <summary>
+        ///     Converts an address string to a <see cref="LocalSubnet" /> instance.
+        /// </summary>
+        /// <returns>
+        ///     A <see cref="LocalSubnet" /> instance.
+        /// </returns>
+        /// <param name="str">
+        ///     A string that contains an address
+        /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="str" /> is null. </exception>
+        /// <exception cref="FormatException"><paramref name="str" /> is not a valid address. </exception>
+        public static LocalSubnet Parse(string str)
+        {
+            return Parse<LocalSubnet>(str);
         }
 
         /// <summary>

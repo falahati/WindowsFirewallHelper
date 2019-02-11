@@ -1,4 +1,6 @@
-﻿namespace WindowsFirewallHelper.Addresses
+﻿using System;
+
+namespace WindowsFirewallHelper.Addresses
 {
     /// <inheritdoc />
     /// <summary>
@@ -10,6 +12,22 @@
         protected override string AddressString
         {
             get => @"DNS";
+        }
+
+        /// <summary>
+        ///     Converts an address string to a <see cref="DNSService" /> instance.
+        /// </summary>
+        /// <returns>
+        ///     A <see cref="DNSService" /> instance.
+        /// </returns>
+        /// <param name="str">
+        ///     A string that contains an address
+        /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="str" /> is null. </exception>
+        /// <exception cref="FormatException"><paramref name="str" /> is not a valid address. </exception>
+        public static DNSService Parse(string str)
+        {
+            return Parse<DNSService>(str);
         }
 
         /// <summary>

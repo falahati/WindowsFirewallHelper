@@ -71,29 +71,15 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         internal INetFwPolicy2 UnderlyingObject { get; }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Creates a rule about an executable file (application) to be registered to a firewall profile
-        /// </summary>
-        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
-        /// <param name="name">Name of the rule</param>
-        /// <param name="action">Action of the rule</param>
-        /// <param name="filename">Address of the executable file that the rule applies to</param>
-        /// <param name="protocol">Protocol that the rule applies to</param>
-        /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreateApplicationRule(
+        IRule IFirewall.CreateApplicationRule(
             FirewallProfiles profiles,
             string name,
             FirewallAction action,
             string filename,
             FirewallProtocol protocol)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             if (StandardRuleWin8.IsSupported)
             {
                 return new StandardRuleWin8(name, filename, action, FirewallDirection.Inbound, profiles)
@@ -122,68 +108,40 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Creates a rule about an executable file (application) to be registered to a firewall profile
-        /// </summary>
-        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
-        /// <param name="name">Name of the rule</param>
-        /// <param name="action">Action of the rule</param>
-        /// <param name="filename">Address of the executable file that the rule applies to</param>
-        /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreateApplicationRule(
+        IRule IFirewall.CreateApplicationRule(
             FirewallProfiles profiles,
             string name,
             FirewallAction action,
             string filename)
         {
-            return CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.TCP);
+            return (this as IFirewall).CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.Any);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Creates a rule about an executable file (application) to be registered to a firewall profile
-        /// </summary>
-        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
-        /// <param name="name">Name of the rule</param>
-        /// <param name="filename">Address of the executable file that the rule applies to</param>
-        /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
-        /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
-        public IRule CreateApplicationRule(FirewallProfiles profiles, string name, string filename)
+        IRule IFirewall.CreateApplicationRule(FirewallProfiles profiles, string name, string filename)
         {
-            return CreateApplicationRule(profiles, name, FirewallAction.Allow, filename);
+            return (this as IFirewall).CreateApplicationRule(profiles, name, FirewallAction.Allow, filename);
         }
 
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Creates a rule about a port to be registered to a firewall profile
-        /// </summary>
-        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
-        /// <param name="name">Name of the rule</param>
-        /// <param name="action">Action of the rule</param>
-        /// <param name="portNumber">Port number that the rule applies to</param>
-        /// <param name="protocol">Protocol that the rule applies to</param>
-        /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreatePortRule(
+        IRule IFirewall.CreatePortRule(
             FirewallProfiles profiles,
             string name,
             FirewallAction action,
             ushort portNumber,
             FirewallProtocol protocol)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            if (!protocol.Equals(FirewallProtocol.TCP) && !protocol.Equals(FirewallProtocol.UDP))
+            if (!protocol.Equals(FirewallProtocol.TCP) &&
+                !protocol.Equals(FirewallProtocol.UDP) &&
+                !protocol.Equals(FirewallProtocol.Any))
             {
                 throw new FirewallAPIv2InvalidProtocolException(
-                    "Invalid protocol selected; rule's protocol should be TCP or UDP.");
+                    "Invalid protocol selected; rule's protocol should be TCP, UDP or Any (which means both TCP and UDP).");
             }
 
             if (StandardRuleWin8.IsSupported)
@@ -211,33 +169,17 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Creates a rule about a port to be registered to a firewall profile
-        /// </summary>
-        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
-        /// <param name="name">Name of the rule</param>
-        /// <param name="action">Action of the rule</param>
-        /// <param name="portNumber">Port number that the rule applies to</param>
-        /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
         /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         // ReSharper disable once TooManyArguments
-        public IRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber)
+        IRule IFirewall.CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber)
         {
-            return CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.TCP);
+            return (this as IFirewall).CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.Any);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Creates a rule about a port to be registered to a firewall profile
-        /// </summary>
-        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
-        /// <param name="name">Name of the rule</param>
-        /// <param name="portNumber">Port number that the rule applies to</param>
-        /// <returns>Returns the newly created rule object implementing <see cref="IRule" /> interface</returns>
-        /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
-        public IRule CreatePortRule(FirewallProfiles profiles, string name, ushort portNumber)
+        IRule IFirewall.CreatePortRule(FirewallProfiles profiles, string name, ushort portNumber)
         {
-            return CreatePortRule(profiles, name, FirewallAction.Allow, portNumber);
+            return (this as IFirewall).CreatePortRule(profiles, name, FirewallAction.Allow, portNumber);
         }
 
         /// <inheritdoc />
@@ -247,16 +189,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Returns a specific firewall profile
-        /// </summary>
-        /// <param name="profile">Requested firewall profile</param>
-        /// <returns>Firewall profile object implementing <see cref="IProfile" /> interface</returns>
-        /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
-        /// <exception cref="FirewallAPIv2NotSupportedException">The asked profile is not supported with this class</exception>
         // ReSharper disable once FlagArgument
-        public IProfile GetProfile(FirewallProfiles profile)
+        IProfile IFirewall.GetProfile(FirewallProfiles profile)
         {
+            return GetProfile(profile);
         }
 
         /// <inheritdoc />
@@ -278,6 +214,29 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         ICollection<IRule> IFirewall.Rules
         {
             get => new FirewallRulesCollection<IRule>(UnderlyingObject.Rules);
+        }
+
+        /// <summary>
+        ///     Returns the active firewall profile, if any
+        /// </summary>
+        /// <returns>
+        ///     The active firewall profile object implementing <see cref="IProfile" /> interface or null if no firewall
+        ///     profile is currently active
+        /// </returns>
+        public FirewallProfile GetActiveProfile()
+        {
+            return Profiles.FirstOrDefault(p => p.IsActive);
+        }
+
+        /// <summary>
+        ///     Returns a specific firewall profile
+        /// </summary>
+        /// <param name="profile">Requested firewall profile</param>
+        /// <returns>Firewall profile object implementing <see cref="IProfile" /> interface</returns>
+        /// <exception cref="FirewallAPIv2NotSupportedException">The asked profile is not supported with this class</exception>
+        public FirewallProfile GetProfile(FirewallProfiles profile)
+        {
+            return Profiles.FirstOrDefault(p => p.Type == profile) ?? throw new FirewallAPIv2NotSupportedException();
         }
 
         /// <summary>

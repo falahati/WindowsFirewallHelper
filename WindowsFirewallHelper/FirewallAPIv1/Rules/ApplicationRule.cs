@@ -235,7 +235,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <exception cref="FirewallAPIv1NotSupportedException">Setting a value for this property is not supported</exception>
         FirewallProtocol IRule.Protocol
         {
-            get => FirewallProtocol.FirewallV1_TCP_UDP;
+            get => FirewallProtocol.Any;
             set => throw new FirewallAPIv1NotSupportedException();
         }
 

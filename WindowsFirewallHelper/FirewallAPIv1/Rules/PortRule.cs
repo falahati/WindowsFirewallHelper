@@ -254,11 +254,11 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
             get => new FirewallProtocol((int) UnderlyingObjects.Values.First().Protocol);
             set
             {
-                if (!value.Equals(FirewallProtocol.FirewallV1_TCP_UDP) &&
+                if (!value.Equals(FirewallProtocol.Any) &&
                     !value.Equals(FirewallProtocol.TCP) &&
                     !value.Equals(FirewallProtocol.UDP))
                 {
-                    throw new NotSupportedException("Acceptable values are UDP, TCP and Any");
+                    throw new NotSupportedException("Acceptable values are UDP, TCP and Any.");
                 }
 
                 foreach (var openPort in UnderlyingObjects.Values)

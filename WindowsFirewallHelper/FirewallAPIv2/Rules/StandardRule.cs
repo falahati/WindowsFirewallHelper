@@ -71,7 +71,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             FirewallDirection direction,
             FirewallProfiles profiles) : this(name, action, direction, profiles)
         {
-            Protocol = FirewallProtocol.TCP;
+            Protocol = FirewallProtocol.Any;
             LocalPorts = new[] {port};
         }
 

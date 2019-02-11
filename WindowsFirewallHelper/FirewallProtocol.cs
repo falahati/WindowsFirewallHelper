@@ -13,9 +13,9 @@ namespace WindowsFirewallHelper
     public class FirewallProtocol : IEquatable<FirewallProtocol>, IEquatable<int>
     {
         /// <summary>
-        ///     Matches both TCP and UDP protocols; only available for FirewallV1 (WinXP)
+        ///     Matches both TCP and UDP protocols for port rules and all protocols for other type of rules
         /// </summary>
-        public static readonly FirewallProtocol FirewallV1_TCP_UDP =
+        public static readonly FirewallProtocol Any =
             new FirewallProtocol((int) NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_ANY);
 
         /// <summary>
@@ -81,12 +81,12 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Transmission Control Protocol
         /// </summary>
-        public static readonly FirewallProtocol TCP = new FirewallProtocol(6);
+        public static readonly FirewallProtocol TCP = new FirewallProtocol((int)NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_TCP);
 
         /// <summary>
         ///     User Datagram Protocol
         /// </summary>
-        public static readonly FirewallProtocol UDP = new FirewallProtocol(17);
+        public static readonly FirewallProtocol UDP = new FirewallProtocol((int)NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_UDP);
 
         /// <summary>
         ///     Virtual Router Redundancy Protocol

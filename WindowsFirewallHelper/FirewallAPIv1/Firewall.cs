@@ -72,7 +72,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
                 throw new NotSupportedException();
             }
 
-            if (!protocol.Equals(FirewallProtocol.FirewallV1_TCP_UDP))
+            if (!protocol.Equals(FirewallProtocol.Any))
             {
                 throw new FirewallAPIv1NotSupportedException();
             }
@@ -107,7 +107,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             string filename)
         {
             return ((IFirewall) this).CreateApplicationRule(profile, name, action, filename,
-                FirewallProtocol.FirewallV1_TCP_UDP);
+                FirewallProtocol.Any);
         }
 
         /// <inheritdoc />
@@ -183,7 +183,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         IRule IFirewall.CreatePortRule(FirewallProfiles profile, string name, FirewallAction action, ushort portNumber)
         {
             return ((IFirewall) this).CreatePortRule(profile, name, action, portNumber,
-                FirewallProtocol.FirewallV1_TCP_UDP);
+                FirewallProtocol.Any);
         }
 
         /// <inheritdoc />

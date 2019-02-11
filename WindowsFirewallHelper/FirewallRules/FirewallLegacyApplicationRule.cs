@@ -27,6 +27,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 throw new FirewallLegacyNotSupportedException("Public profile is not supported.");
             }
 
+            UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwAuthorizedApplication>();
             foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
             {
                 if (profiles.HasFlag(profile))

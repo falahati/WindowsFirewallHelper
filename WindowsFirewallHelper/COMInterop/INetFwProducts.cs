@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using WindowsFirewallHelper.Helpers;
+using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper.COMInterop
 {

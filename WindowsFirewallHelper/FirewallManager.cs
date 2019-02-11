@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ServiceProcess;
-using FirewallVersion2 = WindowsFirewallHelper.FirewallAPIv2.Firewall;
-using FirewallVersion1 = WindowsFirewallHelper.FirewallAPIv1.Firewall;
-using FirewallVersion2Rules = WindowsFirewallHelper.FirewallAPIv2.Rules;
+using WindowsFirewallHelper.FirewallRules;
 
 namespace WindowsFirewallHelper
 {
@@ -21,14 +19,14 @@ namespace WindowsFirewallHelper
             {
                 switch (Version)
                 {
-                    case APIVersion.FirewallAPIv1:
+                    case FirewallAPIVersion.FirewallAPIv1:
 
-                        return FirewallVersion1.Instance;
-                    case APIVersion.FirewallAPIv2:
-                    case APIVersion.FirewallAPIv2Win7:
-                    case APIVersion.FirewallAPIv2Win8:
+                        return FirewallLegacy.Instance;
+                    case FirewallAPIVersion.FirewallAPIv2:
+                    case FirewallAPIVersion.FirewallAPIv2Win7:
+                    case FirewallAPIVersion.FirewallAPIv2Win8:
 
-                        return FirewallVersion2.Instance;
+                        return FirewallWAS.Instance;
                 }
 
                 throw new NotSupportedException();
@@ -41,12 +39,12 @@ namespace WindowsFirewallHelper
             {
                 switch (Version)
                 {
-                    case APIVersion.FirewallAPIv1:
+                    case FirewallAPIVersion.FirewallAPIv1:
 
                         return new ServiceController("SharedAccess").Status == ServiceControllerStatus.Running;
-                    case APIVersion.FirewallAPIv2:
-                    case APIVersion.FirewallAPIv2Win7:
-                    case APIVersion.FirewallAPIv2Win8:
+                    case FirewallAPIVersion.FirewallAPIv2:
+                    case FirewallAPIVersion.FirewallAPIv2Win7:
+                    case FirewallAPIVersion.FirewallAPIv2Win8:
 
                         return new ServiceController("MpsSvc").Status == ServiceControllerStatus.Running;
                 }
@@ -59,31 +57,31 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Returns the API version of the current active Windows Firewall
         /// </summary>
-        public static APIVersion Version
+        public static FirewallAPIVersion Version
         {
             get
             {
-                if (FirewallVersion2.IsSupported)
+                if (FirewallWAS.IsSupported)
                 {
-                    if (FirewallVersion2Rules.StandardRuleWin8.IsSupported)
+                    if (FirewallWASRuleWin8.IsSupported)
                     {
-                        return APIVersion.FirewallAPIv2Win8;
+                        return FirewallAPIVersion.FirewallAPIv2Win8;
                     }
 
-                    if (FirewallVersion2Rules.StandardRuleWin7.IsSupported)
+                    if (FirewallWASRuleWin7.IsSupported)
                     {
-                        return APIVersion.FirewallAPIv2Win7;
+                        return FirewallAPIVersion.FirewallAPIv2Win7;
                     }
 
-                    return APIVersion.FirewallAPIv2;
+                    return FirewallAPIVersion.FirewallAPIv2;
                 }
 
-                if (FirewallVersion1.IsSupported)
+                if (FirewallLegacy.IsSupported)
                 {
-                    return APIVersion.FirewallAPIv1;
+                    return FirewallAPIVersion.FirewallAPIv1;
                 }
 
-                return APIVersion.None;
+                return FirewallAPIVersion.None;
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using WindowsFirewallHelper.FirewallAPIv2.Rules;
+using WindowsFirewallHelper.FirewallRules;
 
 namespace WindowsFirewallHelper.Sample
 {
@@ -27,9 +27,9 @@ namespace WindowsFirewallHelper.Sample
 
             node.Nodes.Clear();
 
-            if (o is ICollection<StandardRule> || o is ICollection<IRule>)
+            if (o is ICollection<FirewallWASRule> || o is ICollection<IFirewallRule>)
             {
-                foreach (var item in ((IEnumerable) o).Cast<IRule>().OrderBy(rule => rule.FriendlyName))
+                foreach (var item in ((IEnumerable) o).Cast<IFirewallRule>().OrderBy(rule => rule.FriendlyName))
                 {
                     node.Nodes.Add(new TreeNode(item.ToString()) {Tag = item});
                 }
@@ -62,7 +62,7 @@ namespace WindowsFirewallHelper.Sample
         {
             try
             {
-                var profileType = (treeView.SelectedNode.Tag as IProfile)?.Type;
+                var profileType = (treeView.SelectedNode.Tag as IFirewallProfile)?.Type;
 
                 if (profileType == null)
                 {
@@ -102,7 +102,7 @@ namespace WindowsFirewallHelper.Sample
         {
             try
             {
-                var profileType = (treeView.SelectedNode.Tag as IProfile)?.Type;
+                var profileType = (treeView.SelectedNode.Tag as IFirewallProfile)?.Type;
 
                 if (profileType == null)
                 {
@@ -142,7 +142,7 @@ namespace WindowsFirewallHelper.Sample
         {
             try
             {
-                if (treeView.SelectedNode.Tag is IRule rule)
+                if (treeView.SelectedNode.Tag is IFirewallRule rule)
                 {
                     FirewallManager.Instance.Rules.Remove(rule);
                     RefreshTreeView();
@@ -176,9 +176,9 @@ namespace WindowsFirewallHelper.Sample
                 !treeView.SelectedNode.Tag.GetType().GetInterfaces().Contains(typeof(IEnumerable))
                     ? treeView.SelectedNode.Tag
                     : null;
-            btn_delete.Enabled = treeView.SelectedNode.Tag.GetType().GetInterfaces().Contains(typeof(IRule));
-            btn_port.Enabled = treeView.SelectedNode.Tag is IProfile;
-            btn_app.Enabled = treeView.SelectedNode.Tag is IProfile;
+            btn_delete.Enabled = treeView.SelectedNode.Tag.GetType().GetInterfaces().Contains(typeof(IFirewallRule));
+            btn_port.Enabled = treeView.SelectedNode.Tag is IFirewallProfile;
+            btn_app.Enabled = treeView.SelectedNode.Tag is IFirewallProfile;
         }
 
         private void RefreshTreeView()

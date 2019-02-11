@@ -1,7 +1,10 @@
-﻿public enum FirewallRuleCategory
+﻿namespace WindowsFirewallHelper
 {
-    Boot = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_BOOT,
-    Stealth = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_STEALTH,
-    Firewall = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_FIREWALL,
-    ConnectionSecurity = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_CONSEC
+    public enum FirewallRuleCategory
+    {
+        Boot = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_BOOT,
+        Stealth = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_STEALTH,
+        Firewall = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_FIREWALL,
+        ConnectionSecurity = NET_FW_RULE_CATEGORY.NET_FW_RULE_CATEGORY_CONSEC
+    }
 }

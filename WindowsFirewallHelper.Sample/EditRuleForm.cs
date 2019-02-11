@@ -4,7 +4,7 @@ namespace WindowsFirewallHelper.Sample
 {
     public partial class EditRuleForm : Form
     {
-        public EditRuleForm(IRule rule)
+        public EditRuleForm(IFirewallRule rule)
         {
             InitializeComponent();
             propertyGrid1.SelectedObject = rule;

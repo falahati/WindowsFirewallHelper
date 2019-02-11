@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using WindowsFirewallHelper.COMInterop;
-using WindowsFirewallHelper.Helpers;
+using WindowsFirewallHelper.InternalCollections;
+using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
 {
@@ -16,7 +17,7 @@ namespace WindowsFirewallHelper
                 throw new NotSupportedException();
             }
 
-            UnderlyingObject = COMHelper.CreateInstance<INetFwProduct>();
+            UnderlyingObject = ComHelper.CreateInstance<INetFwProduct>();
             Name = name;
         }
 
@@ -32,13 +33,21 @@ namespace WindowsFirewallHelper
 
         public static bool IsSupported
         {
-            get => COMHelper.IsSupported<INetFwProduct>();
+            get => ComHelper.IsSupported<INetFwProduct>();
         }
 
         public string Name
         {
             get => UnderlyingObject.DisplayName;
             set => UnderlyingObject.DisplayName = value;
+        }
+
+        /// <summary>
+        ///     Returns the list of all registered third party firewalls management instances
+        /// </summary>
+        public static ICollection<FirewallProduct> RegisteredProducts
+        {
+            get => new FirewallProductsCollection(GetProducts());
         }
 
         public FirewallRuleCategory[] RuleCategories
@@ -74,14 +83,6 @@ namespace WindowsFirewallHelper
             get => UnderlyingObject.PathToSignedProductExe;
         }
 
-        /// <summary>
-        ///     Returns the list of all registered third party firewalls management instances
-        /// </summary>
-        public static ICollection<FirewallProduct> RegisteredProducts
-        {
-            get => new FirewallProductsCollection(GetProducts());
-        }
-
         private INetFwProduct UnderlyingObject { get; }
 
         private static INetFwProducts GetProducts()
@@ -91,7 +92,13 @@ namespace WindowsFirewallHelper
                 throw new NotSupportedException();
             }
 
-            return COMHelper.CreateInstance<INetFwProducts>();
+            return ComHelper.CreateInstance<INetFwProducts>();
+        }
+
+
+        public INetFwProduct GetCOMObject()
+        {
+            return UnderlyingObject;
         }
 
         /// <summary>
@@ -100,12 +107,6 @@ namespace WindowsFirewallHelper
         public FirewallProductRegistrationHandle Register()
         {
             return new FirewallProductRegistrationHandle(GetProducts().Register(GetCOMObject()));
-        }
-
-
-        public INetFwProduct GetCOMObject()
-        {
-            return UnderlyingObject;
         }
     }
 }

@@ -81,12 +81,14 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Transmission Control Protocol
         /// </summary>
-        public static readonly FirewallProtocol TCP = new FirewallProtocol((int)NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_TCP);
+        public static readonly FirewallProtocol TCP =
+            new FirewallProtocol((int) NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_TCP);
 
         /// <summary>
         ///     User Datagram Protocol
         /// </summary>
-        public static readonly FirewallProtocol UDP = new FirewallProtocol((int)NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_UDP);
+        public static readonly FirewallProtocol UDP =
+            new FirewallProtocol((int) NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_UDP);
 
         /// <summary>
         ///     Virtual Router Redundancy Protocol

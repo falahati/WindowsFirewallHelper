@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using WindowsFirewallHelper.Helpers;
+using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper.Addresses
 {

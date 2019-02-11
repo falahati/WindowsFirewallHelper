@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using WindowsFirewallHelper.Helpers;
+using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper.COMInterop
 {

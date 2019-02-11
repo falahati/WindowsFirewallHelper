@@ -225,6 +225,7 @@ namespace WindowsFirewallHelper.Addresses
         /// <param name="address">The <see cref="SingleIP" /> version of the string.</param>
         public static bool TryParse(string ipString, out SingleIP address)
         {
+            // Check if this is "Any Address" special string
             if (ipString.Trim() == "*")
             {
                 address = Any;
@@ -232,6 +233,7 @@ namespace WindowsFirewallHelper.Addresses
                 return true;
             }
 
+            // Check if this is a valid IPAddress
             if (IPAddress.TryParse(ipString, out var ipAddress))
             {
                 address = FromIPAddress(ipAddress);
@@ -239,19 +241,22 @@ namespace WindowsFirewallHelper.Addresses
                 return true;
             }
 
-            var ips = ipString.Split('-');
-
-            if (ips.Length == 2)
+            // Check if this is a IP range with only one IP
+            if (IPRange.TryParse(ipString, out var ipRange) &&
+                ipRange.StartAddress.Equals(ipRange.EndAddress))
             {
-                if (IPAddress.TryParse(ips[0], out var address1) && IPAddress.TryParse(ips[1], out var address2))
-                {
-                    if (address1.Equals(address2))
-                    {
-                        address = FromIPAddress(address1);
+                address = FromIPAddress(ipRange.StartAddress);
 
-                        return true;
-                    }
-                }
+                return true;
+            }
+
+            // Check if this is a single IP NetworkAddress
+            if (NetworkAddress.TryParse(ipString, out var networkAddress) &&
+                networkAddress.EndAddress.Equals(networkAddress.StartAddress))
+            {
+                address = FromIPAddress(networkAddress.Address);
+
+                return true;
             }
 
             address = null;

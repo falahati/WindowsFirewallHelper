@@ -10,7 +10,7 @@ namespace WindowsFirewallHelper.Sample
 
             cb_protocol.Items.Add(FirewallProtocol.TCP);
             cb_protocol.Items.Add(FirewallProtocol.UDP);
-            cb_protocol.Items.Add(FirewallProtocol.FirewallV1_TCP_UDP);
+            cb_protocol.Items.Add(FirewallProtocol.Any);
             cb_protocol.SelectedIndex = 0;
         }
 

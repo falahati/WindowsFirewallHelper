@@ -1,10 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.COMInterop
 {
     [Guid("AF230D27-BABA-4E42-ACED-F524F22CFCE2")]
     [ComImport]
+    [ComClassProgId("HNetCfg.FWRule")]
     public interface INetFwRule
     {
         [DispId(1)]

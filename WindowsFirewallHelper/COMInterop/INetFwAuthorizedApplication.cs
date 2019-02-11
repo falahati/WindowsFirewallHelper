@@ -1,10 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.COMInterop
 {
     [Guid("B5E64FFA-C2C5-444E-A301-FB5E00018050")]
     [ComImport]
+    [ComClassProgId("HNetCfg.FwAuthorizedApplication")]
     public interface INetFwAuthorizedApplication
     {
         [DispId(1)]

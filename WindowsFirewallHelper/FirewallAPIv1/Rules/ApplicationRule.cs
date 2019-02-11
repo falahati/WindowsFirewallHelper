@@ -23,7 +23,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         {
             if (EnumHelper.HasFlag(profiles, FirewallProfiles.Public))
             {
-                throw new NotSupportedException("Public profile is not supported.");
+                throw new FirewallAPIv1NotSupportedException("Public profile is not supported.");
             }
 
             foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
@@ -32,8 +32,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        (INetFwAuthorizedApplication) Activator.CreateInstance(
-                            Type.GetTypeFromProgID(@"HNetCfg.FwAuthorizedApplication"))
+                        COMHelper.CreateInstance<INetFwAuthorizedApplication>()
                     );
                 }
             }
@@ -75,7 +74,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </summary>
         public static bool IsSupported
         {
-            get => Type.GetTypeFromProgID(@"HNetCfg.FwAuthorizedApplication") != null;
+            get => COMHelper.IsSupported<INetFwAuthorizedApplication>();
         }
 
         public FirewallProfiles Profiles

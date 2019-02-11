@@ -1,5 +1,6 @@
 ﻿using System;
 using WindowsFirewallHelper.COMInterop;
+using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.FirewallAPIv2.Rules
 {
@@ -24,35 +25,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             string filename,
             FirewallAction action,
             FirewallDirection direction,
-            FirewallProfiles profiles)
-            : base(name, filename, action, direction, profiles)
+            FirewallProfiles profiles) : base(name, filename, action, direction, profiles)
         {
-            if (UnderlyingObjectV3 == null)
-            {
-                throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
-        /// <inheritdoc />
         /// <summary>
-        ///     Creates a new application rule for Windows Firewall with Advanced Security
+        ///     Creates a new general rule for Windows Firewall with Advanced Security
         /// </summary>
         /// <param name="name">Name of the rule</param>
         /// <param name="action">Action that this rule defines</param>
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
         // ReSharper disable once TooManyDependencies
-        public StandardRuleWin8(
-            string name,
-            FirewallAction action,
-            FirewallDirection direction,
-            FirewallProfiles profiles)
-            : base(name, action, direction, profiles)
+        protected StandardRuleWin8(string name, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles) :
+            base(name, action, direction, profiles)
         {
-            if (UnderlyingObjectV3 == null)
-            {
-                throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
         /// <inheritdoc />
@@ -70,15 +57,11 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             ushort port,
             FirewallAction action,
             FirewallDirection direction,
-            FirewallProfiles profiles)
-            : base(name, port, action, direction, profiles)
+            FirewallProfiles profiles) : base(name, port, action, direction, profiles)
         {
-            if (UnderlyingObjectV3 == null)
-            {
-                throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
+        /// <inheritdoc />
         // ReSharper disable once SuggestBaseTypeForParameter
         internal StandardRuleWin8(INetFwRule3 rule) : base(rule)
         {
@@ -89,8 +72,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string ApplicationPackageId
         {
-            get => UnderlyingObjectV3.LocalAppPackageId;
-            set => UnderlyingObjectV3.LocalAppPackageId = value;
+            get => UnderlyingObject.LocalAppPackageId;
+            set => UnderlyingObject.LocalAppPackageId = value;
         }
 
         /// <summary>
@@ -100,21 +83,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             get
             {
-                if (!Enum.IsDefined(typeof(IPSecSecurityLevel), UnderlyingObjectV3.SecureFlags))
+                if (!Enum.IsDefined(typeof(IPSecSecurityLevel), UnderlyingObject.SecureFlags))
                 {
-                    throw new NotSupportedException();
+                    throw new ArgumentOutOfRangeException();
                 }
 
-                return (IPSecSecurityLevel) UnderlyingObjectV3.SecureFlags;
+                return (IPSecSecurityLevel)UnderlyingObject.SecureFlags;
             }
             set
             {
                 if (!Enum.IsDefined(typeof(IPSecSecurityLevel), value))
                 {
-                    throw new NotSupportedException();
+                    throw new ArgumentOutOfRangeException();
                 }
 
-                UnderlyingObjectV3.SecureFlags = (int) value;
+                UnderlyingObject.SecureFlags = (int) value;
             }
         }
 
@@ -123,7 +106,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public new static bool IsSupported
         {
-            get => StandardRuleWin7.IsSupported && Environment.OSVersion.Version >= new Version(6, 2);
+            get => StandardRuleWin7.IsSupported && COMHelper.IsSupported<INetFwRule3>();
         }
 
         /// <summary>
@@ -131,8 +114,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string LocalUserAuthorizedList
         {
-            get => UnderlyingObjectV3.LocalUserAuthorizedList;
-            set => UnderlyingObjectV3.LocalUserAuthorizedList = value;
+            get => UnderlyingObject.LocalUserAuthorizedList;
+            set => UnderlyingObject.LocalUserAuthorizedList = value;
         }
 
         /// <summary>
@@ -140,8 +123,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string RemoteMachineAuthorizedList
         {
-            get => UnderlyingObjectV3.RemoteMachineAuthorizedList;
-            set => UnderlyingObjectV3.RemoteMachineAuthorizedList = value;
+            get => UnderlyingObject.RemoteMachineAuthorizedList;
+            set => UnderlyingObject.RemoteMachineAuthorizedList = value;
         }
 
         /// <summary>
@@ -149,13 +132,13 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string RemoteUserAuthorizedList
         {
-            get => UnderlyingObjectV3.RemoteUserAuthorizedList;
-            set => UnderlyingObjectV3.RemoteUserAuthorizedList = value;
+            get => UnderlyingObject.RemoteUserAuthorizedList;
+            set => UnderlyingObject.RemoteUserAuthorizedList = value;
         }
 
-        private INetFwRule3 UnderlyingObjectV3
+        protected new INetFwRule3 UnderlyingObject
         {
-            get => UnderlyingObject as INetFwRule3;
+            get => base.UnderlyingObject as INetFwRule3;
         }
 
         /// <summary>
@@ -163,8 +146,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public string UserOwner
         {
-            get => UnderlyingObjectV3.LocalUserOwner;
-            set => UnderlyingObjectV3.LocalUserOwner = value;
+            get => UnderlyingObject.LocalUserOwner;
+            set => UnderlyingObject.LocalUserOwner = value;
         }
 
         /// <inheritdoc />
@@ -185,15 +168,15 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                 return false;
             }
 
-            return string.Equals(UnderlyingObjectV3.LocalAppPackageId, other.UnderlyingObjectV3.LocalAppPackageId) &&
-                   string.Equals(UnderlyingObjectV3.LocalUserAuthorizedList,
-                       other.UnderlyingObjectV3.LocalUserAuthorizedList) &&
-                   string.Equals(UnderlyingObjectV3.RemoteMachineAuthorizedList,
-                       other.UnderlyingObjectV3.RemoteMachineAuthorizedList) &&
-                   string.Equals(UnderlyingObjectV3.RemoteUserAuthorizedList,
-                       other.UnderlyingObjectV3.RemoteUserAuthorizedList) &&
-                   string.Equals(UnderlyingObjectV3.LocalUserOwner, other.UnderlyingObjectV3.LocalUserOwner) &&
-                   UnderlyingObjectV3.SecureFlags == other.UnderlyingObjectV3.SecureFlags;
+            return string.Equals(UnderlyingObject.LocalAppPackageId, other.UnderlyingObject.LocalAppPackageId) &&
+                   string.Equals(UnderlyingObject.LocalUserAuthorizedList,
+                       other.UnderlyingObject.LocalUserAuthorizedList) &&
+                   string.Equals(UnderlyingObject.RemoteMachineAuthorizedList,
+                       other.UnderlyingObject.RemoteMachineAuthorizedList) &&
+                   string.Equals(UnderlyingObject.RemoteUserAuthorizedList,
+                       other.UnderlyingObject.RemoteUserAuthorizedList) &&
+                   string.Equals(UnderlyingObject.LocalUserOwner, other.UnderlyingObject.LocalUserOwner) &&
+                   UnderlyingObject.SecureFlags == other.UnderlyingObject.SecureFlags;
         }
 
         public static bool operator ==(StandardRuleWin8 left, StandardRuleWin8 right)
@@ -212,18 +195,23 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             return Equals(obj as StandardRuleWin8);
         }
 
+        public new INetFwRule3 GetCOMObject()
+        {
+            return UnderlyingObject;
+        }
+
         /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked
             {
                 var hashCode = base.GetHashCode();
-                hashCode = hashCode * 467 + (UnderlyingObjectV3.LocalAppPackageId?.GetHashCode() ?? 0);
-                hashCode = hashCode * 467 + (UnderlyingObjectV3.LocalUserAuthorizedList?.GetHashCode() ?? 0);
-                hashCode = hashCode * 467 + (UnderlyingObjectV3.RemoteMachineAuthorizedList?.GetHashCode() ?? 0);
-                hashCode = hashCode * 467 + (UnderlyingObjectV3.RemoteUserAuthorizedList?.GetHashCode() ?? 0);
-                hashCode = hashCode * 467 + (UnderlyingObjectV3.LocalUserOwner?.GetHashCode() ?? 0);
-                hashCode = hashCode * 467 + UnderlyingObjectV3.SecureFlags;
+                hashCode = hashCode * 467 + (UnderlyingObject.LocalAppPackageId?.GetHashCode() ?? 0);
+                hashCode = hashCode * 467 + (UnderlyingObject.LocalUserAuthorizedList?.GetHashCode() ?? 0);
+                hashCode = hashCode * 467 + (UnderlyingObject.RemoteMachineAuthorizedList?.GetHashCode() ?? 0);
+                hashCode = hashCode * 467 + (UnderlyingObject.RemoteUserAuthorizedList?.GetHashCode() ?? 0);
+                hashCode = hashCode * 467 + (UnderlyingObject.LocalUserOwner?.GetHashCode() ?? 0);
+                hashCode = hashCode * 467 + UnderlyingObject.SecureFlags;
 
                 return hashCode;
             }

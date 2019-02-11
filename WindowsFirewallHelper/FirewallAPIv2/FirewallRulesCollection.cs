@@ -51,7 +51,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
                 throw new ArgumentException("Passed argument is invalid.", nameof(managed));
             }
 
-            return (managed as StandardRule).UnderlyingObject;
+            return (managed as StandardRule).GetCOMObject();
         }
 
         /// <inheritdoc />

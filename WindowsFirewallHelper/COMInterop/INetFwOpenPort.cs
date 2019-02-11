@@ -1,10 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.COMInterop
 {
     [Guid("E0483BA0-47FF-4D9C-A6D6-7741D0B195F7")]
     [ComImport]
+    [ComClassProgId("HNetCfg.FwOpenPort")]
     public interface INetFwOpenPort
     {
         [DispId(1)]

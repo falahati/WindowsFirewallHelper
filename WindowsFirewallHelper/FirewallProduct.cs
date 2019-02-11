@@ -16,9 +16,7 @@ namespace WindowsFirewallHelper
                 throw new NotSupportedException();
             }
 
-            UnderlyingObject = (INetFwProduct) Activator.CreateInstance(
-                Type.GetTypeFromProgID("HNetCfg.FwProduct")
-            );
+            UnderlyingObject = COMHelper.CreateInstance<INetFwProduct>();
             Name = name;
         }
 
@@ -34,7 +32,7 @@ namespace WindowsFirewallHelper
 
         public static bool IsSupported
         {
-            get => Type.GetTypeFromProgID("HNetCfg.FwProduct") != null;
+            get => COMHelper.IsSupported<INetFwProduct>();
         }
 
         public string Name
@@ -93,9 +91,7 @@ namespace WindowsFirewallHelper
                 throw new NotSupportedException();
             }
 
-            return (INetFwProducts) Activator.CreateInstance(
-                Type.GetTypeFromProgID("HNetCfg.FwProducts")
-            );
+            return COMHelper.CreateInstance<INetFwProducts>();
         }
 
         /// <summary>
@@ -107,7 +103,7 @@ namespace WindowsFirewallHelper
         }
 
 
-        internal INetFwProduct GetCOMObject()
+        public INetFwProduct GetCOMObject()
         {
             return UnderlyingObject;
         }

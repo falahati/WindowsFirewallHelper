@@ -16,14 +16,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <inheritdoc />
         public Firewall()
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            UnderlyingObject = (INetFwPolicy2) Activator.CreateInstance(
-                Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2")
-            );
+            UnderlyingObject = COMHelper.CreateInstance<INetFwPolicy2>();
 
             Profiles = new IProfile[]
             {
@@ -46,7 +39,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public static bool IsSupported
         {
-            get => Type.GetTypeFromProgID(@"HNetCfg.FwPolicy2", false) != null;
+            get => COMHelper.IsSupported<INetFwPolicy2>();
         }
 
         /// <summary>
@@ -55,15 +48,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public FirewallModifyStatePolicy LocalModifyStatePolicy
         {
-            get
-            {
-                if (!IsSupported)
-                {
-                    throw new NotSupportedException();
-                }
-
-                return (FirewallModifyStatePolicy) UnderlyingObject.LocalPolicyModifyState;
-            }
+            get => (FirewallModifyStatePolicy) UnderlyingObject.LocalPolicyModifyState;
         }
 
         public IEnumerable<FirewallRuleGroup> RuleGroups
@@ -256,29 +241,9 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Returns the active firewall profile, if any
-        /// </summary>
-        /// <returns>
-        ///     The active firewall profile object implementing <see cref="IProfile" /> interface or null if no firewall
-        ///     profile is currently active
-        /// </returns>
-        public IProfile GetActiveProfile()
+        IProfile IFirewall.GetActiveProfile()
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            foreach (var p in Profiles)
-            {
-                if (p.IsActive)
-                {
-                    return p;
-                }
-            }
-
-            return null;
+            return GetActiveProfile();
         }
 
         /// <inheritdoc />
@@ -292,20 +257,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         // ReSharper disable once FlagArgument
         public IProfile GetProfile(FirewallProfiles profile)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            foreach (var p in Profiles)
-            {
-                if (p.Type == profile)
-                {
-                    return p;
-                }
-            }
-
-            throw new FirewallAPIv2NotSupportedException();
         }
 
         /// <inheritdoc />
@@ -334,11 +285,6 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// </summary>
         public void ResetDefault()
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             UnderlyingObject.RestoreLocalFirewallDefaults();
         }
     }

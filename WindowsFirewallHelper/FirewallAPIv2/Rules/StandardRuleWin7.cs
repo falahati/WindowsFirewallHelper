@@ -1,5 +1,6 @@
 ﻿using System;
 using WindowsFirewallHelper.COMInterop;
+using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.FirewallAPIv2.Rules
 {
@@ -9,6 +10,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
     /// </summary>
     public class StandardRuleWin7 : StandardRule, IEquatable<StandardRuleWin7>
     {
+
         /// <inheritdoc />
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
@@ -24,34 +26,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             string filename,
             FirewallAction action,
             FirewallDirection direction,
-            FirewallProfiles profiles)
-            : base(name, filename, action, direction, profiles)
+            FirewallProfiles profiles) : base(name, filename, action, direction, profiles)
         {
-            if (UnderlyingObjectV2 == null)
-            {
-                throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
-        /// <inheritdoc />
         /// <summary>
-        ///     Creates a new application rule for Windows Firewall with Advanced Security
+        ///     Creates a new general rule for Windows Firewall with Advanced Security
         /// </summary>
         /// <param name="name">Name of the rule</param>
         /// <param name="action">Action that this rule defines</param>
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
         // ReSharper disable once TooManyDependencies
-        public StandardRuleWin7(
-            string name,
-            FirewallAction action,
-            FirewallDirection direction,
-            FirewallProfiles profiles) : base(name, action, direction, profiles)
+        protected StandardRuleWin7(string name, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles) :
+            base(name, action, direction, profiles)
         {
-            if (UnderlyingObjectV2 == null)
-            {
-                throw new FirewallAPIv2NotSupportedException();
-            }
         }
 
         /// <inheritdoc />
@@ -69,15 +58,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             ushort port,
             FirewallAction action,
             FirewallDirection direction,
-            FirewallProfiles profiles)
-            : base(name, port, action, direction, profiles)
+            FirewallProfiles profiles) : base(name, port, action, direction, profiles)
         {
-            if (UnderlyingObjectV2 == null)
-            {
-                throw new FirewallAPIv2NotSupportedException();
-            }
         }
-
+        
         /// <inheritdoc />
         // ReSharper disable once SuggestBaseTypeForParameter
         internal StandardRuleWin7(INetFwRule2 rule) : base(rule)
@@ -91,22 +75,21 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         {
             get
             {
-                if (!Enum.IsDefined(typeof(EdgeTraversalAction), UnderlyingObjectV2.EdgeTraversalOptions))
+                if (!Enum.IsDefined(typeof(EdgeTraversalAction), UnderlyingObject.EdgeTraversalOptions))
                 {
-                    throw new NotSupportedException();
-                    ;
+                    throw new ArgumentOutOfRangeException();
                 }
 
-                return (EdgeTraversalAction) UnderlyingObjectV2.EdgeTraversalOptions;
+                return (EdgeTraversalAction)UnderlyingObject.EdgeTraversalOptions;
             }
             set
             {
                 if (!Enum.IsDefined(typeof(EdgeTraversalAction), value))
                 {
-                    throw new NotSupportedException();
+                    throw new ArgumentOutOfRangeException();
                 }
 
-                UnderlyingObjectV2.EdgeTraversalOptions = (int) value;
+                UnderlyingObject.EdgeTraversalOptions = (int) value;
             }
         }
 
@@ -115,12 +98,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public new static bool IsSupported
         {
-            get => StandardRule.IsSupported && Environment.OSVersion.Version >= new Version(6, 1);
+            get => StandardRule.IsSupported && COMHelper.IsSupported<INetFwRule2>();
         }
 
-        private INetFwRule2 UnderlyingObjectV2
+        protected new INetFwRule2 UnderlyingObject
         {
-            get => UnderlyingObject as INetFwRule2;
+            get => base.UnderlyingObject as INetFwRule2;
         }
 
         /// <inheritdoc />
@@ -141,7 +124,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                 return false;
             }
 
-            return UnderlyingObjectV2.EdgeTraversalOptions == other.UnderlyingObjectV2.EdgeTraversalOptions;
+            return UnderlyingObject.EdgeTraversalOptions == other.UnderlyingObject.EdgeTraversalOptions;
         }
 
         public static bool operator ==(StandardRuleWin7 left, StandardRuleWin7 right)
@@ -160,13 +143,18 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
             return Equals(obj as StandardRuleWin7);
         }
 
+        public new INetFwRule2 GetCOMObject()
+        {
+            return UnderlyingObject;
+        }
+
         /// <inheritdoc />
         public override int GetHashCode()
         {
             unchecked
             {
                 var hashCode = base.GetHashCode();
-                hashCode = hashCode * 467 + UnderlyingObjectV2.EdgeTraversalOptions;
+                hashCode = hashCode * 467 + UnderlyingObject.EdgeTraversalOptions;
 
                 return hashCode;
             }

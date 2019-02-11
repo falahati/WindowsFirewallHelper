@@ -23,7 +23,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         {
             if (EnumHelper.HasFlag(profiles, FirewallProfiles.Public))
             {
-                throw new NotSupportedException("Public profile is not supported.");
+                throw new FirewallAPIv1NotSupportedException("Public profile is not supported.");
             }
 
             foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
@@ -32,7 +32,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        (INetFwOpenPort) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FwOpenPort"))
+                        COMHelper.CreateInstance<INetFwOpenPort>()
                     );
                 }
             }
@@ -59,7 +59,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// </summary>
         public static bool IsSupported
         {
-            get => Type.GetTypeFromProgID(@"HNetCfg.FwOpenPort") != null;
+            get => COMHelper.IsSupported<INetFwOpenPort>();
         }
 
         public ushort LocalPort
@@ -189,7 +189,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         }
 
         /// <inheritdoc />
-        /// <exception cref="NotSupportedException">
+        /// <exception cref="FirewallAPIv1NotSupportedException">
         ///     The array passes to this property as value should have one and
         ///     only one element
         /// </exception>
@@ -206,7 +206,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
 
                 if (value.Length > 1)
                 {
-                    throw new NotSupportedException(
+                    throw new FirewallAPIv1NotSupportedException(
                         "This property only accept an array of one element length.");
                 }
 

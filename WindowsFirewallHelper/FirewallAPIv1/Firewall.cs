@@ -17,12 +17,10 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         {
             if (!IsSupported)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("This type is not supported in this environment.");
             }
 
-            UnderlyingObject = (INetFwMgr) Activator.CreateInstance(
-                Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false)
-            );
+            UnderlyingObject = COMHelper.CreateInstance<INetFwMgr>();
 
             Profiles = new[]
             {
@@ -41,7 +39,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
 
         public static bool IsSupported
         {
-            get => Type.GetTypeFromProgID(@"HNetCfg.FwMgr", false) == null;
+            get => COMHelper.IsSupported<INetFwMgr>();
         }
 
 
@@ -248,21 +246,11 @@ namespace WindowsFirewallHelper.FirewallAPIv1
 
         public FirewallProfile GetProfile(FirewallProfiles profile)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             return Profiles.FirstOrDefault(p => p.Type == profile) ?? throw new FirewallAPIv1NotSupportedException();
         }
 
         public FirewallProfile GetProfile()
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             return Profiles.FirstOrDefault(p => p.IsActive);
         }
     }

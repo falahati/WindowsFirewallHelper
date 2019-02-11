@@ -143,7 +143,8 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             {
                 return Type.ToString();
             }
-            catch (NotSupportedException)
+            // ReSharper disable once CatchAllClause
+            catch
             {
                 return base.ToString();
             }

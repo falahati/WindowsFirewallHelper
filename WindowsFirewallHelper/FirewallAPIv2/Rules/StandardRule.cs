@@ -37,23 +37,23 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
 
         /// <inheritdoc />
         /// <summary>
-        ///     Creates a new application rule for Windows Firewall with Advanced Security
+        ///     Creates a new general rule for Windows Firewall with Advanced Security
         /// </summary>
         /// <param name="name">Name of the rule</param>
         /// <param name="action">Action that this rule defines</param>
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
         // ReSharper disable once TooManyDependencies
-        public StandardRule(string name, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles)
+        public StandardRule(string name, FirewallAction action, FirewallDirection direction, FirewallProfiles profiles) : 
+            this(COMHelper.CreateInstance<INetFwRule>())
         {
-            UnderlyingObject = (INetFwRule) Activator.CreateInstance(Type.GetTypeFromProgID(@"HNetCfg.FWRule"));
             Name = name;
             Action = action;
             Direction = direction;
             IsEnable = true;
             Profiles = profiles;
         }
-
+        
         /// <inheritdoc />
         /// <summary>
         ///     Creates a new port rule for Windows Firewall with Advanced Security
@@ -186,7 +186,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// </summary>
         public static bool IsSupported
         {
-            get => Type.GetTypeFromProgID(@"HNetCfg.FWRule") != null;
+            get => COMHelper.IsSupported<INetFwRule>();
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
         /// <summary>
         ///     Returns the underlying Windows Firewall Object
         /// </summary>
-        public INetFwRule UnderlyingObject { get; }
+        protected INetFwRule UnderlyingObject { get; }
 
         public bool Equals(IRule other)
         {
@@ -705,8 +705,11 @@ namespace WindowsFirewallHelper.FirewallAPIv2.Rules
                 return hashCode;
             }
         }
-
-
+        public INetFwRule GetCOMObject()
+        {
+            return UnderlyingObject;
+        }
+        
         /// <inheritdoc />
         public override string ToString()
         {

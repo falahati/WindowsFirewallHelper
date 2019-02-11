@@ -105,7 +105,7 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             {
                 if (_profile == NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_ALL)
                 {
-                    throw new NotSupportedException();
+                    throw new ArgumentOutOfRangeException();
                 }
 
                 return (FirewallProfiles) _profile;
@@ -135,7 +135,8 @@ namespace WindowsFirewallHelper.FirewallAPIv2
             {
                 return Type.ToString();
             }
-            catch (NotSupportedException)
+            // ReSharper disable once CatchAllClause
+            catch (Exception)
             {
                 return base.ToString();
             }

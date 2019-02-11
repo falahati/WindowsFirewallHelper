@@ -1,11 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using WindowsFirewallHelper.Helpers;
 
 namespace WindowsFirewallHelper.COMInterop
 {
     [Guid("71881699-18F4-458B-B892-3FFCE5E07F75")]
     [ComImport]
-    internal interface INetFwProduct
+    [ComClassProgId("HNetCfg.FwProduct")]
+    public interface INetFwProduct
     {
         [DispId(1)]
         object RuleCategories

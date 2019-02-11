@@ -225,7 +225,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1.Rules
         /// <inheritdoc />
         public string Name
         {
-            get => NativeHelper.ResolveStringResource(UnderlyingObjects.Values.First().Name);
+            get => UnderlyingObjects.Values.First().Name;
             set
             {
                 foreach (var openPort in UnderlyingObjects.Values)

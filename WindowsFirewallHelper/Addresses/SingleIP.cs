@@ -100,7 +100,7 @@ namespace WindowsFirewallHelper.Addresses
                 return true;
             }
 
-            return ToIPAddress().Equals(other);
+            return base.Equals(other);
         }
 
         /// <inheritdoc />
@@ -116,7 +116,7 @@ namespace WindowsFirewallHelper.Addresses
                 return true;
             }
 
-            return ToIPAddress().Equals(other.ToIPAddress());
+            return Equals(other.ToIPAddress());
         }
 
         /// <summary>

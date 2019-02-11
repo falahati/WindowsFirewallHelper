@@ -104,7 +104,7 @@ namespace WindowsFirewallHelper
             string filename)
         {
             return ((IFirewall) this).CreateApplicationRule(profile, name, action, filename,
-                FirewallProtocol.Any);
+                FirewallProtocol.TCP);
         }
 
         /// <inheritdoc />
@@ -184,7 +184,7 @@ namespace WindowsFirewallHelper
             ushort portNumber)
         {
             return ((IFirewall) this).CreatePortRule(profile, name, action, portNumber,
-                FirewallProtocol.Any);
+                FirewallProtocol.TCP);
         }
 
         /// <inheritdoc />

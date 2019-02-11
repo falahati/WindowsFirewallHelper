@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2;net4</TargetFrameworks>
     <PackageId>WindowsFirewallHelper</PackageId>
-    <Version>2.0.0.2-alpha</Version>
+    <Version>2.0.0.4-alpha</Version>
     <Authors>Soroush Falahati</Authors>
     <Description>A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list. Supporting Windows XP+.</Description>
     <PackageLicenseUrl>https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE</PackageLicenseUrl>
@@ -13,7 +13,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <IncludeSource>true</IncludeSource>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Copyright>Copyright (c) 2016 Soroush Falahati</Copyright>
+    <Copyright>Copyright (c) 2019 Soroush Falahati</Copyright>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Title>Windows Firewall Helper (Win XP+)</Title>
   </PropertyGroup>

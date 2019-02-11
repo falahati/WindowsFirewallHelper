@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv1.Rules;
@@ -22,11 +23,11 @@ namespace WindowsFirewallHelper.FirewallAPIv1
 
             UnderlyingObject = COMHelper.CreateInstance<INetFwMgr>();
 
-            Profiles = new[]
+            Profiles = new ReadOnlyCollection<FirewallProfile>(new[]
             {
                 new FirewallProfile(this, FirewallProfiles.Domain),
                 new FirewallProfile(this, FirewallProfiles.Private)
-            };
+            });
         }
 
         /// <summary>
@@ -41,15 +42,9 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         {
             get => COMHelper.IsSupported<INetFwMgr>();
         }
-
-
-        public FirewallProfile[] Profiles { get; }
-
-        public FirewallRulesCollection Rules
-        {
-            get => new FirewallRulesCollection(Profiles);
-        }
-
+        
+        public ReadOnlyCollection<FirewallProfile> Profiles { get; }
+        
         internal INetFwMgr UnderlyingObject { get; }
 
         /// <inheritdoc />
@@ -211,7 +206,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         /// </exception>
         IProfile IFirewall.GetActiveProfile()
         {
-            return GetProfile();
+            return GetActiveProfile();
         }
 
         /// <inheritdoc />
@@ -233,15 +228,15 @@ namespace WindowsFirewallHelper.FirewallAPIv1
         }
 
         /// <inheritdoc />
-        IProfile[] IFirewall.Profiles
+        ReadOnlyCollection<IProfile> IFirewall.Profiles
         {
-            get => Profiles.Cast<IProfile>().ToArray();
+            get => new ReadOnlyCollection<IProfile>(Profiles.Cast<IProfile>().ToArray());
         }
 
         /// <inheritdoc />
-        ICollection<IRule> IFirewall.Rules
+        public ICollection<IRule> Rules
         {
-            get => Rules;
+            get => new FirewallRulesCollection(Profiles.ToArray());
         }
 
         public FirewallProfile GetProfile(FirewallProfiles profile)
@@ -249,7 +244,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             return Profiles.FirstOrDefault(p => p.Type == profile) ?? throw new FirewallAPIv1NotSupportedException();
         }
 
-        public FirewallProfile GetProfile()
+        public FirewallProfile GetActiveProfile()
         {
             return Profiles.FirstOrDefault(p => p.IsActive);
         }

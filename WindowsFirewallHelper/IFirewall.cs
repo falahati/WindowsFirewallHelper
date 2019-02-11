@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace WindowsFirewallHelper
 {
@@ -15,7 +16,7 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Gets the list of all available profiles of the firewall
         /// </summary>
-        IProfile[] Profiles { get; }
+        ReadOnlyCollection<IProfile> Profiles { get; }
 
         /// <summary>
         ///     Gets the list of all registered rules of the firewall

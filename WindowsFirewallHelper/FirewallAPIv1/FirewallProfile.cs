@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using WindowsFirewallHelper.COMInterop;
 
 namespace WindowsFirewallHelper.FirewallAPIv1
@@ -18,7 +19,7 @@ namespace WindowsFirewallHelper.FirewallAPIv1
             _firewall = firewall;
         }
 
-        public FirewallRulesCollection Rules
+        public ICollection<IRule> Rules
         {
             get => new FirewallRulesCollection(new[] {this});
         }

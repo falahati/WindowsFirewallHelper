@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallAPIv2.Rules;
@@ -18,12 +19,12 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
             UnderlyingObject = COMHelper.CreateInstance<INetFwPolicy2>();
 
-            Profiles = new IProfile[]
+            Profiles = new ReadOnlyCollection<FirewallProfile>(new[]
             {
                 new FirewallProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_DOMAIN),
                 new FirewallProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PRIVATE),
                 new FirewallProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PUBLIC)
-            };
+            });
         }
 
         /// <summary>
@@ -50,6 +51,11 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         {
             get => (FirewallModifyStatePolicy) UnderlyingObject.LocalPolicyModifyState;
         }
+
+        /// <summary>
+        ///     Gets the list of all available profiles of the firewall
+        /// </summary>
+        public ReadOnlyCollection<FirewallProfile> Profiles { get; }
 
         public IEnumerable<FirewallRuleGroup> RuleGroups
         {
@@ -208,7 +214,10 @@ namespace WindowsFirewallHelper.FirewallAPIv2
         /// <summary>
         ///     Gets the list of all available profiles of the firewall
         /// </summary>
-        public IProfile[] Profiles { get; }
+        ReadOnlyCollection<IProfile> IFirewall.Profiles
+        {
+            get => new ReadOnlyCollection<IProfile>(Profiles.Cast<IProfile>().ToArray());
+        }
 
         /// <inheritdoc />
         ICollection<IRule> IFirewall.Rules

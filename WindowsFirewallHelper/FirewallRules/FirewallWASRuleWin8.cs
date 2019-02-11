@@ -56,7 +56,7 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <param name="direction">Data direction in which this rule applies to</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
         // ReSharper disable once TooManyDependencies
-        protected FirewallWASRuleWin8(
+        public FirewallWASRuleWin8(
             string name,
             FirewallAction action,
             FirewallDirection direction,

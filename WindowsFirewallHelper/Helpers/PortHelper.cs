@@ -42,7 +42,7 @@ namespace WindowsFirewallHelper.Helpers
                             ushort.TryParse(portParts[0].Trim(), out var start) &&
                             ushort.TryParse(portParts[1].Trim(), out var end))
                         {
-                            return Enumerable.Range(start, end - start).Select(p => (ushort) p);
+                            return Enumerable.Range(start, end - start + 1).Select(p => (ushort) p);
                         }
 
                         if (portParts.Length == 1 && ushort.TryParse(port.Trim(), out var portNumber))

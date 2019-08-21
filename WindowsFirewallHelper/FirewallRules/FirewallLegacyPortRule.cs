@@ -135,6 +135,13 @@ namespace WindowsFirewallHelper.FirewallRules
             set => throw new FirewallLegacyNotSupportedException();
         }
 
+        /// <inheritdoc />
+        public string ApplicationName
+        {
+            get => string.Empty;
+            set => throw new ArgumentException(
+                "You can not change the identity of a port rule. Consider creating another rule.");
+        }
 
         /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
@@ -313,6 +320,14 @@ namespace WindowsFirewallHelper.FirewallRules
                     throw new ArgumentOutOfRangeException();
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public string ServiceName
+        {
+            get => string.Empty;
+            set => throw new ArgumentException(
+                "You can not change the identity of a port rule. Consider creating another rule.");
         }
 
         /// <summary>

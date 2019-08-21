@@ -13,6 +13,11 @@ namespace WindowsFirewallHelper
         FirewallAction Action { get; set; }
 
         /// <summary>
+        ///     Gets or sets the name of the application that this rule is about
+        /// </summary>
+        string ApplicationName { get; set; }
+
+        /// <summary>
         ///     Gets or sets the data direction that the rule applies to
         /// </summary>
         FirewallDirection Direction { get; set; }
@@ -71,5 +76,10 @@ namespace WindowsFirewallHelper
         ///     Gets or sets the scope that the rule applies to
         /// </summary>
         FirewallScope Scope { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the name of the service that this rule is about
+        /// </summary>
+        string ServiceName { get; set; }
     }
 }

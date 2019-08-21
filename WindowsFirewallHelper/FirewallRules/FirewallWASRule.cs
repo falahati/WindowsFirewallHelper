@@ -83,15 +83,6 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <summary>
-        ///     Gets or sets the address of the executable file that this rule is about
-        /// </summary>
-        public string ApplicationName
-        {
-            get => UnderlyingObject.ApplicationName;
-            set => UnderlyingObject.ApplicationName = value;
-        }
-
-        /// <summary>
         ///     Gets or sets the description string of this rule
         /// </summary>
         public string Description
@@ -195,15 +186,6 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <summary>
-        ///     Gets or sets the name of the service that this rule is about
-        /// </summary>
-        public string ServiceName
-        {
-            get => UnderlyingObject.serviceName;
-            set => UnderlyingObject.serviceName = value;
-        }
-
-        /// <summary>
         ///     Returns the underlying Windows Firewall Object
         /// </summary>
         protected INetFwRule UnderlyingObject { get; }
@@ -282,6 +264,13 @@ namespace WindowsFirewallHelper.FirewallRules
             set => UnderlyingObject.Action = value == FirewallAction.Allow
                 ? NetFwAction.Allow
                 : NetFwAction.Block;
+        }
+
+        /// <inheritdoc />
+        public string ApplicationName
+        {
+            get => UnderlyingObject.ApplicationName;
+            set => UnderlyingObject.ApplicationName = value;
         }
 
         /// <inheritdoc />
@@ -603,6 +592,13 @@ namespace WindowsFirewallHelper.FirewallRules
                         );
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public string ServiceName
+        {
+            get => UnderlyingObject.serviceName;
+            set => UnderlyingObject.serviceName = value;
         }
 
         /// <summary>

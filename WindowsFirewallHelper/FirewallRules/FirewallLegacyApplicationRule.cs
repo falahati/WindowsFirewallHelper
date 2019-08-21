@@ -46,7 +46,7 @@ namespace WindowsFirewallHelper.FirewallRules
             }
 
             Name = name;
-            ExecutableAddress = processAddress;
+            ApplicationName = processAddress;
             IsEnable = true;
             Scope = FirewallScope.All;
             IsEnable = true;
@@ -56,21 +56,6 @@ namespace WindowsFirewallHelper.FirewallRules
             Dictionary<FirewallProfiles, INetFwAuthorizedApplication> authorizedApplications)
         {
             UnderlyingObjects = authorizedApplications;
-        }
-
-        /// <summary>
-        ///     Gets or sets the address of the executable file that this rule is about
-        /// </summary>
-        public string ExecutableAddress
-        {
-            get => UnderlyingObjects.Values.First().ProcessImageFileName;
-            set
-            {
-                foreach (var authorizedApplication in UnderlyingObjects.Values)
-                {
-                    authorizedApplication.ProcessImageFileName = value;
-                }
-            }
         }
 
         /// <summary>
@@ -143,6 +128,20 @@ namespace WindowsFirewallHelper.FirewallRules
             set => throw new FirewallLegacyNotSupportedException();
         }
 
+        /// <summary>
+        ///     Gets or sets the address of the executable file that this rule is about
+        /// </summary>
+        public string ApplicationName
+        {
+            get => UnderlyingObjects.Values.First().ProcessImageFileName;
+            set
+            {
+                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                {
+                    authorizedApplication.ProcessImageFileName = value;
+                }
+            }
+        }
 
         /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
@@ -291,6 +290,13 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
+        /// <inheritdoc />
+        public string ServiceName
+        {
+            get => string.Empty;
+            set => throw new ArgumentException(
+                "You can not change the identity of an application rule. Consider creating another rule.");
+        }
 
         /// <summary>
         ///     Compares two <see cref="FirewallLegacyApplicationRule" /> objects for equality

@@ -23,12 +23,12 @@ namespace WindowsFirewallHelper
             {
                 switch (Version)
                 {
-                    case FirewallAPIVersion.FirewallAPIv1:
+                    case FirewallAPIVersion.FirewallLegacy:
 
                         return FirewallLegacy.Instance;
-                    case FirewallAPIVersion.FirewallAPIv2:
-                    case FirewallAPIVersion.FirewallAPIv2Win7:
-                    case FirewallAPIVersion.FirewallAPIv2Win8:
+                    case FirewallAPIVersion.FirewallWAS:
+                    case FirewallAPIVersion.FirewallWASWin7:
+                    case FirewallAPIVersion.FirewallWASWin8:
 
                         return FirewallWAS.Instance;
                 }
@@ -37,18 +37,21 @@ namespace WindowsFirewallHelper
             }
         }
 
+        /// <summary>
+        /// Gets a Boolean value indicating if the firewall service is currently running
+        /// </summary>
         public static bool IsServiceRunning
         {
             get
             {
                 switch (Version)
                 {
-                    case FirewallAPIVersion.FirewallAPIv1:
+                    case FirewallAPIVersion.FirewallLegacy:
 
                         return new ServiceController("SharedAccess").Status == ServiceControllerStatus.Running;
-                    case FirewallAPIVersion.FirewallAPIv2:
-                    case FirewallAPIVersion.FirewallAPIv2Win7:
-                    case FirewallAPIVersion.FirewallAPIv2Win8:
+                    case FirewallAPIVersion.FirewallWAS:
+                    case FirewallAPIVersion.FirewallWASWin7:
+                    case FirewallAPIVersion.FirewallWASWin8:
 
                         return new ServiceController("MpsSvc").Status == ServiceControllerStatus.Running;
                 }
@@ -57,7 +60,6 @@ namespace WindowsFirewallHelper
             }
         }
 
-
         /// <summary>
         ///     Returns the list of all registered third party firewalls
         /// </summary>
@@ -65,7 +67,6 @@ namespace WindowsFirewallHelper
         {
             get => new FirewallProductsCollection(GetProducts());
         }
-
 
         /// <summary>
         ///     Returns the API version of the current active Windows Firewall
@@ -78,20 +79,20 @@ namespace WindowsFirewallHelper
                 {
                     if (FirewallWASRuleWin8.IsSupported)
                     {
-                        return FirewallAPIVersion.FirewallAPIv2Win8;
+                        return FirewallAPIVersion.FirewallWASWin8;
                     }
 
                     if (FirewallWASRuleWin7.IsSupported)
                     {
-                        return FirewallAPIVersion.FirewallAPIv2Win7;
+                        return FirewallAPIVersion.FirewallWASWin7;
                     }
 
-                    return FirewallAPIVersion.FirewallAPIv2;
+                    return FirewallAPIVersion.FirewallWAS;
                 }
 
                 if (FirewallLegacy.IsSupported)
                 {
-                    return FirewallAPIVersion.FirewallAPIv1;
+                    return FirewallAPIVersion.FirewallLegacy;
                 }
 
                 return FirewallAPIVersion.None;

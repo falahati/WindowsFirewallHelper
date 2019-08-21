@@ -28,6 +28,7 @@ namespace WindowsFirewallHelper.FirewallRules
             }
 
             UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwOpenPort>();
+
             foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
             {
                 if (profiles.HasFlag(profile))
@@ -64,6 +65,9 @@ namespace WindowsFirewallHelper.FirewallRules
             get => ComHelper.IsSupported<INetFwOpenPort>();
         }
 
+        /// <summary>
+        ///     Gets or sets the local port that the rule applies to
+        /// </summary>
         public ushort LocalPort
         {
             get => (ushort) UnderlyingObjects.Values.First().Port;
@@ -76,34 +80,10 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
-        /// <inheritdoc />
-        public FirewallProfiles Profiles
-        {
-            get
-            {
-                return UnderlyingObjects.Keys.ToArray()
-                    .Aggregate(
-                        (FirewallProfiles) 0,
-                        (profiles, profile) => profiles & profile
-                    );
-            }
-        }
-
-        /// <summary>
-        ///     Returns the underlying Windows Firewall Object
-        /// </summary>
         private Dictionary<FirewallProfiles, INetFwOpenPort> UnderlyingObjects { get; }
 
-        /// <summary>
-        ///     Determines whether the specified<see cref="FirewallLegacyPortRule" /> is equal to the current
-        ///     <see cref="FirewallLegacyPortRule" />.
-        /// </summary>
-        /// <param name="other"> The object to compare with the current object.</param>
-        /// <returns>
-        ///     true if the specified <see cref="FirewallLegacyPortRule" /> is equal to the current
-        ///     <see cref="FirewallLegacyPortRule" />;
-        ///     otherwise, false.
-        /// </returns>
+
+        /// <inheritdoc />
         public bool Equals(FirewallLegacyPortRule other)
         {
             if (other == null)
@@ -140,6 +120,7 @@ namespace WindowsFirewallHelper.FirewallRules
             return true;
         }
 
+        /// <inheritdoc />
         public bool Equals(IFirewallRule other)
         {
             return Equals(other as FirewallLegacyPortRule);
@@ -239,6 +220,19 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
+        /// <inheritdoc />
+        public FirewallProfiles Profiles
+        {
+            get
+            {
+                return UnderlyingObjects.Keys.ToArray()
+                    .Aggregate(
+                        (FirewallProfiles) 0,
+                        (profiles, profile) => profiles & profile
+                    );
+            }
+        }
+
 
         /// <inheritdoc />
         /// <exception cref="NotSupportedException">Only acceptable values are UDP, TCP and Any</exception>
@@ -256,11 +250,10 @@ namespace WindowsFirewallHelper.FirewallRules
 
                 foreach (var openPort in UnderlyingObjects.Values)
                 {
-                    openPort.Protocol = (NET_FW_IP_PROTOCOL) value.ProtocolNumber;
+                    openPort.Protocol = (NetFwIPProtocol) value.ProtocolNumber;
                 }
             }
         }
-
 
         /// <inheritdoc />
         public IAddress[] RemoteAddresses
@@ -278,7 +271,6 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
-
         /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
         ushort[] IFirewallRule.RemotePorts
@@ -286,7 +278,6 @@ namespace WindowsFirewallHelper.FirewallRules
             get => new ushort[0];
             set => throw new FirewallLegacyNotSupportedException();
         }
-
 
         /// <inheritdoc />
         public FirewallScope Scope
@@ -305,7 +296,7 @@ namespace WindowsFirewallHelper.FirewallRules
 
                     foreach (var openPort in UnderlyingObjects.Values)
                     {
-                        openPort.Scope = NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET;
+                        openPort.Scope = NetFwScope.LocalSubnet;
                     }
                 }
                 else if (value == FirewallScope.All)
@@ -314,7 +305,7 @@ namespace WindowsFirewallHelper.FirewallRules
 
                     foreach (var openPort in UnderlyingObjects.Values)
                     {
-                        openPort.Scope = NET_FW_SCOPE.NET_FW_SCOPE_ALL;
+                        openPort.Scope = NetFwScope.All;
                     }
                 }
                 else
@@ -367,6 +358,11 @@ namespace WindowsFirewallHelper.FirewallRules
             return FriendlyName;
         }
 
+        /// <summary>
+        ///     Returns the rule underlying object for an specific profile
+        /// </summary>
+        /// <param name="profile">The firewall profile to get the underlying COM object of this rule for</param>
+        /// <returns>The underlying COM object of this rule</returns>
         // ReSharper disable once FlagArgument
         public INetFwOpenPort GetCOMObject(FirewallProfiles profile)
         {

@@ -12,16 +12,16 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Domain Profile
         /// </summary>
-        Domain = NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_DOMAIN,
+        Domain = NetFwProfileType2.Domain,
 
         /// <summary>
         ///     Private Profile
         /// </summary>
-        Private = NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PRIVATE,
+        Private = NetFwProfileType2.Private,
 
         /// <summary>
         ///     Public Profile
         /// </summary>
-        Public = NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PUBLIC
+        Public = NetFwProfileType2.Public
     }
 }

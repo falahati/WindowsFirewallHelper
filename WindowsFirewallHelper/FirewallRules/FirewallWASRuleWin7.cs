@@ -10,7 +10,6 @@ namespace WindowsFirewallHelper.FirewallRules
     /// </summary>
     public class FirewallWASRuleWin7 : FirewallWASRule, IEquatable<FirewallWASRuleWin7>
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -29,7 +28,6 @@ namespace WindowsFirewallHelper.FirewallRules
         {
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a new port rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -65,7 +63,6 @@ namespace WindowsFirewallHelper.FirewallRules
         {
         }
 
-        /// <inheritdoc />
         // ReSharper disable once SuggestBaseTypeForParameter
         internal FirewallWASRuleWin7(INetFwRule2 rule) : base(rule)
         {
@@ -104,6 +101,9 @@ namespace WindowsFirewallHelper.FirewallRules
             get => FirewallWASRule.IsSupported && ComHelper.IsSupported<INetFwRule2>();
         }
 
+        /// <summary>
+        ///     Returns the underlying Windows Firewall Object
+        /// </summary>
         protected new INetFwRule2 UnderlyingObject
         {
             get => base.UnderlyingObject as INetFwRule2;
@@ -130,11 +130,23 @@ namespace WindowsFirewallHelper.FirewallRules
             return UnderlyingObject.EdgeTraversalOptions == other.UnderlyingObject.EdgeTraversalOptions;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="FirewallWASRuleWin7" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallWASRuleWin7" /> object</param>
+        /// <param name="right">A <see cref="FirewallWASRuleWin7" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(FirewallWASRuleWin7 left, FirewallWASRuleWin7 right)
         {
             return Equals(left, right) || left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="FirewallWASRuleWin7" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallWASRuleWin7" /> object</param>
+        /// <param name="right">A <see cref="FirewallWASRuleWin7" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(FirewallWASRuleWin7 left, FirewallWASRuleWin7 right)
         {
             return !(left == right);
@@ -158,6 +170,10 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
+        /// <summary>
+        ///     Returns the underlying COM object
+        /// </summary>
+        /// <returns>The underlying COM object</returns>
         public new INetFwRule2 GetCOMObject()
         {
             return UnderlyingObject;

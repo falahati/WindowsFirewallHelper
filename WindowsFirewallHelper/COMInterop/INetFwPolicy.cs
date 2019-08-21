@@ -19,6 +19,6 @@ namespace WindowsFirewallHelper.COMInterop
         [DispId(2)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [return: MarshalAs(UnmanagedType.Interface)]
-        INetFwProfile GetProfileByType([In] NET_FW_PROFILE_TYPE profileType);
+        INetFwProfile GetProfileByType([In] NetFwProfileType profileType);
     }
 }

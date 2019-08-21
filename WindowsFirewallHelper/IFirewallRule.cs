@@ -18,7 +18,7 @@ namespace WindowsFirewallHelper
         FirewallDirection Direction { get; set; }
 
         /// <summary>
-        ///     Gets or sets the name of the rule
+        ///     Gets or sets the resolved name of the rule
         /// </summary>
         string FriendlyName { get; }
 

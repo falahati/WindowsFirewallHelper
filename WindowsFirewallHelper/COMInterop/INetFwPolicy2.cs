@@ -19,47 +19,47 @@ namespace WindowsFirewallHelper.COMInterop
 
         [DispId(2)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        bool get_FirewallEnabled([In] NET_FW_PROFILE_TYPE2 profileType);
+        bool get_FirewallEnabled([In] NetFwProfileType2 profileType);
 
         [DispId(2)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void set_FirewallEnabled([In] NET_FW_PROFILE_TYPE2 profileType, [In] bool enabled);
+        void set_FirewallEnabled([In] NetFwProfileType2 profileType, [In] bool enabled);
 
         [DispId(3)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [return: MarshalAs(UnmanagedType.Struct)]
-        object get_ExcludedInterfaces([In] NET_FW_PROFILE_TYPE2 profileType);
+        object get_ExcludedInterfaces([In] NetFwProfileType2 profileType);
 
         [DispId(3)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void set_ExcludedInterfaces(
-            [In] NET_FW_PROFILE_TYPE2 profileType,
+            [In] NetFwProfileType2 profileType,
             [MarshalAs(UnmanagedType.Struct)] [In] object interfaces);
 
         [DispId(4)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        bool get_BlockAllInboundTraffic([In] NET_FW_PROFILE_TYPE2 profileType);
+        bool get_BlockAllInboundTraffic([In] NetFwProfileType2 profileType);
 
         [DispId(4)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void set_BlockAllInboundTraffic([In] NET_FW_PROFILE_TYPE2 profileType, [In] bool block);
+        void set_BlockAllInboundTraffic([In] NetFwProfileType2 profileType, [In] bool block);
 
         [DispId(5)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        bool get_NotificationsDisabled([In] NET_FW_PROFILE_TYPE2 profileType);
+        bool get_NotificationsDisabled([In] NetFwProfileType2 profileType);
 
         [DispId(5)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void set_NotificationsDisabled([In] NET_FW_PROFILE_TYPE2 profileType, [In] bool disabled);
+        void set_NotificationsDisabled([In] NetFwProfileType2 profileType, [In] bool disabled);
 
         [DispId(6)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        bool get_UnicastResponsesToMulticastBroadcastDisabled([In] NET_FW_PROFILE_TYPE2 profileType);
+        bool get_UnicastResponsesToMulticastBroadcastDisabled([In] NetFwProfileType2 profileType);
 
         [DispId(6)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void set_UnicastResponsesToMulticastBroadcastDisabled(
-            [In] NET_FW_PROFILE_TYPE2 profileType,
+            [In] NetFwProfileType2 profileType,
             [In] bool disabled
         );
 
@@ -99,26 +99,26 @@ namespace WindowsFirewallHelper.COMInterop
 
         [DispId(12)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        NET_FW_ACTION get_DefaultInboundAction([In] NET_FW_PROFILE_TYPE2 profileType);
+        NetFwAction get_DefaultInboundAction([In] NetFwProfileType2 profileType);
 
         [DispId(12)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void set_DefaultInboundAction([In] NET_FW_PROFILE_TYPE2 profileType, [In] NET_FW_ACTION action);
+        void set_DefaultInboundAction([In] NetFwProfileType2 profileType, [In] NetFwAction action);
 
         [DispId(13)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        NET_FW_ACTION get_DefaultOutboundAction([In] NET_FW_PROFILE_TYPE2 profileType);
+        NetFwAction get_DefaultOutboundAction([In] NetFwProfileType2 profileType);
 
         [DispId(13)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void set_DefaultOutboundAction([In] NET_FW_PROFILE_TYPE2 profileType, [In] NET_FW_ACTION action);
+        void set_DefaultOutboundAction([In] NetFwProfileType2 profileType, [In] NetFwAction action);
 
         [DispId(14)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         bool get_IsRuleGroupCurrentlyEnabled([MarshalAs(UnmanagedType.BStr)] [In] string group);
 
         [DispId(15)]
-        NET_FW_MODIFY_STATE LocalPolicyModifyState
+        NetFwModifyState LocalPolicyModifyState
         {
             [DispId(15)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

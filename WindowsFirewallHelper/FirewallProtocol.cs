@@ -16,7 +16,7 @@ namespace WindowsFirewallHelper
         ///     Matches both TCP and UDP protocols for port rules and all protocols for other type of rules
         /// </summary>
         public static readonly FirewallProtocol Any =
-            new FirewallProtocol((int) NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_ANY);
+            new FirewallProtocol((int) NetFwIPProtocol.Any);
 
         /// <summary>
         ///     Generic Routing Encapsulation Protocol
@@ -82,13 +82,13 @@ namespace WindowsFirewallHelper
         ///     Transmission Control Protocol
         /// </summary>
         public static readonly FirewallProtocol TCP =
-            new FirewallProtocol((int) NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_TCP);
+            new FirewallProtocol((int) NetFwIPProtocol.TCP);
 
         /// <summary>
         ///     User Datagram Protocol
         /// </summary>
         public static readonly FirewallProtocol UDP =
-            new FirewallProtocol((int) NET_FW_IP_PROTOCOL.NET_FW_IP_PROTOCOL_UDP);
+            new FirewallProtocol((int) NetFwIPProtocol.UDP);
 
         /// <summary>
         ///     Virtual Router Redundancy Protocol

@@ -16,16 +16,19 @@ namespace WindowsFirewallHelper
     /// </summary>
     public class FirewallWAS : IFirewall
     {
-        /// <inheritdoc />
+        /// <summary>
+        ///     Creates a new instance of this class on the current thread and leaves the cross thread control to the user of the
+        ///     class.
+        /// </summary>
         public FirewallWAS()
         {
             UnderlyingObject = ComHelper.CreateInstance<INetFwPolicy2>();
 
             Profiles = new ReadOnlyCollection<FirewallWASProfile>(new[]
             {
-                new FirewallWASProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_DOMAIN),
-                new FirewallWASProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PRIVATE),
-                new FirewallWASProfile(this, NET_FW_PROFILE_TYPE2.NET_FW_PROFILE2_PUBLIC)
+                new FirewallWASProfile(this, NetFwProfileType2.Domain),
+                new FirewallWASProfile(this, NetFwProfileType2.Private),
+                new FirewallWASProfile(this, NetFwProfileType2.Public)
             });
         }
 
@@ -59,6 +62,9 @@ namespace WindowsFirewallHelper
         /// </summary>
         public ReadOnlyCollection<FirewallWASProfile> Profiles { get; }
 
+        /// <summary>
+        ///     Gets the list of all registered rule groups of the firewall
+        /// </summary>
         public IEnumerable<FirewallWASRuleGroup> RuleGroups
         {
             get
@@ -71,6 +77,9 @@ namespace WindowsFirewallHelper
             }
         }
 
+        /// <summary>
+        ///     Gets the list of all registered rules of the firewall
+        /// </summary>
         public ICollection<FirewallWASRule> Rules
         {
             get => new FirewallWASRulesCollection<FirewallWASRule>(UnderlyingObject.Rules);
@@ -235,8 +244,7 @@ namespace WindowsFirewallHelper
         ///     Returns the active firewall profile, if any
         /// </summary>
         /// <returns>
-        ///     The active firewall profile object implementing <see cref="IFirewallProfile" /> interface or null if no firewall
-        ///     profile is currently active
+        ///     The active firewall profile object or null if no firewall profile is currently active
         /// </returns>
         public FirewallWASProfile GetActiveProfile()
         {
@@ -247,7 +255,7 @@ namespace WindowsFirewallHelper
         ///     Returns a specific firewall profile
         /// </summary>
         /// <param name="profile">Requested firewall profile</param>
-        /// <returns>Firewall profile object implementing <see cref="IFirewallProfile" /> interface</returns>
+        /// <returns>Firewall profile object</returns>
         /// <exception cref="FirewallWASNotSupportedException">The asked profile is not supported with this class</exception>
         public FirewallWASProfile GetProfile(FirewallProfiles profile)
         {

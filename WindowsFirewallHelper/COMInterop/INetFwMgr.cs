@@ -19,7 +19,7 @@ namespace WindowsFirewallHelper.COMInterop
         }
 
         [DispId(2)]
-        NET_FW_PROFILE_TYPE CurrentProfileType
+        NetFwProfileType CurrentProfileType
         {
             [DispId(2)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -35,10 +35,10 @@ namespace WindowsFirewallHelper.COMInterop
         // ReSharper disable once TooManyArguments
         void IsPortAllowed(
             [MarshalAs(UnmanagedType.BStr)] [In] string imageFileName,
-            [In] NET_FW_IP_VERSION ipVersion,
+            [In] NetFwIPVersion ipVersion,
             [In] int portNumber,
             [MarshalAs(UnmanagedType.BStr)] [In] string localAddress,
-            [In] NET_FW_IP_PROTOCOL ipProtocol,
+            [In] NetFwIPProtocol ipProtocol,
             [MarshalAs(UnmanagedType.Struct)] out object allowed,
             [MarshalAs(UnmanagedType.Struct)] out object restricted
         );
@@ -47,7 +47,7 @@ namespace WindowsFirewallHelper.COMInterop
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         // ReSharper disable once TooManyArguments
         void IsIcmpTypeAllowed(
-            [In] NET_FW_IP_VERSION ipVersion,
+            [In] NetFwIPVersion ipVersion,
             [MarshalAs(UnmanagedType.BStr)] [In] string localAddress,
             [In] byte type,
             [MarshalAs(UnmanagedType.Struct)] out object allowed,

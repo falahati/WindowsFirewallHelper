@@ -148,7 +148,7 @@ namespace WindowsFirewallHelper.COMInterop
         }
 
         [DispId(11)]
-        NET_FW_RULE_DIRECTION Direction
+        NetFwRuleDirection Direction
         {
             [DispId(11)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -238,7 +238,7 @@ namespace WindowsFirewallHelper.COMInterop
         }
 
         [DispId(18)]
-        NET_FW_ACTION Action
+        NetFwAction Action
         {
             [DispId(18)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

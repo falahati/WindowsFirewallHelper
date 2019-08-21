@@ -10,11 +10,11 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Inbound data
         /// </summary>
-        Inbound = NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_IN,
+        Inbound = NetFwRuleDirection.Inbound,
 
         /// <summary>
         ///     Outbound data
         /// </summary>
-        Outbound = NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_OUT
+        Outbound = NetFwRuleDirection.Outbound
     }
 }

@@ -8,7 +8,7 @@ namespace WindowsFirewallHelper.COMInterop
     internal interface INetFwProfile
     {
         [DispId(1)]
-        NET_FW_PROFILE_TYPE Type
+        NetFwProfileType Type
         {
             [DispId(1)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

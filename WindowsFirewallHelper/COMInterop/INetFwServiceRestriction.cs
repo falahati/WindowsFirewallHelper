@@ -13,8 +13,8 @@ namespace WindowsFirewallHelper.COMInterop
         void RestrictService(
             [MarshalAs(UnmanagedType.BStr)] [In] string serviceName,
             [MarshalAs(UnmanagedType.BStr)] [In] string appName,
-            [In] bool RestrictService,
-            [In] bool serviceSidRestricted
+            [In] bool restrictService,
+            [In] bool serviceSIDRestricted
         );
 
         [DispId(2)]

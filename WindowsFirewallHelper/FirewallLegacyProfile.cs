@@ -20,6 +20,9 @@ namespace WindowsFirewallHelper
             _firewall = firewall;
         }
 
+        /// <summary>
+        ///     Gets the list of all firewall rules for this profile
+        /// </summary>
         public ICollection<IFirewallRule> Rules
         {
             get => new FirewallLegacyRulesCollection(new[] {this});
@@ -101,14 +104,14 @@ namespace WindowsFirewallHelper
             set => UnderlyingObject.UnicastResponsesToMulticastBroadcastDisabled = !value;
         }
 
-        private static FirewallProfiles GetManagedProfileType(NET_FW_PROFILE_TYPE profile)
+        private static FirewallProfiles GetManagedProfileType(NetFwProfileType profile)
         {
             switch (profile)
             {
-                case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN:
+                case NetFwProfileType.Domain:
 
                     return FirewallProfiles.Domain;
-                case NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD:
+                case NetFwProfileType.Standard:
 
                     return FirewallProfiles.Private;
                 default:
@@ -117,16 +120,16 @@ namespace WindowsFirewallHelper
             }
         }
 
-        private static NET_FW_PROFILE_TYPE GetNativeProfileType(FirewallProfiles profile)
+        private static NetFwProfileType GetNativeProfileType(FirewallProfiles profile)
         {
             switch (profile)
             {
                 case FirewallProfiles.Domain:
 
-                    return NET_FW_PROFILE_TYPE.NET_FW_PROFILE_DOMAIN;
+                    return NetFwProfileType.Domain;
                 case FirewallProfiles.Private:
 
-                    return NET_FW_PROFILE_TYPE.NET_FW_PROFILE_STANDARD;
+                    return NetFwProfileType.Standard;
                 default:
 
                     throw new FirewallLegacyNotSupportedException();

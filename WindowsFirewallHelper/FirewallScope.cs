@@ -10,16 +10,16 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     All scopes
         /// </summary>
-        All = NET_FW_SCOPE.NET_FW_SCOPE_ALL,
+        All = NetFwScope.All,
 
         /// <summary>
         ///     Local subnet only
         /// </summary>
-        LocalSubnet = NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET,
+        LocalSubnet = NetFwScope.LocalSubnet,
 
         /// <summary>
         ///     Specific list of addresses
         /// </summary>
-        Specific = NET_FW_SCOPE.NET_FW_SCOPE_CUSTOM
+        Specific = NetFwScope.Custom
     }
 }

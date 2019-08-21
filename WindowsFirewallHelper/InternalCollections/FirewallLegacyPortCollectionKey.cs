@@ -6,7 +6,7 @@ namespace WindowsFirewallHelper.InternalCollections
     internal class FirewallLegacyPortCollectionKey : IEquatable<FirewallLegacyPortCollectionKey>
     {
         /// <inheritdoc />
-        public FirewallLegacyPortCollectionKey(int portNumber, NET_FW_IP_PROTOCOL protocolType)
+        public FirewallLegacyPortCollectionKey(int portNumber, NetFwIPProtocol protocolType)
         {
             PortNumber = portNumber;
             ProtocolType = protocolType;
@@ -14,7 +14,7 @@ namespace WindowsFirewallHelper.InternalCollections
 
 
         public int PortNumber { get; }
-        public NET_FW_IP_PROTOCOL ProtocolType { get; }
+        public NetFwIPProtocol ProtocolType { get; }
 
         /// <inheritdoc />
         public bool Equals(FirewallLegacyPortCollectionKey other)

@@ -24,7 +24,7 @@ namespace WindowsFirewallHelper.COMInterop
         }
 
         [DispId(2)]
-        NET_FW_IP_VERSION IpVersion
+        NetFwIPVersion IpVersion
         {
             [DispId(2)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -36,7 +36,7 @@ namespace WindowsFirewallHelper.COMInterop
         }
 
         [DispId(3)]
-        NET_FW_IP_PROTOCOL Protocol
+        NetFwIPProtocol Protocol
         {
             [DispId(3)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -60,7 +60,7 @@ namespace WindowsFirewallHelper.COMInterop
         }
 
         [DispId(5)]
-        NET_FW_SCOPE Scope
+        NetFwScope Scope
         {
             [DispId(5)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

@@ -8,7 +8,7 @@ namespace WindowsFirewallHelper.COMInterop
     internal interface INetFwRemoteAdminSettings
     {
         [DispId(1)]
-        NET_FW_IP_VERSION IpVersion
+        NetFwIPVersion IpVersion
         {
             [DispId(1)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -20,7 +20,7 @@ namespace WindowsFirewallHelper.COMInterop
         }
 
         [DispId(2)]
-        NET_FW_SCOPE Scope
+        NetFwScope Scope
         {
             [DispId(2)]
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

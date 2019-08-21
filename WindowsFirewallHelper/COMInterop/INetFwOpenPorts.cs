@@ -27,12 +27,12 @@ namespace WindowsFirewallHelper.COMInterop
 
         [DispId(3)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Remove([In] int portNumber, [In] NET_FW_IP_PROTOCOL ipProtocol);
+        void Remove([In] int portNumber, [In] NetFwIPProtocol ipProtocol);
 
         [DispId(4)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [return: MarshalAs(UnmanagedType.Interface)]
-        INetFwOpenPort Item([In] int portNumber, [In] NET_FW_IP_PROTOCOL ipProtocol);
+        INetFwOpenPort Item([In] int portNumber, [In] NetFwIPProtocol ipProtocol);
 
         [DispId(-4)]
         IEnumVARIANT GetEnumeratorVariant();

@@ -11,27 +11,27 @@
         None,
 
         /// <summary>
-        ///     Windows Firewall API v1 (Win XP+)
+        ///     Windows Firewall Legacy API (Win XP+)
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        FirewallAPIv1,
+        FirewallLegacy,
 
         /// <summary>
-        ///     Windows Firewall API v2 (Windows Vista+)
+        ///     Windows Firewall With Advanced Security API (Windows Vista+)
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        FirewallAPIv2,
+        FirewallWAS,
 
         /// <summary>
-        ///     Windows Firewall API v2 (Windows 7+)
+        ///     Windows Firewall With Advanced Security API (Windows 7+)
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        FirewallAPIv2Win7,
+        FirewallWASWin7,
 
         /// <summary>
-        ///     Windows Firewall API v2 (Windows 8+)
+        ///     Windows Firewall With Advanced Security API (Windows 8+)
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        FirewallAPIv2Win8
+        FirewallWASWin8
     }
 }

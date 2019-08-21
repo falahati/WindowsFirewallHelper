@@ -3,18 +3,32 @@ using System.Runtime.InteropServices;
 
 namespace WindowsFirewallHelper
 {
+    /// <summary>
+    ///     Represents a firewall product registration handle
+    /// </summary>
     public class FirewallProductRegistrationHandle : IDisposable
     {
-        private object _handle;
-
-        public FirewallProductRegistrationHandle(object handle)
+        internal FirewallProductRegistrationHandle(object handle)
         {
             if (handle == null || !handle.GetType().IsCOMObject)
             {
                 throw new ArgumentException("Handle is empty or invalid.", nameof(handle));
             }
 
-            _handle = handle;
+            DangerousHandle = handle;
+        }
+
+        /// <summary>
+        ///     Returns the underlying dangerous handle value
+        /// </summary>
+        public object DangerousHandle { get; private set; }
+
+        /// <summary>
+        ///     Returns a boolean value indicating if this instance contains a valid handle
+        /// </summary>
+        public bool IsInvalid
+        {
+            get => DangerousHandle == null;
         }
 
         /// <inheritdoc />
@@ -24,14 +38,17 @@ namespace WindowsFirewallHelper
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        ///     Releases the handle
+        /// </summary>
         public void Release()
         {
             lock (this)
             {
-                if (_handle != null)
+                if (!IsInvalid)
                 {
-                    Marshal.ReleaseComObject(_handle);
-                    _handle = null;
+                    Marshal.ReleaseComObject(DangerousHandle);
+                    DangerousHandle = null;
                 }
             }
         }

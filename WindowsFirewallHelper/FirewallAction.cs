@@ -10,11 +10,11 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Block rule
         /// </summary>
-        Block = NET_FW_ACTION.NET_FW_ACTION_BLOCK,
+        Block = NetFwAction.Block,
 
         /// <summary>
         ///     Allow rule
         /// </summary>
-        Allow = NET_FW_ACTION.NET_FW_ACTION_ALLOW
+        Allow = NetFwAction.Allow
     }
 }

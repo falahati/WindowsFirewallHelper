@@ -6,7 +6,7 @@ using WindowsFirewallHelper.InternalHelpers.Collections;
 namespace WindowsFirewallHelper.InternalCollections
 {
     internal class FirewallLegacyServiceCollection :
-        ComNativeCollectionBase<INetFwServices, INetFwService, NET_FW_SERVICE_TYPE>
+        ComNativeCollectionBase<INetFwServices, INetFwService, NetFwServiceType>
     {
         public FirewallLegacyServiceCollection(INetFwServices servicesCollection) :
             base(servicesCollection)
@@ -18,7 +18,7 @@ namespace WindowsFirewallHelper.InternalCollections
         public override bool IsReadOnly { get; } = true;
 
         /// <inheritdoc />
-        protected override NET_FW_SERVICE_TYPE GetCollectionKey(INetFwService managed)
+        protected override NetFwServiceType GetCollectionKey(INetFwService managed)
         {
             return managed.Type;
         }
@@ -42,13 +42,13 @@ namespace WindowsFirewallHelper.InternalCollections
         }
 
         /// <inheritdoc />
-        protected override INetFwService InternalItem(NET_FW_SERVICE_TYPE key)
+        protected override INetFwService InternalItem(NetFwServiceType key)
         {
             return NativeEnumerable.Item(key);
         }
 
         /// <inheritdoc />
-        protected override void InternalRemove(NET_FW_SERVICE_TYPE key)
+        protected override void InternalRemove(NetFwServiceType key)
         {
             throw new InvalidOperationException();
         }

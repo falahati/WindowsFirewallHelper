@@ -28,6 +28,7 @@ namespace WindowsFirewallHelper.FirewallRules
             }
 
             UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwAuthorizedApplication>();
+
             foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
             {
                 if (profiles.HasFlag(profile))
@@ -80,22 +81,6 @@ namespace WindowsFirewallHelper.FirewallRules
             get => ComHelper.IsSupported<INetFwAuthorizedApplication>();
         }
 
-        /// <inheritdoc />
-        public FirewallProfiles Profiles
-        {
-            get
-            {
-                return UnderlyingObjects.Keys.ToArray()
-                    .Aggregate(
-                        (FirewallProfiles) 0,
-                        (profiles, profile) => profiles & profile
-                    );
-            }
-        }
-
-        /// <summary>
-        ///     Returns the underlying Windows Firewall Object
-        /// </summary>
         private Dictionary<FirewallProfiles, INetFwAuthorizedApplication> UnderlyingObjects { get; }
 
         /// <summary>
@@ -144,6 +129,7 @@ namespace WindowsFirewallHelper.FirewallRules
             return true;
         }
 
+        /// <inheritdoc />
         public bool Equals(IFirewallRule other)
         {
             return Equals(other as FirewallLegacyApplicationRule);
@@ -186,7 +172,6 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
-
         /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
         IAddress[] IFirewallRule.LocalAddresses
@@ -226,13 +211,25 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <inheritdoc />
+        public FirewallProfiles Profiles
+        {
+            get
+            {
+                return UnderlyingObjects.Keys.ToArray()
+                    .Aggregate(
+                        (FirewallProfiles) 0,
+                        (profiles, profile) => profiles & profile
+                    );
+            }
+        }
+
+        /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
         FirewallProtocol IFirewallRule.Protocol
         {
             get => FirewallProtocol.Any;
             set => throw new FirewallLegacyNotSupportedException();
         }
-
 
         /// <inheritdoc />
         public IAddress[] RemoteAddresses
@@ -250,7 +247,6 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
-
         /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
         ushort[] IFirewallRule.RemotePorts
@@ -258,7 +254,6 @@ namespace WindowsFirewallHelper.FirewallRules
             get => new ushort[0];
             set => throw new FirewallLegacyNotSupportedException();
         }
-
 
         /// <inheritdoc />
         public FirewallScope Scope
@@ -277,7 +272,7 @@ namespace WindowsFirewallHelper.FirewallRules
 
                     foreach (var authorizedApplication in UnderlyingObjects.Values)
                     {
-                        authorizedApplication.Scope = NET_FW_SCOPE.NET_FW_SCOPE_LOCAL_SUBNET;
+                        authorizedApplication.Scope = NetFwScope.LocalSubnet;
                     }
                 }
                 else if (value == FirewallScope.All)
@@ -286,7 +281,7 @@ namespace WindowsFirewallHelper.FirewallRules
 
                     foreach (var authorizedApplication in UnderlyingObjects.Values)
                     {
-                        authorizedApplication.Scope = NET_FW_SCOPE.NET_FW_SCOPE_ALL;
+                        authorizedApplication.Scope = NetFwScope.All;
                     }
                 }
                 else
@@ -340,6 +335,11 @@ namespace WindowsFirewallHelper.FirewallRules
             return FriendlyName;
         }
 
+        /// <summary>
+        ///     Returns the rule underlying object for an specific profile
+        /// </summary>
+        /// <param name="profile">The firewall profile to get the underlying COM object of this rule for</param>
+        /// <returns>The underlying COM object of this rule</returns>
         // ReSharper disable once FlagArgument
         public INetFwAuthorizedApplication GetCOMObject(FirewallProfiles profile)
         {

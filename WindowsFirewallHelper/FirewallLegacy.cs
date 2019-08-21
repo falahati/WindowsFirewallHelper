@@ -16,6 +16,10 @@ namespace WindowsFirewallHelper
     /// </summary>
     public class FirewallLegacy : IFirewall
     {
+        /// <summary>
+        ///     Creates a new instance of this class on the current thread and leaves the cross thread control to the user of the
+        ///     class.
+        /// </summary>
         public FirewallLegacy()
         {
             if (!IsSupported)
@@ -40,11 +44,17 @@ namespace WindowsFirewallHelper
             get => ThreadedSingleton.GetInstance<FirewallLegacy>();
         }
 
+        /// <summary>
+        ///     Gets a Boolean value showing if the firewall is supported in this environment.
+        /// </summary>
         public static bool IsSupported
         {
             get => ComHelper.IsSupported<INetFwMgr>();
         }
 
+        /// <summary>
+        ///     Gets the list of all available profiles of the firewall
+        /// </summary>
         public ReadOnlyCollection<FirewallLegacyProfile> Profiles { get; }
 
         internal INetFwMgr UnderlyingObject { get; }
@@ -245,11 +255,22 @@ namespace WindowsFirewallHelper
             get => new FirewallLegacyRulesCollection(Profiles.ToArray());
         }
 
+        /// <summary>
+        ///     Returns the active firewall profile, if any
+        /// </summary>
+        /// <returns>
+        ///     The active firewall profile object or null if no firewall profile is currently active
+        /// </returns>
         public FirewallLegacyProfile GetActiveProfile()
         {
             return Profiles.FirstOrDefault(p => p.IsActive);
         }
 
+        /// <summary>
+        ///     Returns a specific firewall profile
+        /// </summary>
+        /// <param name="profile">Requested firewall profile</param>
+        /// <returns>Firewall profile object</returns>
         public FirewallLegacyProfile GetProfile(FirewallProfiles profile)
         {
             return Profiles.FirstOrDefault(p => p.Type == profile) ?? throw new FirewallLegacyNotSupportedException();

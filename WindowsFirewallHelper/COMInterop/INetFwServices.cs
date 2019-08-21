@@ -20,7 +20,7 @@ namespace WindowsFirewallHelper.COMInterop
         [DispId(2)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [return: MarshalAs(UnmanagedType.Interface)]
-        INetFwService Item([In] NET_FW_SERVICE_TYPE svcType);
+        INetFwService Item([In] NetFwServiceType svcType);
 
         [DispId(-4)]
         IEnumVARIANT GetEnumeratorVariant();

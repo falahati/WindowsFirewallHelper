@@ -16,7 +16,6 @@ namespace WindowsFirewallHelper.FirewallRules
     /// </summary>
     public class FirewallWASRule : IFirewallRule, IEquatable<FirewallWASRule>
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a new application rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -36,7 +35,6 @@ namespace WindowsFirewallHelper.FirewallRules
             ApplicationName = filename;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a new general rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -59,7 +57,6 @@ namespace WindowsFirewallHelper.FirewallRules
             Profiles = profiles;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a new port rule for Windows Firewall with Advanced Security
         /// </summary>
@@ -95,7 +92,7 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <summary>
-        ///     Gets or sets the description string about this rule
+        ///     Gets or sets the description string of this rule
         /// </summary>
         public string Description
         {
@@ -112,6 +109,9 @@ namespace WindowsFirewallHelper.FirewallRules
             set => UnderlyingObject.EdgeTraversal = value;
         }
 
+        /// <summary>
+        ///     Gets resolved description string of this rule
+        /// </summary>
         public string FriendlyDescription
         {
             get => NativeHelper.ResolveStringResource(Description);
@@ -209,16 +209,6 @@ namespace WindowsFirewallHelper.FirewallRules
         protected INetFwRule UnderlyingObject { get; }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Determines whether the specified<see cref="FirewallWASRule" /> is equal to the current
-        ///     <see cref="FirewallWASRule" />.
-        /// </summary>
-        /// <param name="other"> The object to compare with the current object.</param>
-        /// <returns>
-        ///     true if the specified <see cref="FirewallWASRule" /> is equal to the current<see cref="FirewallWASRule" />;
-        ///     otherwise, false.
-        /// </returns>
-        // ReSharper disable once MethodTooLong
         public virtual bool Equals(FirewallWASRule other)
         {
             if (other == null)
@@ -277,37 +267,32 @@ namespace WindowsFirewallHelper.FirewallRules
                 );
         }
 
+        /// <inheritdoc />
         public bool Equals(IFirewallRule other)
         {
             return Equals(other as FirewallWASRule);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the action that this rules define
-        /// </summary>
         public FirewallAction Action
         {
-            get => UnderlyingObject.Action == NET_FW_ACTION.NET_FW_ACTION_ALLOW
+            get => UnderlyingObject.Action == NetFwAction.Allow
                 ? FirewallAction.Allow
                 : FirewallAction.Block;
             set => UnderlyingObject.Action = value == FirewallAction.Allow
-                ? NET_FW_ACTION.NET_FW_ACTION_ALLOW
-                : NET_FW_ACTION.NET_FW_ACTION_BLOCK;
+                ? NetFwAction.Allow
+                : NetFwAction.Block;
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the data direction that rule applies to
-        /// </summary>
         public FirewallDirection Direction
         {
-            get => UnderlyingObject.Direction == NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_IN
+            get => UnderlyingObject.Direction == NetFwRuleDirection.Inbound
                 ? FirewallDirection.Inbound
                 : FirewallDirection.Outbound;
             set => UnderlyingObject.Direction = value == FirewallDirection.Inbound
-                ? NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_IN
-                : NET_FW_RULE_DIRECTION.NET_FW_RULE_DIR_OUT;
+                ? NetFwRuleDirection.Inbound
+                : NetFwRuleDirection.Outbound;
         }
 
         /// <inheritdoc />
@@ -317,9 +302,6 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets a Boolean value indicating if this rule is active
-        /// </summary>
         public bool IsEnable
         {
             get => UnderlyingObject.Enabled;
@@ -327,9 +309,6 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the local addresses that rule applies to
-        /// </summary>
         public IAddress[] LocalAddresses
         {
             get => AddressHelper.StringToAddresses(UnderlyingObject.LocalAddresses);
@@ -353,9 +332,6 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the local ports that rule applies to
-        /// </summary>
         public ushort[] LocalPorts
         {
             get => PortHelper.StringToPorts(UnderlyingObject.LocalPorts);
@@ -536,7 +512,6 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
-        // ReSharper disable once ExceptionNotThrown
         /// <inheritdoc />
         public IAddress[] RemoteAddresses
         {
@@ -652,16 +627,7 @@ namespace WindowsFirewallHelper.FirewallRules
             return !(left == right);
         }
 
-        /// <summary>
-        ///     Determines whether the specified <see cref="T:System.Object" /> is equal to the current
-        ///     <see cref="FirewallWASRule" />
-        ///     .
-        /// </summary>
-        /// <returns>
-        ///     true if the specified <see cref="T:System.Object" /> is equal to the current <see cref="FirewallWASRule" />;
-        ///     otherwise, false.
-        /// </returns>
-        /// <param name="obj">The <see cref="T:System.Object" /> to compare with the current <see cref="FirewallWASRule" />. </param>
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return Equals(obj as IFirewallRule);
@@ -718,6 +684,10 @@ namespace WindowsFirewallHelper.FirewallRules
             return FriendlyName;
         }
 
+        /// <summary>
+        ///     Returns the underlying COM object
+        /// </summary>
+        /// <returns>The underlying COM object</returns>
         public INetFwRule GetCOMObject()
         {
             return UnderlyingObject;

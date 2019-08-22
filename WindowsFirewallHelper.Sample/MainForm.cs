@@ -124,10 +124,15 @@ namespace WindowsFirewallHelper.Sample
                     addPortDialog.FirewallProtocol
                 );
 
-                FirewallManager.Instance.Rules.Add(newPortRule);
+				// GMS 2019-08-22 - Commented as the property grid was consistently having error showing the newly created object.
+				//var editDialog = new EditRuleForm(newPortRule);
+				//if (editDialog.ShowDialog() == DialogResult.OK)
+				//{
+					FirewallManager.Instance.Rules.Add(newPortRule);
 
-                RefreshTreeView();
-            }
+					RefreshTreeView();
+				//}
+			}
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

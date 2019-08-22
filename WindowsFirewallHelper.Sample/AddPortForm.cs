@@ -4,7 +4,9 @@ namespace WindowsFirewallHelper.Sample
 {
     internal partial class AddPortForm : Form
     {
-        public AddPortForm()
+        public AddPortForm(
+			FirewallProfiles currentProfile,
+			string defaultRuleName)
         {
             InitializeComponent();
 
@@ -12,8 +14,17 @@ namespace WindowsFirewallHelper.Sample
             cb_protocol.Items.Add(FirewallProtocol.UDP);
             cb_protocol.Items.Add(FirewallProtocol.Any);
             cb_protocol.SelectedIndex = 0;
-        }
 
+			textBoxRuleName.Text = defaultRuleName;
+
+			for (int index = 0; index < checkedListBoxProfiles.Items.Count; index++)
+			{
+				if (checkedListBoxProfiles.Items[index].ToString() == currentProfile.ToString())
+				{
+					checkedListBoxProfiles.SetItemChecked(index, true);
+				}
+			}
+        }
         public FirewallProtocol FirewallProtocol
         {
             get => cb_protocol.SelectedItem as FirewallProtocol;
@@ -23,5 +34,36 @@ namespace WindowsFirewallHelper.Sample
         {
             get => (ushort) nud_port.Value;
         }
-    }
+
+		public string RuleName
+		{
+			get => textBoxRuleName.Text;
+		}
+
+		public FirewallProfiles Profiles
+		{
+			get
+			{
+				FirewallProfiles profiles = (FirewallProfiles) 0;
+
+				foreach (object checkedItem in checkedListBoxProfiles.CheckedItems)
+				{
+					switch (checkedItem.ToString())
+					{
+						case "Domain":
+							profiles |= FirewallProfiles.Domain;
+							break;
+						case "Private":
+							profiles |= FirewallProfiles.Private;
+							break;
+						case "Public":
+							profiles |= FirewallProfiles.Public;
+							break;
+					}
+				}
+
+				return profiles;
+			}
+		}
+	}
 }

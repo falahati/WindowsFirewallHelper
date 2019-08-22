@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+
 using WindowsFirewallHelper.FirewallRules;
 
 namespace WindowsFirewallHelper.Sample
@@ -108,7 +109,7 @@ namespace WindowsFirewallHelper.Sample
                     return;
                 }
 
-                var addPortDialog = new AddPortForm();
+                var addPortDialog = new AddPortForm(profileType.GetValueOrDefault(), "!!TEST!! " + Guid.NewGuid().ToString("B"));
 
                 if (addPortDialog.ShowDialog() != DialogResult.OK)
                 {
@@ -116,20 +117,16 @@ namespace WindowsFirewallHelper.Sample
                 }
 
                 var newPortRule = FirewallManager.Instance.CreatePortRule(
-                    profileType.Value,
-                    "!!TETS!! " + Guid.NewGuid().ToString("B"),
+                    addPortDialog.Profiles,
+                    addPortDialog.RuleName,
                     FirewallAction.Allow,
                     addPortDialog.PortNumber,
                     addPortDialog.FirewallProtocol
                 );
 
-                var editDialog = new EditRuleForm(newPortRule);
+                FirewallManager.Instance.Rules.Add(newPortRule);
 
-                if (editDialog.ShowDialog() == DialogResult.OK)
-                {
-                    FirewallManager.Instance.Rules.Add(newPortRule);
-                    RefreshTreeView();
-                }
+                RefreshTreeView();
             }
             catch (Exception ex)
             {
@@ -187,5 +184,13 @@ namespace WindowsFirewallHelper.Sample
             treeView.Nodes.Add(topLevelNode);
             NodeDiscovery(topLevelNode);
         }
-    }
+
+		private void buttonThirdParty_Click(object sender, EventArgs e)
+		{
+			using (ThirdPartyFirewalls form = new ThirdPartyFirewalls())
+			{
+				form.ShowDialog();
+			}
+		}
+	}
 }

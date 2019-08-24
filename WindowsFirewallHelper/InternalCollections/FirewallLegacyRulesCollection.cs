@@ -85,15 +85,31 @@ namespace WindowsFirewallHelper.InternalCollections
         /// <inheritdoc />
         public void CopyTo(IFirewallRule[] array, int arrayIndex)
         {
-            var sourceArray = this.ToArray();
-            Array.Copy(sourceArray, 0, array, arrayIndex, sourceArray.Length);
+            var sourceList = new List<IFirewallRule>();
+
+            foreach (var r in this)
+            {
+                sourceList.Add(r);
+            }
+
+            Array.Copy(sourceList.ToArray(), 0, array, arrayIndex, sourceList.Count);
         }
 
         /// <inheritdoc />
         public int Count
         {
             // ReSharper disable once InvokeAsExtensionMethod
-            get => Enumerable.Count(this);
+            get
+            {
+                var i = 0;
+
+                foreach (var _ in this)
+                {
+                    i++;
+                }
+
+                return i;
+            }
         }
 
         /// <inheritdoc />

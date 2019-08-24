@@ -24,10 +24,10 @@ namespace WindowsFirewallHelper.FirewallRules
         {
             if (profiles.HasFlag(FirewallProfiles.Public))
             {
-                throw new FirewallLegacyNotSupportedException("Public profile is not supported.");
+                throw new FirewallLegacyNotSupportedException("Public profile is not supported when working with Windows Firewall Legacy.");
             }
 
-            UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwAuthorizedApplication>();
+            UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwAuthorizedApplication[]>();
 
             foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
             {
@@ -35,7 +35,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        ComHelper.CreateInstance<INetFwAuthorizedApplication>()
+                        new [] { ComHelper.CreateInstance<INetFwAuthorizedApplication>() }
                     );
                 }
             }
@@ -53,7 +53,7 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         internal FirewallLegacyApplicationRule(
-            Dictionary<FirewallProfiles, INetFwAuthorizedApplication> authorizedApplications)
+            Dictionary<FirewallProfiles, INetFwAuthorizedApplication[]> authorizedApplications)
         {
             UnderlyingObjects = authorizedApplications;
         }
@@ -66,7 +66,7 @@ namespace WindowsFirewallHelper.FirewallRules
             get => ComHelper.IsSupported<INetFwAuthorizedApplication>();
         }
 
-        private Dictionary<FirewallProfiles, INetFwAuthorizedApplication> UnderlyingObjects { get; }
+        private Dictionary<FirewallProfiles, INetFwAuthorizedApplication[]> UnderlyingObjects { get; }
 
         /// <summary>
         ///     Determines whether the specified<see cref="FirewallLegacyApplicationRule" /> is equal to the current
@@ -90,25 +90,14 @@ namespace WindowsFirewallHelper.FirewallRules
                 return true;
             }
 
-            if (UnderlyingObjects.Count != other.UnderlyingObjects.Count)
+            if (Profiles != other.Profiles)
             {
                 return false;
             }
 
-            if (!UnderlyingObjects.Keys.SequenceEqual(other.UnderlyingObjects.Keys))
+            if (!string.Equals(ApplicationName, other.ApplicationName))
             {
                 return false;
-            }
-
-            foreach (var profile in UnderlyingObjects.Keys)
-            {
-                var thisPort = UnderlyingObjects[profile];
-                var otherPort = other.UnderlyingObjects[profile];
-
-                if (!string.Equals(thisPort.ProcessImageFileName, otherPort.ProcessImageFileName))
-                {
-                    return false;
-                }
             }
 
             return true;
@@ -133,10 +122,10 @@ namespace WindowsFirewallHelper.FirewallRules
         /// </summary>
         public string ApplicationName
         {
-            get => UnderlyingObjects.Values.First().ProcessImageFileName;
+            get => UnderlyingObjects.Values.SelectMany(a => a).First().ProcessImageFileName;
             set
             {
-                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                foreach (var authorizedApplication in UnderlyingObjects.Values.SelectMany(a => a))
                 {
                     authorizedApplication.ProcessImageFileName = value;
                 }
@@ -161,10 +150,10 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <inheritdoc />
         public bool IsEnable
         {
-            get => UnderlyingObjects.Values.All(port => port.Enabled);
+            get => UnderlyingObjects.Values.SelectMany(a => a).All(port => port.Enabled);
             set
             {
-                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                foreach (var authorizedApplication in UnderlyingObjects.Values.SelectMany(a => a))
                 {
                     authorizedApplication.Enabled = value;
                 }
@@ -199,10 +188,10 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <inheritdoc />
         public string Name
         {
-            get => UnderlyingObjects.Values.First().Name;
+            get => UnderlyingObjects.Values.SelectMany(a => a).First().Name;
             set
             {
-                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                foreach (var authorizedApplication in UnderlyingObjects.Values.SelectMany(a => a))
                 {
                     authorizedApplication.Name = value;
                 }
@@ -234,12 +223,13 @@ namespace WindowsFirewallHelper.FirewallRules
         public IAddress[] RemoteAddresses
         {
             get => UnderlyingObjects.Values
+                .SelectMany(a => a)
                 .SelectMany(application => AddressHelper.StringToAddresses(application.RemoteAddresses))
                 .Distinct()
                 .ToArray();
             set
             {
-                foreach (var authorizedApplication in UnderlyingObjects.Values)
+                foreach (var authorizedApplication in UnderlyingObjects.Values.SelectMany(a => a))
                 {
                     authorizedApplication.RemoteAddresses = AddressHelper.AddressesToString(value);
                 }
@@ -257,7 +247,7 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <inheritdoc />
         public FirewallScope Scope
         {
-            get => (FirewallScope) UnderlyingObjects.Values.First().Scope;
+            get => (FirewallScope) UnderlyingObjects.Values.SelectMany(a => a).First().Scope;
             set
             {
                 if (value == FirewallScope.Specific)
@@ -269,7 +259,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     RemoteAddresses = new IAddress[] {new LocalSubnet()};
 
-                    foreach (var authorizedApplication in UnderlyingObjects.Values)
+                    foreach (var authorizedApplication in UnderlyingObjects.Values.SelectMany(a => a))
                     {
                         authorizedApplication.Scope = NetFwScope.LocalSubnet;
                     }
@@ -278,7 +268,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     RemoteAddresses = new IAddress[] {SingleIP.Any};
 
-                    foreach (var authorizedApplication in UnderlyingObjects.Values)
+                    foreach (var authorizedApplication in UnderlyingObjects.Values.SelectMany(a => a))
                     {
                         authorizedApplication.Scope = NetFwScope.All;
                     }
@@ -347,7 +337,7 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <param name="profile">The firewall profile to get the underlying COM object of this rule for</param>
         /// <returns>The underlying COM object of this rule</returns>
         // ReSharper disable once FlagArgument
-        public INetFwAuthorizedApplication GetCOMObject(FirewallProfiles profile)
+        public INetFwAuthorizedApplication[] GetCOMObjects(FirewallProfiles profile)
         {
             if (UnderlyingObjects.ContainsKey(profile))
             {

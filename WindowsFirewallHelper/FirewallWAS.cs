@@ -10,7 +10,6 @@ using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
 {
-    /// <inheritdoc cref="IFirewall" />
     /// <summary>
     ///     Contains properties and methods of Windows Firewall with Advanced Security
     /// </summary>
@@ -88,7 +87,6 @@ namespace WindowsFirewallHelper
         internal INetFwPolicy2 UnderlyingObject { get; }
 
         /// <inheritdoc />
-        /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         // ReSharper disable once TooManyArguments
         IFirewallRule IFirewall.CreateApplicationRule(
             FirewallProfiles profiles,
@@ -97,31 +95,7 @@ namespace WindowsFirewallHelper
             string filename,
             FirewallProtocol protocol)
         {
-            if (FirewallWASRuleWin8.IsSupported)
-            {
-                return new FirewallWASRuleWin8(name, filename, action, FirewallDirection.Inbound, profiles)
-                {
-                    Protocol = protocol
-                };
-            }
-
-            if (FirewallWASRuleWin7.IsSupported)
-            {
-                return new FirewallWASRuleWin7(name, filename, action, FirewallDirection.Inbound, profiles)
-                {
-                    Protocol = protocol
-                };
-            }
-
-            if (FirewallWASRule.IsSupported)
-            {
-                return new FirewallWASRule(name, filename, action, FirewallDirection.Inbound, profiles)
-                {
-                    Protocol = protocol
-                };
-            }
-
-            throw new NotSupportedException();
+            return CreateApplicationRule(profiles, name, action, FirewallDirection.Inbound, filename, protocol);
         }
 
         /// <inheritdoc />
@@ -142,9 +116,7 @@ namespace WindowsFirewallHelper
             return (this as IFirewall).CreateApplicationRule(profiles, name, FirewallAction.Allow, filename);
         }
 
-
         /// <inheritdoc />
-        /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         // ReSharper disable once TooManyArguments
         IFirewallRule IFirewall.CreatePortRule(
             FirewallProfiles profiles,
@@ -153,40 +125,10 @@ namespace WindowsFirewallHelper
             ushort portNumber,
             FirewallProtocol protocol)
         {
-            if (!protocol.Equals(FirewallProtocol.TCP) &&
-                !protocol.Equals(FirewallProtocol.UDP) &&
-                !protocol.Equals(FirewallProtocol.Any))
-            {
-                throw new FirewallWASInvalidProtocolException(
-                    "Invalid protocol selected; rule's protocol should be TCP, UDP or Any (which means both TCP and UDP).");
-            }
-
-            if (FirewallWASRuleWin8.IsSupported)
-            {
-                return new FirewallWASRuleWin8(name, portNumber, action, FirewallDirection.Inbound,
-                        profiles)
-                    {Protocol = protocol};
-            }
-
-            if (FirewallWASRuleWin7.IsSupported)
-            {
-                return new FirewallWASRuleWin7(name, portNumber, action, FirewallDirection.Inbound,
-                        profiles)
-                    {Protocol = protocol};
-            }
-
-            if (FirewallWASRule.IsSupported)
-            {
-                return new FirewallWASRule(name, portNumber, action, FirewallDirection.Inbound,
-                        profiles)
-                    {Protocol = protocol};
-            }
-
-            throw new NotSupportedException();
+            return CreatePortRule(profiles, name, action, FirewallDirection.Inbound, portNumber, protocol);
         }
 
         /// <inheritdoc />
-        /// <exception cref="NotSupportedException">This class is not supported on this machine</exception>
         // ReSharper disable once TooManyArguments
         IFirewallRule IFirewall.CreatePortRule(
             FirewallProfiles profiles,
@@ -194,7 +136,7 @@ namespace WindowsFirewallHelper
             FirewallAction action,
             ushort portNumber)
         {
-            return (this as IFirewall).CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.Any);
+            return (this as IFirewall).CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.TCP);
         }
 
         /// <inheritdoc />
@@ -210,25 +152,18 @@ namespace WindowsFirewallHelper
         }
 
         /// <inheritdoc />
-        // ReSharper disable once FlagArgument
         IFirewallProfile IFirewall.GetProfile(FirewallProfiles profile)
         {
             return GetProfile(profile);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the name of the firewall
-        /// </summary>
         public string Name
         {
             get => "Windows Firewall with Advanced Security";
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets the list of all available profiles of the firewall
-        /// </summary>
         ReadOnlyCollection<IFirewallProfile> IFirewall.Profiles
         {
             get => new ReadOnlyCollection<IFirewallProfile>(Profiles.Cast<IFirewallProfile>().ToArray());
@@ -238,6 +173,133 @@ namespace WindowsFirewallHelper
         ICollection<IFirewallRule> IFirewall.Rules
         {
             get => new FirewallWASRulesCollection<IFirewallRule>(UnderlyingObject.Rules);
+        }
+
+        /// <summary>
+        ///     Creates a rule about an executable file (application) to be registered to a firewall profile
+        /// </summary>
+        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="direction">The rule control direction</param>
+        /// <param name="filename">Address of the executable file that the rule applies to</param>
+        /// <param name="protocol">Protocol that the rule applies to</param>
+        /// <returns>Returns the newly created <see cref="FirewallWASRule" /> instance or one of its children</returns>
+        // ReSharper disable once TooManyArguments
+        public FirewallWASRule CreateApplicationRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
+            FirewallDirection direction,
+            string filename,
+            FirewallProtocol protocol)
+        {
+            if (!IsSupported)
+            {
+                throw new FirewallWASNotSupportedException();
+            }
+
+            if (FirewallWASRuleWin8.IsSupported)
+            {
+                return new FirewallWASRuleWin8(name, filename, action, direction, profiles)
+                {
+                    Protocol = protocol
+                };
+            }
+
+            if (FirewallWASRuleWin7.IsSupported)
+            {
+                return new FirewallWASRuleWin7(name, filename, action, direction, profiles)
+                {
+                    Protocol = protocol
+                };
+            }
+
+            if (FirewallWASRule.IsSupported)
+            {
+                return new FirewallWASRule(name, filename, action, direction, profiles)
+                {
+                    Protocol = protocol
+                };
+            }
+
+            throw new FirewallWASNotSupportedException();
+        }
+
+        /// <summary>
+        ///     Creates a rule about a port to be registered to a firewall profile
+        /// </summary>
+        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="direction">The rule control direction</param>
+        /// <param name="portNumber">Port number that the rule applies to</param>
+        /// <param name="protocol">Protocol that the rule applies to</param>
+        /// <returns>Returns the newly created <see cref="FirewallWASRule" /> instance or one of its children</returns>
+        // ReSharper disable once TooManyArguments
+        public FirewallWASRule CreatePortRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
+            FirewallDirection direction,
+            ushort portNumber,
+            FirewallProtocol protocol)
+        {
+            if (!IsSupported)
+            {
+                throw new FirewallWASNotSupportedException();
+            }
+
+            if (!protocol.Equals(FirewallProtocol.TCP) &&
+                !protocol.Equals(FirewallProtocol.UDP))
+            {
+                throw new FirewallWASInvalidProtocolException(
+                    "Invalid protocol selected; rule's protocol should be TCP or UDP.");
+            }
+
+            if (FirewallWASRuleWin8.IsSupported)
+            {
+                return new FirewallWASRuleWin8(
+                    name,
+                    portNumber,
+                    action,
+                    direction,
+                    profiles
+                )
+                {
+                    Protocol = protocol
+                };
+            }
+
+            if (FirewallWASRuleWin7.IsSupported)
+            {
+                return new FirewallWASRuleWin7(
+                    name,
+                    portNumber,
+                    action,
+                    direction,
+                    profiles
+                )
+                {
+                    Protocol = protocol
+                };
+            }
+
+            if (FirewallWASRule.IsSupported)
+            {
+                return new FirewallWASRule(
+                    name,
+                    portNumber,
+                    action,
+                    direction,
+                    profiles
+                )
+                {
+                    Protocol = protocol
+                };
+            }
+
+            throw new FirewallWASNotSupportedException();
         }
 
         /// <summary>

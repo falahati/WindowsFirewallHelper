@@ -3,43 +3,36 @@ using WindowsFirewallHelper.COMInterop;
 
 namespace WindowsFirewallHelper
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Contains properties of a Windows Firewall with Advanced Security profile
     /// </summary>
     public class FirewallWASProfile : IFirewallProfile
     {
-        private readonly NetFwProfileType2 _profile;
+        private readonly FirewallWAS _firewall;
+        private readonly NetFwProfileType2 _profileType;
 
-        internal FirewallWASProfile(FirewallWAS firewall, NetFwProfileType2 profile)
+        internal FirewallWASProfile(FirewallWAS firewall, NetFwProfileType2 profileType)
         {
-            _profile = profile;
-            Firewall = firewall;
+            _profileType = profileType;
+            _firewall = firewall;
         }
 
-        private FirewallWAS Firewall { get; }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets a Boolean value that blocks all inbound traffic completely regardless of any rules in this profile
-        /// </summary>
         public bool BlockAllInboundTraffic
         {
-            get => Firewall.UnderlyingObject.get_BlockAllInboundTraffic(_profile);
-            set => Firewall.UnderlyingObject.set_BlockAllInboundTraffic(_profile, value);
+            get => _firewall.UnderlyingObject.get_BlockAllInboundTraffic(_profileType);
+            set => _firewall.UnderlyingObject.set_BlockAllInboundTraffic(_profileType, value);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the global default behavior regarding inbound traffic
-        /// </summary>
         public FirewallAction DefaultInboundAction
         {
-            get => Firewall.UnderlyingObject.get_DefaultInboundAction(_profile) == NetFwAction.Allow
+            get => _firewall.UnderlyingObject.get_DefaultInboundAction(_profileType) == NetFwAction.Allow
                 ? FirewallAction.Allow
                 : FirewallAction.Block;
-            set => Firewall.UnderlyingObject.set_DefaultInboundAction(
-                _profile,
+            set => _firewall.UnderlyingObject.set_DefaultInboundAction(
+                _profileType,
                 value == FirewallAction.Allow
                     ? NetFwAction.Allow
                     : NetFwAction.Block
@@ -47,16 +40,13 @@ namespace WindowsFirewallHelper
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets the global default behavior regarding outbound traffic
-        /// </summary>
         public FirewallAction DefaultOutboundAction
         {
-            get => Firewall.UnderlyingObject.get_DefaultOutboundAction(_profile) == NetFwAction.Allow
+            get => _firewall.UnderlyingObject.get_DefaultOutboundAction(_profileType) == NetFwAction.Allow
                 ? FirewallAction.Allow
                 : FirewallAction.Block;
-            set => Firewall.UnderlyingObject.set_DefaultOutboundAction(
-                _profile,
+            set => _firewall.UnderlyingObject.set_DefaultOutboundAction(
+                _profileType,
                 value == FirewallAction.Allow
                     ? NetFwAction.Allow
                     : NetFwAction.Block
@@ -64,71 +54,51 @@ namespace WindowsFirewallHelper
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets a Boolean value showing if this firewall profile is enable and available
-        /// </summary>
         public bool Enable
         {
-            get => Firewall.UnderlyingObject.get_FirewallEnabled(_profile);
-            set => Firewall.UnderlyingObject.set_FirewallEnabled(_profile, value);
+            get => _firewall.UnderlyingObject.get_FirewallEnabled(_profileType);
+            set => _firewall.UnderlyingObject.set_FirewallEnabled(_profileType, value);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets a Boolean value showing if this firewall profile is the currently active profile.
-        /// </summary>
         public bool IsActive
         {
-            get => (NetFwProfileType2) Firewall.UnderlyingObject.CurrentProfileTypes ==
+            get => (NetFwProfileType2) _firewall.UnderlyingObject.CurrentProfileTypes ==
                    NetFwProfileType2.All ||
                    // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-                   ((NetFwProfileType2) Firewall.UnderlyingObject.CurrentProfileTypes & _profile) == _profile;
+                   ((NetFwProfileType2) _firewall.UnderlyingObject.CurrentProfileTypes & _profileType) == _profileType;
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets a value indicating if the user should get notifications about rules of this profile
-        /// </summary>
         public bool ShowNotifications
         {
-            get => !Firewall.UnderlyingObject.get_NotificationsDisabled(_profile);
-            set => Firewall.UnderlyingObject.set_NotificationsDisabled(_profile, !value);
+            get => !_firewall.UnderlyingObject.get_NotificationsDisabled(_profileType);
+            set => _firewall.UnderlyingObject.set_NotificationsDisabled(_profileType, !value);
         }
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets a FirewallProfiles showing the type of this firewall profile
-        /// </summary>
         public FirewallProfiles Type
         {
             get
             {
-                if (_profile == NetFwProfileType2.All)
+                if (_profileType == NetFwProfileType2.All)
                 {
                     throw new ArgumentOutOfRangeException();
                 }
 
-                return (FirewallProfiles) _profile;
+                return (FirewallProfiles) _profileType;
             }
         }
 
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Gets or sets a value indicating if the firewall should send unicast responses to the multicast broadcasts
-        /// </summary>
         public bool UnicastResponsesToMulticastBroadcast
         {
-            get => !Firewall.UnderlyingObject.get_UnicastResponsesToMulticastBroadcastDisabled(_profile);
-            set => Firewall.UnderlyingObject.set_UnicastResponsesToMulticastBroadcastDisabled(_profile, !value);
+            get => !_firewall.UnderlyingObject.get_UnicastResponsesToMulticastBroadcastDisabled(_profileType);
+            set => _firewall.UnderlyingObject.set_UnicastResponsesToMulticastBroadcastDisabled(_profileType, !value);
         }
 
-        /// <summary>
-        ///     Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>
-        ///     A string that represents the current object.
-        /// </returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             try

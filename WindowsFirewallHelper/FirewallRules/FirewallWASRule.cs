@@ -73,7 +73,7 @@ namespace WindowsFirewallHelper.FirewallRules
             FirewallDirection direction,
             FirewallProfiles profiles) : this(name, action, direction, profiles)
         {
-            Protocol = FirewallProtocol.Any;
+            Protocol = FirewallProtocol.TCP;
             LocalPorts = new[] {port};
         }
 

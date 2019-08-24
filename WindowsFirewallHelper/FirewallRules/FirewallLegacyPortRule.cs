@@ -24,10 +24,10 @@ namespace WindowsFirewallHelper.FirewallRules
         {
             if (profiles.HasFlag(FirewallProfiles.Public))
             {
-                throw new FirewallLegacyNotSupportedException("Public profile is not supported.");
+                throw new FirewallLegacyNotSupportedException("Public profile is not supported when working with Windows Firewall Legacy.");
             }
 
-            UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwOpenPort>();
+            UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwOpenPort[]>();
 
             foreach (var profile in Enum.GetValues(typeof(FirewallProfiles)).OfType<FirewallProfiles>())
             {
@@ -35,7 +35,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        ComHelper.CreateInstance<INetFwOpenPort>()
+                        new [] { ComHelper.CreateInstance<INetFwOpenPort>() }
                     );
                 }
             }
@@ -52,7 +52,7 @@ namespace WindowsFirewallHelper.FirewallRules
             IsEnable = true;
         }
 
-        internal FirewallLegacyPortRule(Dictionary<FirewallProfiles, INetFwOpenPort> openPorts)
+        internal FirewallLegacyPortRule(Dictionary<FirewallProfiles, INetFwOpenPort[]> openPorts)
         {
             UnderlyingObjects = openPorts;
         }
@@ -70,17 +70,17 @@ namespace WindowsFirewallHelper.FirewallRules
         /// </summary>
         public ushort LocalPort
         {
-            get => (ushort) UnderlyingObjects.Values.First().Port;
+            get => (ushort) UnderlyingObjects.Values.SelectMany(p => p).First().Port;
             set
             {
-                foreach (var openPort in UnderlyingObjects.Values)
+                foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                 {
                     openPort.Port = value;
                 }
             }
         }
 
-        private Dictionary<FirewallProfiles, INetFwOpenPort> UnderlyingObjects { get; }
+        private Dictionary<FirewallProfiles, INetFwOpenPort[]> UnderlyingObjects { get; }
 
 
         /// <inheritdoc />
@@ -96,25 +96,14 @@ namespace WindowsFirewallHelper.FirewallRules
                 return true;
             }
 
-            if (UnderlyingObjects.Count != other.UnderlyingObjects.Count)
+            if (Profiles != other.Profiles)
             {
                 return false;
             }
 
-            if (!UnderlyingObjects.Keys.SequenceEqual(other.UnderlyingObjects.Keys))
+            if (LocalPort != other.LocalPort || Protocol != other.Protocol)
             {
                 return false;
-            }
-
-            foreach (var profile in UnderlyingObjects.Keys)
-            {
-                var thisPort = UnderlyingObjects[profile];
-                var otherPort = other.UnderlyingObjects[profile];
-
-                if (thisPort.Port != otherPort.Port || thisPort.Protocol != otherPort.Protocol)
-                {
-                    return false;
-                }
             }
 
             return true;
@@ -161,10 +150,10 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <inheritdoc />
         public bool IsEnable
         {
-            get => UnderlyingObjects.Values.All(port => port.Enabled);
+            get => UnderlyingObjects.Values.SelectMany(p => p).All(port => port.Enabled);
             set
             {
-                foreach (var openPort in UnderlyingObjects.Values)
+                foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                 {
                     openPort.Enabled = value;
                 }
@@ -187,7 +176,7 @@ namespace WindowsFirewallHelper.FirewallRules
         /// </exception>
         ushort[] IFirewallRule.LocalPorts
         {
-            get => UnderlyingObjects.Values.Select(port => (ushort) port.Port).Distinct().ToArray();
+            get => UnderlyingObjects.Values.SelectMany(p => p).Select(port => (ushort) port.Port).Distinct().ToArray();
             set
             {
                 if (value.Length == 0)
@@ -211,16 +200,16 @@ namespace WindowsFirewallHelper.FirewallRules
         FirewallPortType IFirewallRule.LocalPortType
         {
             get => FirewallPortType.Specific;
-            set => throw new FirewallLegacyNotSupportedException("Setting a value for this property is not supported.");
+            set => throw new FirewallLegacyNotSupportedException();
         }
 
         /// <inheritdoc />
         public string Name
         {
-            get => UnderlyingObjects.Values.First().Name;
+            get => UnderlyingObjects.Values.SelectMany(p => p).First().Name;
             set
             {
-                foreach (var openPort in UnderlyingObjects.Values)
+                foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                 {
                     openPort.Name = value;
                 }
@@ -242,20 +231,20 @@ namespace WindowsFirewallHelper.FirewallRules
 
 
         /// <inheritdoc />
-        /// <exception cref="NotSupportedException">Only acceptable values are UDP, TCP and Any</exception>
+        /// <exception cref="FirewallLegacyNotSupportedException">Acceptable protocols for Windows Firewall Legacy are UDP, TCP and Any.</exception>
         public FirewallProtocol Protocol
         {
-            get => new FirewallProtocol((int) UnderlyingObjects.Values.First().Protocol);
+            get => new FirewallProtocol((int) UnderlyingObjects.Values.SelectMany(p => p).First().Protocol);
             set
             {
                 if (!value.Equals(FirewallProtocol.Any) &&
                     !value.Equals(FirewallProtocol.TCP) &&
                     !value.Equals(FirewallProtocol.UDP))
                 {
-                    throw new NotSupportedException("Acceptable values are UDP, TCP and Any.");
+                    throw new FirewallLegacyNotSupportedException("Acceptable protocols for Windows Firewall Legacy are UDP, TCP and Any.");
                 }
 
-                foreach (var openPort in UnderlyingObjects.Values)
+                foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                 {
                     openPort.Protocol = (NetFwIPProtocol) value.ProtocolNumber;
                 }
@@ -266,12 +255,13 @@ namespace WindowsFirewallHelper.FirewallRules
         public IAddress[] RemoteAddresses
         {
             get => UnderlyingObjects.Values
+                .SelectMany(p => p)
                 .SelectMany(application => AddressHelper.StringToAddresses(application.RemoteAddresses))
                 .Distinct()
                 .ToArray();
             set
             {
-                foreach (var openPort in UnderlyingObjects.Values)
+                foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                 {
                     openPort.RemoteAddresses = AddressHelper.AddressesToString(value);
                 }
@@ -289,7 +279,7 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <inheritdoc />
         public FirewallScope Scope
         {
-            get => (FirewallScope) UnderlyingObjects.Values.First().Scope;
+            get => (FirewallScope) UnderlyingObjects.Values.SelectMany(p => p).First().Scope;
             set
             {
                 if (value == FirewallScope.Specific)
@@ -301,7 +291,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     RemoteAddresses = new IAddress[] {new LocalSubnet()};
 
-                    foreach (var openPort in UnderlyingObjects.Values)
+                    foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                     {
                         openPort.Scope = NetFwScope.LocalSubnet;
                     }
@@ -310,7 +300,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     RemoteAddresses = new IAddress[] {SingleIP.Any};
 
-                    foreach (var openPort in UnderlyingObjects.Values)
+                    foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                     {
                         openPort.Scope = NetFwScope.All;
                     }
@@ -379,7 +369,7 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <param name="profile">The firewall profile to get the underlying COM object of this rule for</param>
         /// <returns>The underlying COM object of this rule</returns>
         // ReSharper disable once FlagArgument
-        public INetFwOpenPort GetCOMObject(FirewallProfiles profile)
+        public INetFwOpenPort[] GetCOMObjects(FirewallProfiles profile)
         {
             if (UnderlyingObjects.ContainsKey(profile))
             {

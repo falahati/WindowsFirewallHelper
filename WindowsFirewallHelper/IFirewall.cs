@@ -23,7 +23,6 @@ namespace WindowsFirewallHelper
         /// </summary>
         ICollection<IFirewallRule> Rules { get; }
 
-
         /// <summary>
         ///     Creates a rule about an executable file (application) to be registered to a firewall profile
         /// </summary>
@@ -85,7 +84,7 @@ namespace WindowsFirewallHelper
         );
 
         /// <summary>
-        ///     Creates a rule about a port to be registered to a firewall profile
+        ///     Creates a rule about a TCP port to be registered to a firewall profile
         /// </summary>
         /// <param name="profiles">The profile or profiles that the rule belongs to</param>
         /// <param name="name">Name of the rule</param>
@@ -96,7 +95,7 @@ namespace WindowsFirewallHelper
         IFirewallRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber);
 
         /// <summary>
-        ///     Creates a rule about a port to be registered to a firewall profile
+        ///     Creates a rule about a TCP port to be registered to a firewall profile
         /// </summary>
         /// <param name="profiles">The profile or profiles that the rule belongs to</param>
         /// <param name="name">Name of the rule</param>

@@ -44,9 +44,10 @@ namespace WindowsFirewallHelper.InternalCollections
                 {
                     if (applicationRule.Profiles.HasFlag(firewallProfile))
                     {
-                        _firewallApplicationCollections[firewallProfile].Add(
-                            applicationRule.GetCOMObject(firewallProfile)
-                        );
+                        foreach (var comObject in applicationRule.GetCOMObjects(firewallProfile))
+                        {
+                            _firewallApplicationCollections[firewallProfile].Add(comObject);
+                        }
                     }
                 }
             }
@@ -56,9 +57,10 @@ namespace WindowsFirewallHelper.InternalCollections
                 {
                     if (portRule.Profiles.HasFlag(firewallProfile))
                     {
-                        _firewallPortCollections[firewallProfile].Add(
-                            portRule.GetCOMObject(firewallProfile)
-                        );
+                        foreach (var comObject in portRule.GetCOMObjects(firewallProfile))
+                        {
+                            _firewallPortCollections[firewallProfile].Add(comObject);
+                        }
                     }
                 }
             }
@@ -112,8 +114,10 @@ namespace WindowsFirewallHelper.InternalCollections
                 {
                     if (applicationRule.Profiles.HasFlag(firewallProfile))
                     {
-                        _firewallApplicationCollections[firewallProfile]
-                            .Remove(applicationRule.GetCOMObject(firewallProfile));
+                        foreach (var comObject in applicationRule.GetCOMObjects(firewallProfile))
+                        {
+                            _firewallApplicationCollections[firewallProfile].Remove(comObject);
+                        }
                     }
                 }
             }
@@ -123,7 +127,10 @@ namespace WindowsFirewallHelper.InternalCollections
                 {
                     if (portRule.Profiles.HasFlag(firewallProfile))
                     {
-                        _firewallPortCollections[firewallProfile].Remove(portRule.GetCOMObject(firewallProfile));
+                        foreach (var comObject in portRule.GetCOMObjects(firewallProfile))
+                        {
+                            _firewallPortCollections[firewallProfile].Remove(comObject);
+                        }
                     }
                 }
             }
@@ -145,14 +152,16 @@ namespace WindowsFirewallHelper.InternalCollections
                 .SelectMany(pair => pair.Value.Select(rule => new {Profile = pair.Key, Rule = rule}))
                 .GroupBy(
                     arg => Tuple.Create(
+                        arg.Rule.Name,
                         arg.Rule.ProcessImageFileName,
                         arg.Rule.RemoteAddresses,
                         arg.Rule.Scope,
                         arg.Rule.IpVersion
                     )
                 )
+                .Select(group => group.GroupBy(arg => arg.Profile))
                 .Select(
-                    group => new FirewallLegacyApplicationRule(group.ToDictionary(t => t.Profile, t => t.Rule))
+                    group => new FirewallLegacyApplicationRule(group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray()))
                 )
                 .OfType<IFirewallRule>();
 
@@ -160,6 +169,7 @@ namespace WindowsFirewallHelper.InternalCollections
                 .SelectMany(pair => pair.Value.Select(rule => new {Profile = pair.Key, Rule = rule}))
                 .GroupBy(
                     arg => Tuple.Create(
+                        arg.Rule.Name,
                         arg.Rule.Port,
                         arg.Rule.Protocol,
                         arg.Rule.Scope,
@@ -168,8 +178,9 @@ namespace WindowsFirewallHelper.InternalCollections
                         arg.Rule.IpVersion
                     )
                 )
+                .Select(group => group.GroupBy(arg => arg.Profile))
                 .Select(
-                    group => new FirewallLegacyPortRule(group.ToDictionary(t => t.Profile, t => t.Rule))
+                    group => new FirewallLegacyPortRule(group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray()))
                 )
                 .OfType<IFirewallRule>();
 

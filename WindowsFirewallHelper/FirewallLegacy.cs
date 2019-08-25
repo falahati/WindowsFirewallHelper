@@ -100,14 +100,9 @@ namespace WindowsFirewallHelper
         }
 
         /// <inheritdoc />
-        public IFirewallRule CreateApplicationRule(FirewallProfiles profiles, string name, string filename)
+        IFirewallRule IFirewall.CreateApplicationRule(FirewallProfiles profiles, string name, string filename)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            return new FirewallLegacyApplicationRule(name, filename, profiles);
+            return CreateApplicationRule(profiles, name, filename);
         }
 
         /// <inheritdoc />
@@ -127,7 +122,8 @@ namespace WindowsFirewallHelper
 
             if (action != FirewallAction.Allow)
             {
-                throw new FirewallLegacyNotSupportedException("Windows Firewall Legacy only accepts allow exception rules.");
+                throw new FirewallLegacyNotSupportedException(
+                    "Windows Firewall Legacy only accepts allow exception rules.");
             }
 
             return new FirewallLegacyPortRule(name, portNumber, profiles) {Protocol = protocol};
@@ -147,7 +143,7 @@ namespace WindowsFirewallHelper
         /// <inheritdoc />
         IFirewallRule IFirewall.CreatePortRule(FirewallProfiles profiles, string name, ushort portNumber)
         {
-            return ((IFirewall)this).CreatePortRule(profiles, name, FirewallAction.Allow, portNumber, FirewallProtocol.TCP);
+            return CreatePortRule(profiles, name, portNumber);
         }
 
         /// <inheritdoc />
@@ -181,7 +177,27 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Creates a rule about a port to be registered to a firewall profile regardless of its protocol (TCP or UDP)
+        ///     Creates a rule about an executable file (application) to be registered to a firewall profile
+        /// </summary>
+        /// <param name="profiles">The profile or profiles that the rule belongs to</param>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="filename">Address of the executable file that the rule applies to</param>
+        /// <returns>Returns the newly created <see cref="FirewallLegacyApplicationRule" /> instance</returns>
+        public FirewallLegacyApplicationRule CreateApplicationRule(
+            FirewallProfiles profiles,
+            string name,
+            string filename)
+        {
+            if (!IsSupported)
+            {
+                throw new NotSupportedException();
+            }
+
+            return new FirewallLegacyApplicationRule(name, filename, profiles);
+        }
+
+        /// <summary>
+        ///     Creates a rule about a TCP port to be registered to a firewall profile regardless of its protocol
         /// </summary>
         /// <param name="profiles">The profile that the rule belongs to</param>
         /// <param name="name">Name of the rule</param>
@@ -194,7 +210,7 @@ namespace WindowsFirewallHelper
                 throw new NotSupportedException();
             }
 
-            return new FirewallLegacyPortRule(name, portNumber, profiles) {Protocol = FirewallProtocol.Any};
+            return new FirewallLegacyPortRule(name, portNumber, profiles) {Protocol = FirewallProtocol.TCP};
         }
 
         /// <summary>

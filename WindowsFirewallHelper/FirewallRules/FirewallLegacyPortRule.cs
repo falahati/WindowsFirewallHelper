@@ -224,7 +224,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 return UnderlyingObjects.Keys.ToArray()
                     .Aggregate(
                         (FirewallProfiles) 0,
-                        (profiles, profile) => profiles & profile
+                        (profiles, profile) => profiles | profile
                     );
             }
         }

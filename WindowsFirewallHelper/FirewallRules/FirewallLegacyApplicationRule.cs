@@ -167,8 +167,7 @@ namespace WindowsFirewallHelper.FirewallRules
             get => new IAddress[] {SingleIP.Any};
             set => throw new FirewallLegacyNotSupportedException();
         }
-
-
+        
         /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
         ushort[] IFirewallRule.LocalPorts
@@ -205,8 +204,8 @@ namespace WindowsFirewallHelper.FirewallRules
             {
                 return UnderlyingObjects.Keys.ToArray()
                     .Aggregate(
-                        (FirewallProfiles) 0,
-                        (profiles, profile) => profiles & profile
+                        (FirewallProfiles)0,
+                        (profiles, profile) => profiles | profile
                     );
             }
         }

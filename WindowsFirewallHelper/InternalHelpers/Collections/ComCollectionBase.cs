@@ -75,7 +75,6 @@ namespace WindowsFirewallHelper.InternalHelpers.Collections
                 return;
             }
 
-
             try
             {
                 InternalAdd(nativeObject);

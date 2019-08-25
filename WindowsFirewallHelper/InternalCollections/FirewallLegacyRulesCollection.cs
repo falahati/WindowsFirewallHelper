@@ -124,6 +124,7 @@ namespace WindowsFirewallHelper.InternalCollections
         // ReSharper disable once MethodTooLong
         public bool Remove(IFirewallRule rule)
         {
+            var deleted = false;
             if (rule is FirewallLegacyApplicationRule applicationRule)
             {
                 foreach (var firewallProfile in _firewallApplicationCollections.Keys)
@@ -132,7 +133,7 @@ namespace WindowsFirewallHelper.InternalCollections
                     {
                         foreach (var comObject in applicationRule.GetCOMObjects(firewallProfile))
                         {
-                            _firewallApplicationCollections[firewallProfile].Remove(comObject);
+                            deleted = _firewallApplicationCollections[firewallProfile].Remove(comObject) || deleted;
                         }
                     }
                 }
@@ -145,13 +146,17 @@ namespace WindowsFirewallHelper.InternalCollections
                     {
                         foreach (var comObject in portRule.GetCOMObjects(firewallProfile))
                         {
-                            _firewallPortCollections[firewallProfile].Remove(comObject);
+                            deleted = _firewallPortCollections[firewallProfile].Remove(comObject) || deleted;
                         }
                     }
                 }
             }
+            else
+            {
+                throw new ArgumentException("Invalid argument type passed.", nameof(rule));
+            }
 
-            throw new ArgumentException("Invalid argument type passed.", nameof(rule));
+            return deleted;
         }
 
         /// <inheritdoc />

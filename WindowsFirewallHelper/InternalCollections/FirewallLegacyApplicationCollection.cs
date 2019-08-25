@@ -36,10 +36,14 @@ namespace WindowsFirewallHelper.InternalCollections
 
                 return true;
             }
-            finally
+            catch (Exception)
             {
                 item.ProcessImageFileName = oldFilename;
 
+                throw;
+            }
+            finally
+            {
                 if (File.Exists(tempFilename))
                 {
                     File.Delete(tempFilename);

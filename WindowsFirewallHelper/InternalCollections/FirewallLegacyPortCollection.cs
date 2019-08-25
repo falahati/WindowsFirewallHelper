@@ -35,9 +35,11 @@ namespace WindowsFirewallHelper.InternalCollections
 
                 return true;
             }
-            finally
+            catch(Exception)
             {
                 item.Port = oldPortNumber;
+
+                throw;
             }
         }
 

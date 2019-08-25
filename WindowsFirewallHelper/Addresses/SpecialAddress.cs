@@ -52,6 +52,83 @@ namespace WindowsFirewallHelper.Addresses
         }
 
         /// <summary>
+        ///     Converts an address string to a <see cref="SpecialAddress" /> instance.
+        /// </summary>
+        /// <returns>
+        ///     A <see cref="SpecialAddress" /> instance.
+        /// </returns>
+        /// <param name="str">
+        ///     A string that contains an address
+        /// </param>
+        /// <exception cref="ArgumentNullException"><paramref name="str" /> is null. </exception>
+        /// <exception cref="FormatException"><paramref name="str" /> is not a valid address. </exception>
+        public static SpecialAddress Parse(string str)
+        {
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str));
+            }
+
+            if (!TryParse(str, out var address))
+            {
+                throw new FormatException();
+            }
+
+            return address;
+        }
+
+        /// <summary>
+        ///     Determines whether a string is a valid special service address.
+        /// </summary>
+        /// <returns>
+        ///     <see langword="true" /> if <paramref name="str" /> is a valid special service address; otherwise,
+        ///     <see langword="false" />.
+        /// </returns>
+        /// <param name="str">The string to validate.</param>
+        /// <param name="specialAddress">The <see cref="SpecialAddress" /> version of the string.</param>
+        public static bool TryParse(string str, out SpecialAddress specialAddress)
+        {
+            if (DNSService.TryParse(str, out var dns))
+            {
+                specialAddress = dns;
+
+                return true;
+            }
+
+            if (DHCPService.TryParse(str, out var dhcp))
+            {
+                specialAddress = dhcp;
+
+                return true;
+            }
+
+            if (WINSService.TryParse(str, out var wins))
+            {
+                specialAddress = wins;
+
+                return true;
+            }
+
+            if (LocalSubnet.TryParse(str, out var localSubnet))
+            {
+                specialAddress = localSubnet;
+
+                return true;
+            }
+
+            if (DefaultGateway.TryParse(str, out var defaultGateway))
+            {
+                specialAddress = defaultGateway;
+
+                return true;
+            }
+
+            specialAddress = null;
+
+            return false;
+        }
+
+        /// <summary>
         ///     Converts an address string to a <see cref="T" /> instance.
         /// </summary>
         /// <returns>

@@ -7,174 +7,107 @@ namespace WindowsFirewallHelper.Tests
     internal class SpecialAddressTests
     {
         [Test]
-        public void DefaultGatewayTests()
+        public void DefaultGatewayValidParse()
         {
             // ReSharper disable once StringLiteralTypo
             var str = "Defaultgateway";
-            var address = DefaultGateway.Parse(str);
+            var address = SpecialAddress.Parse(str);
 
             Assert.AreEqual(new DefaultGateway(), address);
             Assert.AreEqual(str, address.ToString());
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DefaultGateway.Parse("");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DefaultGateway.Parse("*");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DefaultGateway.Parse("127.0.0.1");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DefaultGateway.Parse("SOME_UNKNOWN_STRING");
-                }
-            );
         }
 
         [Test]
-        public void DHCPServiceTests()
+        public void DHCPServiceValidParse()
         {
             var str = "DHCP";
-            var address = DHCPService.Parse(str);
+            var address = SpecialAddress.Parse(str);
 
             Assert.AreEqual(new DHCPService(), address);
             Assert.AreEqual(str, address.ToString());
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DHCPService.Parse("");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DHCPService.Parse("*");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DHCPService.Parse("127.0.0.1");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DHCPService.Parse("SOME_UNKNOWN_STRING");
-                }
-            );
         }
 
         [Test]
-        public void DNSServiceTests()
+        public void DNSServiceValidParse()
         {
             var str = "DNS";
-            var address = DNSService.Parse(str);
+            var address = SpecialAddress.Parse(str);
 
             Assert.AreEqual(new DNSService(), address);
             Assert.AreEqual(str, address.ToString());
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DNSService.Parse("");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DNSService.Parse("*");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DNSService.Parse("127.0.0.1");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    DNSService.Parse("SOME_UNKNOWN_STRING");
-                }
-            );
         }
-        
+
         [Test]
-        public void LocalSubnetTests()
+        public void LocalSubnetValidParse()
         {
             var str = "LocalSubnet";
-            var address = LocalSubnet.Parse(str);
+            var address = SpecialAddress.Parse(str);
 
             Assert.AreEqual(new LocalSubnet(), address);
             Assert.AreEqual(str, address.ToString());
+        }
 
+        [Test]
+        public void SpecialAddressInvalidParses()
+        {
             Assert.Throws<FormatException>(() =>
                 {
-                    LocalSubnet.Parse("");
+                    SpecialAddress.Parse("");
+                }
+            );
+            Assert.Throws<FormatException>(() =>
+                {
+                    SpecialAddress.Parse("SOME_UNKNOWN_STRING");
+                }
+            );
+            Assert.Throws<FormatException>(() =>
+                {
+                    SpecialAddress.Parse("*");
                 }
             );
 
             Assert.Throws<FormatException>(() =>
                 {
-                    LocalSubnet.Parse("*");
+                    SpecialAddress.Parse("192.168.1.0");
+                }
+            );
+            Assert.Throws<FormatException>(() =>
+                {
+                    SpecialAddress.Parse("2001:1::");
                 }
             );
 
             Assert.Throws<FormatException>(() =>
                 {
-                    LocalSubnet.Parse("127.0.0.1");
+                    SpecialAddress.Parse("192.168.2.0/24");
+                }
+            );
+            Assert.Throws<FormatException>(() =>
+                {
+                    SpecialAddress.Parse("2001:1::/112");
                 }
             );
 
             Assert.Throws<FormatException>(() =>
                 {
-                    LocalSubnet.Parse("SOME_UNKNOWN_STRING");
+                    SpecialAddress.Parse("192.168.3.0-192.168.4.0");
+                }
+            );
+            Assert.Throws<FormatException>(() =>
+                {
+                    SpecialAddress.Parse("2001:2::-2001:3::");
                 }
             );
         }
-        
+
         [Test]
-        public void WINSServiceTests()
+        public void WINSServiceValidParse()
         {
             var str = "WINS";
-            var address = WINSService.Parse(str);
+            var address = SpecialAddress.Parse(str);
 
             Assert.AreEqual(new WINSService(), address);
             Assert.AreEqual(str, address.ToString());
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    WINSService.Parse("");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    WINSService.Parse("*");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    WINSService.Parse("127.0.0.1");
-                }
-            );
-
-            Assert.Throws<FormatException>(() =>
-                {
-                    WINSService.Parse("SOME_UNKNOWN_STRING");
-                }
-            );
         }
     }
 }

@@ -25,7 +25,7 @@ namespace WindowsFirewallHelper.Addresses
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="str" /> is null. </exception>
         /// <exception cref="FormatException"><paramref name="str" /> is not a valid address. </exception>
-        public static WINSService Parse(string str)
+        public new static WINSService Parse(string str)
         {
             return Parse<WINSService>(str);
         }

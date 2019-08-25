@@ -25,7 +25,7 @@ namespace WindowsFirewallHelper.Addresses
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="str" /> is null. </exception>
         /// <exception cref="FormatException"><paramref name="str" /> is not a valid address. </exception>
-        public static DHCPService Parse(string str)
+        public new static DHCPService Parse(string str)
         {
             return Parse<DHCPService>(str);
         }

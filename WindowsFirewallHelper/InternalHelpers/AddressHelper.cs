@@ -81,7 +81,6 @@ namespace WindowsFirewallHelper.InternalHelpers
             return val1;
         }
 
-
         // ReSharper disable once ExcessiveIndentation
         public static IAddress[] StringToAddresses(string str)
         {
@@ -89,25 +88,9 @@ namespace WindowsFirewallHelper.InternalHelpers
 
             foreach (var remoteAddress in str.Split(','))
             {
-                if (DNSService.TryParse(remoteAddress, out var dns))
+                if (SpecialAddress.TryParse(remoteAddress, out var specialAddress))
                 {
-                    remoteAddresses.Add(dns);
-                }
-                else if (DHCPService.TryParse(remoteAddress, out var dhcp))
-                {
-                    remoteAddresses.Add(dhcp);
-                }
-                else if (WINSService.TryParse(remoteAddress, out var wins))
-                {
-                    remoteAddresses.Add(wins);
-                }
-                else if (LocalSubnet.TryParse(remoteAddress, out var localSubnet))
-                {
-                    remoteAddresses.Add(localSubnet);
-                }
-                else if (DefaultGateway.TryParse(remoteAddress, out var defaultGateway))
-                {
-                    remoteAddresses.Add(defaultGateway);
+                    remoteAddresses.Add(specialAddress);
                 }
                 else if (SingleIP.TryParse(remoteAddress, out SingleIP ip))
                 {

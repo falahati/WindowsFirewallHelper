@@ -24,7 +24,7 @@ namespace WindowsFirewallHelper.Addresses
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="str" /> is null. </exception>
         /// <exception cref="FormatException"><paramref name="str" /> is not a valid address. </exception>
-        public static LocalSubnet Parse(string str)
+        public new static LocalSubnet Parse(string str)
         {
             return Parse<LocalSubnet>(str);
         }

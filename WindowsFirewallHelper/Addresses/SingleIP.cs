@@ -46,10 +46,8 @@ namespace WindowsFirewallHelper.Addresses
         public new static readonly SingleIP None = FromIPAddress(IPAddress.None);
 
         /// <summary>
-        ///     Obsolete - Provides an IP address that matches any IPv6 IPAddress. This field is read-only.
+        ///     Provides an IP address that matches any IPv6 IPAddress. This field is read-only.
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)]
         // ReSharper disable once InconsistentNaming
         public new static readonly SingleIP IPv6Any = FromIPAddress(IPAddress.IPv6Any);
 
@@ -79,7 +77,7 @@ namespace WindowsFirewallHelper.Addresses
         /// </returns>
         public override string ToString()
         {
-            if (Equals(Any))
+            if (Equals(Any) || Equals(IPv6Any))
             {
                 return "*";
             }
@@ -130,14 +128,6 @@ namespace WindowsFirewallHelper.Addresses
         }
 
         /// <summary>
-        ///     NOT SUPPORTED
-        /// </summary>
-        public new static bool IsLoopback(IPAddress address)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <summary>
         ///     Indicates whether the specified IP address is the loopback address.
         /// </summary>
         /// <returns>
@@ -146,7 +136,7 @@ namespace WindowsFirewallHelper.Addresses
         /// <param name="address">An IP address. </param>
         public static bool IsLoopback(SingleIP address)
         {
-            return IPAddress.IsLoopback(address.ToIPAddress());
+            return IsLoopback(address.ToIPAddress());
         }
 
         public static bool operator ==(SingleIP left, SingleIP right)
@@ -252,7 +242,7 @@ namespace WindowsFirewallHelper.Addresses
 
             // Check if this is a single IP NetworkAddress
             if (NetworkAddress.TryParse(ipString, out var networkAddress) &&
-                networkAddress.EndAddress.Equals(networkAddress.StartAddress))
+                networkAddress.StartAddress.Equals(networkAddress.EndAddress))
             {
                 address = FromIPAddress(networkAddress.Address);
 

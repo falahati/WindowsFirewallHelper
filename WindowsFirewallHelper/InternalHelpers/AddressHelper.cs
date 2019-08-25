@@ -110,13 +110,13 @@ namespace WindowsFirewallHelper.InternalHelpers
                 {
                     remoteAddresses.Add(defaultGateway);
                 }
-                else if (IPRange.TryParse(remoteAddress, out var range))
-                {
-                    remoteAddresses.Add(range);
-                }
                 else if (SingleIP.TryParse(remoteAddress, out SingleIP ip))
                 {
                     remoteAddresses.Add(ip);
+                }
+                else if (IPRange.TryParse(remoteAddress, out var range))
+                {
+                    remoteAddresses.Add(range);
                 }
                 else if (NetworkAddress.TryParse(remoteAddress, out var network))
                 {

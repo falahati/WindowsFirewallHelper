@@ -14,7 +14,7 @@ namespace WindowsFirewallHelper.Addresses
         private int? _hashCode;
 
         /// <summary>
-        ///     Creates an instance of the IPRange class using the provided values as the start and end of the IP range
+        ///     Creates an instance of the IPRange class using the provided values as the start and the end of the IP range
         /// </summary>
         /// <param name="address1">One end of the range</param>
         /// <param name="address2">Other end of the range</param>
@@ -26,14 +26,29 @@ namespace WindowsFirewallHelper.Addresses
                 throw new ArgumentException("Addresses of different family can not be used.");
             }
 
-            if (address1.Equals(address2))
+            if ((address1.Equals(IPAddress.Any) ||
+                 address1.Equals(IPAddress.IPv6Any) ||
+                 address2.Equals(IPAddress.Any) ||
+                 address2.Equals(IPAddress.IPv6Any)) &&
+                !address1.Equals(address2))
             {
-                throw new ArgumentException("Both addresses are same.");
+                throw new ArgumentException("Address ranges starting or ending in `Any` are not supported.");
             }
 
             StartAddress = AddressHelper.Min(address1, address2);
             EndAddress = AddressHelper.Max(address1, address2);
         }
+
+
+        /// <summary>
+        ///     Creates an instance of the IPRange class using the provided value as both the start and the end of the IP range
+        /// </summary>
+        /// <param name="address">Both end of the range</param>
+        /// <exception cref="ArgumentException">Addresses should be of a same family</exception>
+        public IPRange(IPAddress address) : this(address, address)
+        {
+        }
+
 
         /// <summary>
         ///     Gets and sets the upper bound of the range
@@ -53,6 +68,16 @@ namespace WindowsFirewallHelper.Addresses
         /// </returns>
         public override string ToString()
         {
+            if (StartAddress.Equals(EndAddress))
+            {
+                if (StartAddress.Equals(IPAddress.Any) || StartAddress.Equals(IPAddress.IPv6Any))
+                {
+                    return "*";
+                }
+
+                return StartAddress.ToString();
+            }
+
             return $"{StartAddress}-{EndAddress}";
         }
 
@@ -125,19 +150,39 @@ namespace WindowsFirewallHelper.Addresses
         /// <param name="addressRange">The <see cref="IPRange" /> version of the string.</param>
         public static bool TryParse(string str, out IPRange addressRange)
         {
-            var ips = str.Split('-');
-
-            if (ips.Length == 2)
+            try
             {
-                if (IPAddress.TryParse(ips[0], out var address1) && IPAddress.TryParse(ips[1], out var address2))
+                if (str == "*")
                 {
-                    if (!address1.Equals(address2))
+                    addressRange = new IPRange(IPAddress.Any);
+
+                    return true;
+                }
+
+                var ips = str.Split('-');
+
+                if (ips.Length == 1)
+                {
+                    if (IPAddress.TryParse(ips[0], out var address))
+                    {
+                        addressRange = new IPRange(address);
+
+                        return true;
+                    }
+                }
+                else if (ips.Length == 2)
+                {
+                    if (IPAddress.TryParse(ips[0], out var address1) && IPAddress.TryParse(ips[1], out var address2))
                     {
                         addressRange = new IPRange(address1, address2);
 
                         return true;
                     }
                 }
+            }
+            catch (Exception)
+            {
+                // ignored
             }
 
             addressRange = null;

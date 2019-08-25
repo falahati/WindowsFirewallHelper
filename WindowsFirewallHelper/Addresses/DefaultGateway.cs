@@ -11,6 +11,7 @@ namespace WindowsFirewallHelper.Addresses
         /// <inheritdoc />
         protected override string AddressString
         {
+            // ReSharper disable once StringLiteralTypo
             get => @"Defaultgateway";
         }
 

@@ -13,23 +13,24 @@ namespace WindowsFirewallHelper.Addresses
         /// <summary>
         ///     Provides an IP address that matches any IPAddress. This field is read-only.
         /// </summary>
-        public new static readonly SingleIP Any = FromIPAddress(IPAddress.Any);
-
-        /// <summary>
-        ///     Provides the IP loopback address. This field is read-only.
-        /// </summary>
-        public new static readonly SingleIP Loopback = FromIPAddress(IPAddress.Loopback);
+        public new static readonly SingleIP Any = new SingleIP(IPAddress.Any);
 
         /// <summary>
         ///     Provides the IP broadcast address. This field is read-only.
         /// </summary>
-        public new static readonly SingleIP Broadcast = FromIPAddress(IPAddress.Broadcast);
+        public new static readonly SingleIP Broadcast = new SingleIP(IPAddress.Broadcast);
+
+        /// <summary>
+        ///     Provides an IP address that matches any IPv6 IPAddress. This field is read-only.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        public new static readonly SingleIP IPv6Any = new SingleIP(IPAddress.IPv6Any);
 
         /// <summary>
         ///     Provides the IP loopback address. This property is read-only.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public new static readonly SingleIP IPv6Loopback = FromIPAddress(IPAddress.IPv6Loopback);
+        public new static readonly SingleIP IPv6Loopback = new SingleIP(IPAddress.IPv6Loopback);
 
         /// <summary>
         ///     Obsolete - Provides an IP address that indicates that no IPv6 IPAddress is mentioned. This property is read-only.
@@ -37,19 +38,18 @@ namespace WindowsFirewallHelper.Addresses
         // ReSharper disable once InconsistentNaming
         [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)]
         // ReSharper disable once InconsistentNaming
-        public new static readonly SingleIP IPv6None = FromIPAddress(IPAddress.IPv6None);
+        public new static readonly SingleIP IPv6None = new SingleIP(IPAddress.IPv6None);
+
+        /// <summary>
+        ///     Provides the IP loopback address. This field is read-only.
+        /// </summary>
+        public new static readonly SingleIP Loopback = new SingleIP(IPAddress.Loopback);
 
         /// <summary>
         ///     Obsolete - Provides an IP address that indicates that no IPAddress is mentioned. This property is read-only.
         /// </summary>
         [Obsolete("Unrelated", true)] [Browsable(false)] [EditorBrowsable(EditorBrowsableState.Never)]
-        public new static readonly SingleIP None = FromIPAddress(IPAddress.None);
-
-        /// <summary>
-        ///     Provides an IP address that matches any IPv6 IPAddress. This field is read-only.
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public new static readonly SingleIP IPv6Any = FromIPAddress(IPAddress.IPv6Any);
+        public new static readonly SingleIP None = new SingleIP(IPAddress.None);
 
 
         /// <summary>
@@ -65,6 +65,14 @@ namespace WindowsFirewallHelper.Addresses
         /// </summary>
         /// <param name="address"><see langword="byte" /> array containing the IP Address</param>
         public SingleIP(byte[] address) : base(address)
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="SingleIP" /> class using the provided <see cref="IPAddress" />.
+        /// </summary>
+        /// <param name="ip"></param>
+        public SingleIP(IPAddress ip) : this(ip.GetAddressBytes())
         {
         }
 
@@ -115,16 +123,6 @@ namespace WindowsFirewallHelper.Addresses
             }
 
             return Equals(other.ToIPAddress());
-        }
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="SingleIP" /> class using the provided <see cref="IPAddress" />.
-        /// </summary>
-        /// <param name="ip">The <see cref="IPAddress" /> to create new object from.</param>
-        /// <returns>Newly created <see cref="SingleIP" /> instance</returns>
-        public static SingleIP FromIPAddress(IPAddress ip)
-        {
-            return new SingleIP(ip.GetAddressBytes());
         }
 
         /// <summary>
@@ -226,7 +224,7 @@ namespace WindowsFirewallHelper.Addresses
             // Check if this is a valid IPAddress
             if (IPAddress.TryParse(ipString, out var ipAddress))
             {
-                address = FromIPAddress(ipAddress);
+                address = new SingleIP(ipAddress);
 
                 return true;
             }
@@ -235,7 +233,7 @@ namespace WindowsFirewallHelper.Addresses
             if (IPRange.TryParse(ipString, out var ipRange) &&
                 ipRange.StartAddress.Equals(ipRange.EndAddress))
             {
-                address = FromIPAddress(ipRange.StartAddress);
+                address = new SingleIP(ipRange.StartAddress);
 
                 return true;
             }
@@ -244,7 +242,7 @@ namespace WindowsFirewallHelper.Addresses
             if (NetworkAddress.TryParse(ipString, out var networkAddress) &&
                 networkAddress.StartAddress.Equals(networkAddress.EndAddress))
             {
-                address = FromIPAddress(networkAddress.Address);
+                address = new SingleIP(networkAddress.Address);
 
                 return true;
             }

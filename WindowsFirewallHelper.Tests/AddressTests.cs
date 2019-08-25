@@ -21,7 +21,7 @@ namespace WindowsFirewallHelper.Tests
                 new LocalSubnet(),
                 new IPRange(IPAddress.Parse("192.168.0.0"), IPAddress.Parse("192.168.1.0")),
                 new NetworkAddress(IPAddress.Parse("10.10.0.0"), IPAddress.Parse("255.255.255.0")),
-                SingleIP.FromIPAddress(IPAddress.Parse("192.168.1.1")),
+                new SingleIP(IPAddress.Parse("192.168.1.1")),
                 SingleIP.Loopback
             };
 

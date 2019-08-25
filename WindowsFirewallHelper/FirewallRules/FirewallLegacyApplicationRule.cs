@@ -280,7 +280,7 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <inheritdoc />
-        public string ServiceName
+        string IFirewallRule.ServiceName
         {
             get => string.Empty;
             set => throw new ArgumentException(

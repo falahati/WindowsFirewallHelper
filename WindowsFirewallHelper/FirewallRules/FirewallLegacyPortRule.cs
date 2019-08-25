@@ -125,7 +125,7 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <inheritdoc />
-        public string ApplicationName
+        string IFirewallRule.ApplicationName
         {
             get => string.Empty;
             set => throw new ArgumentException(
@@ -313,7 +313,7 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <inheritdoc />
-        public string ServiceName
+        string IFirewallRule.ServiceName
         {
             get => string.Empty;
             set => throw new ArgumentException(

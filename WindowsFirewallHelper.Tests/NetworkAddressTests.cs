@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net;
 using WindowsFirewallHelper.Addresses;
-using WindowsFirewallHelper.InternalHelpers;
 using NUnit.Framework;
 
 namespace WindowsFirewallHelper.Tests
@@ -145,7 +144,7 @@ namespace WindowsFirewallHelper.Tests
 
             Assert.IsTrue(expected.SequenceEqual(actual));
 
-            var addressesInString = AddressHelper.AddressesToString(actual.OfType<IAddress>().ToArray());
+            var addressesInString = string.Join(',', actual.Select(address => address.ToString()).ToArray());
 
             Assert.AreEqual(
                 "*,*,127.0.0.1,192.168.1.0,192.168.2.0/255.255.255.0,192.168.3.0/255.255.0.0," +

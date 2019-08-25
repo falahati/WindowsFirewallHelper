@@ -14,15 +14,14 @@ namespace WindowsFirewallHelper.InternalHelpers
 
             foreach (var address in rules)
             {
-                if (SingleIP.Any.Equals(address))
-                {
-                    addresses.Clear();
-                    addresses.Add(address.ToString());
+                var addressAsString = address.ToString();
 
-                    break;
+                if (addressAsString == "*")
+                {
+                    return "*";
                 }
 
-                addresses.Add(address.ToString());
+                addresses.Add(addressAsString);
             }
 
             return string.Join(",", addresses.ToArray());

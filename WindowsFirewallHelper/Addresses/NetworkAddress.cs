@@ -69,6 +69,29 @@ namespace WindowsFirewallHelper.Addresses
                 throw new ArgumentException("Addresses of different family can not be used.");
             }
 
+            switch (address.AddressFamily)
+            {
+                case AddressFamily.InterNetwork:
+
+                    if (Equals(address, IPAddress.Any) && !Equals(SubnetMask, IPv4SingleHostSubnet))
+                    {
+                        throw new ArgumentException("Any IPAddresses are only allowed with single host sub-nets.");
+                    }
+
+                    break;
+                case AddressFamily.InterNetworkV6:
+
+                    if (Equals(address, IPAddress.IPv6Any) && !Equals(SubnetMask, IPv6SingleHostSubnet))
+                    {
+                        throw new ArgumentException("Any IPAddresses are only allowed with single host sub-nets.");
+                    }
+
+                    break;
+                default:
+
+                    throw new ArgumentOutOfRangeException();
+            }
+
             Address = address;
             SubnetMask = subnetMask;
         }
@@ -144,7 +167,17 @@ namespace WindowsFirewallHelper.Addresses
         /// </returns>
         public override string ToString()
         {
-            return StartAddress.Equals(EndAddress) ? Address.ToString() : $"{Address}/{SubnetMask}";
+            if (StartAddress.Equals(EndAddress))
+            {
+                if (Equals(Address, IPAddress.Any) || Equals(Address, IPAddress.IPv6Any))
+                {
+                    return "*";
+                }
+
+                return Address.ToString();
+            }
+
+            return $"{Address}/{SubnetMask}";
         }
 
         /// <summary>
@@ -217,46 +250,63 @@ namespace WindowsFirewallHelper.Addresses
         // ReSharper disable once ExcessiveIndentation
         public static bool TryParse(string str, out NetworkAddress addressNetwork)
         {
-            var ips = str.Split('/');
-
-            if (ips.Length == 1)
+            try
             {
-                if (IPAddress.TryParse(ips[0], out var address))
+                if (str == "*")
                 {
-                    addressNetwork = new NetworkAddress(address);
+                    addressNetwork = new NetworkAddress(IPAddress.Any);
 
                     return true;
                 }
-            }
-            else if (ips.Length == 2)
-            {
-                if (IPAddress.TryParse(ips[0], out var address1))
+
+                var ips = str.Split('/');
+
+                if (ips.Length == 1)
                 {
-                    if (int.TryParse(ips[1], out var netMask) && netMask >= 1)
+                    if (IPAddress.TryParse(ips[0], out var address))
                     {
-                        if (address1.AddressFamily == AddressFamily.InterNetwork && netMask <= 32 ||
-                            address1.AddressFamily == AddressFamily.InterNetworkV6 && netMask <= 128)
-                        {
-                            var bytes = new byte[address1.AddressFamily == AddressFamily.InterNetworkV6 ? 16 : 4];
-
-                            for (byte i = 0; i < netMask; i++)
-                            {
-                                bytes[(int) Math.Floor(i / 8d)] |= (byte) (1 << (7 - i % 8));
-                            }
-
-                            addressNetwork = new NetworkAddress(address1, new IPAddress(bytes));
-
-                            return true;
-                        }
-                    }
-
-                    if (IPAddress.TryParse(ips[1], out var address2))
-                    {
-                        addressNetwork = new NetworkAddress(address1, address2);
+                        addressNetwork = new NetworkAddress(address);
 
                         return true;
                     }
                 }
+                else if (ips.Length == 2)
+                {
+                    if (IPAddress.TryParse(ips[0], out var address1))
+                    {
+                        // If subnet mask
+                        if (int.TryParse(ips[1], out var netMask) && netMask >= 1)
+                        {
+                            if (address1.AddressFamily == AddressFamily.InterNetwork && netMask <= 32 ||
+                                address1.AddressFamily == AddressFamily.InterNetworkV6 && netMask <= 128)
+                            {
+                                var bytes = new byte[address1.AddressFamily == AddressFamily.InterNetworkV6 ? 16 : 4];
+
+                                for (byte i = 0; i < netMask; i++)
+                                {
+                                    bytes[(int)Math.Floor(i / 8d)] |= (byte)(1 << (7 - i % 8));
+                                }
+
+                                addressNetwork = new NetworkAddress(address1, new IPAddress(bytes));
+
+                                return true;
+                            }
+                        }
+
+                        // If subnet
+                        if ((ips[1].Contains(":") || ips[1].Contains(".")) &&
+                            IPAddress.TryParse(ips[1], out var address2))
+                        {
+                            addressNetwork = new NetworkAddress(address1, address2);
+
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
             }
 
             addressNetwork = null;

@@ -14,7 +14,6 @@ namespace WindowsFirewallHelper.Sample
             cb_protocol.SelectedIndex = 0;
         }
 
-
         public FirewallProtocol FirewallProtocol
         {
             get => cb_protocol.SelectedItem as FirewallProtocol;

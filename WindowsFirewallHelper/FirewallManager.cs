@@ -38,7 +38,7 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        /// Gets a Boolean value indicating if the firewall service is currently running
+        ///     Gets a Boolean value indicating if the firewall service is currently running
         /// </summary>
         public static bool IsServiceRunning
         {

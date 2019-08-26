@@ -24,7 +24,9 @@ namespace WindowsFirewallHelper.FirewallRules
         {
             if (profiles.HasFlag(FirewallProfiles.Public))
             {
-                throw new FirewallLegacyNotSupportedException("Public profile is not supported when working with Windows Firewall Legacy.");
+                throw new FirewallLegacyNotSupportedException(
+                    "Public profile is not supported when working with Windows Firewall Legacy."
+                );
             }
 
             UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwAuthorizedApplication[]>();
@@ -35,7 +37,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        new [] { ComHelper.CreateInstance<INetFwAuthorizedApplication>() }
+                        new[] {ComHelper.CreateInstance<INetFwAuthorizedApplication>()}
                     );
                 }
             }
@@ -167,7 +169,7 @@ namespace WindowsFirewallHelper.FirewallRules
             get => new IAddress[] {SingleIP.Any};
             set => throw new FirewallLegacyNotSupportedException();
         }
-        
+
         /// <inheritdoc />
         /// <exception cref="FirewallLegacyNotSupportedException">Setting a value for this property is not supported</exception>
         ushort[] IFirewallRule.LocalPorts
@@ -204,7 +206,7 @@ namespace WindowsFirewallHelper.FirewallRules
             {
                 return UnderlyingObjects.Keys.ToArray()
                     .Aggregate(
-                        (FirewallProfiles)0,
+                        (FirewallProfiles) 0,
                         (profiles, profile) => profiles | profile
                     );
             }
@@ -251,7 +253,9 @@ namespace WindowsFirewallHelper.FirewallRules
             {
                 if (value == FirewallScope.Specific)
                 {
-                    throw new ArgumentException("Use the RemoteAddresses property to set the exact remote addresses");
+                    throw new ArgumentException(
+                        "Use the RemoteAddresses property to set the exact remote addresses"
+                    );
                 }
 
                 if (value == FirewallScope.LocalSubnet)
@@ -284,7 +288,8 @@ namespace WindowsFirewallHelper.FirewallRules
         {
             get => string.Empty;
             set => throw new ArgumentException(
-                "You can not change the identity of an application rule. Consider creating another rule.");
+                "You can not change the identity of an application rule. Consider creating another rule."
+            );
         }
 
         /// <summary>

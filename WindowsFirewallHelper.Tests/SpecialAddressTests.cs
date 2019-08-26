@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace WindowsFirewallHelper.Tests
 {
-    internal class SpecialAddressTests
+    public class SpecialAddressTests
     {
         [Test]
         public void DefaultGatewayValidParse()

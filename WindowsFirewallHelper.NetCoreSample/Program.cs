@@ -18,7 +18,7 @@ namespace WindowsFirewallHelper.NetCoreSample
 
                 return;
             }
-            
+
             var firewallInstance = FirewallManager.Instance;
 
             ConsoleWriter.Default.PrintCaption(firewallInstance.Name);
@@ -27,21 +27,27 @@ namespace WindowsFirewallHelper.NetCoreSample
             {
                 new ConsoleNavigationItem("Profiles", (i, item) =>
                 {
-                    ConsoleNavigation.Default.PrintNavigation(firewallInstance.Profiles.ToArray(), (i1, profile) =>
-                    {
-                        ConsoleWriter.Default.WriteObject(profile);
-                        ConsoleWriter.Default.PrintMessage("Press any key to get one step back.");
-                        Console.ReadKey();
-                    }, "Select a profile to view its settings.");
+                    ConsoleNavigation.Default.PrintNavigation(
+                        firewallInstance.Profiles.ToArray(), (i1, profile) =>
+                        {
+                            ConsoleWriter.Default.WriteObject(profile);
+                            ConsoleWriter.Default.PrintMessage("Press any key to get one step back.");
+                            Console.ReadKey();
+                        },
+                        "Select a profile to view its settings."
+                    );
                 }),
                 new ConsoleNavigationItem("Rules", (i, item) =>
                 {
-                    ConsoleNavigation.Default.PrintNavigation(firewallInstance.Rules.OrderBy(rule => rule.FriendlyName).ToArray(), (i1, rule) =>
-                    {
-                        ConsoleWriter.Default.WriteObject(rule);
-                        ConsoleWriter.Default.PrintMessage("Press any key to get one step back.");
-                        Console.ReadKey();
-                    }, "Select a rule to view its settings.");
+                    ConsoleNavigation.Default.PrintNavigation(
+                        firewallInstance.Rules.OrderBy(rule => rule.FriendlyName).ToArray(), (i1, rule) =>
+                        {
+                            ConsoleWriter.Default.WriteObject(rule);
+                            ConsoleWriter.Default.PrintMessage("Press any key to get one step back.");
+                            Console.ReadKey();
+                        },
+                        "Select a rule to view its settings."
+                    );
                 })
             }, "Select an execution path.");
         }

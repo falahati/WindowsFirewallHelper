@@ -74,7 +74,6 @@ namespace WindowsFirewallHelper.Sample
                     return;
                 }
 
-
                 var newAppRule = FirewallManager.Instance.CreateApplicationRule(
                     profileType.Value,
                     "!!TETS!! " + Guid.NewGuid().ToString("B"),

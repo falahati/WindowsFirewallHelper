@@ -125,6 +125,7 @@ namespace WindowsFirewallHelper.InternalCollections
         public bool Remove(IFirewallRule rule)
         {
             var deleted = false;
+
             if (rule is FirewallLegacyApplicationRule applicationRule)
             {
                 foreach (var firewallProfile in _firewallApplicationCollections.Keys)
@@ -182,7 +183,9 @@ namespace WindowsFirewallHelper.InternalCollections
                 )
                 .Select(group => group.GroupBy(arg => arg.Profile))
                 .Select(
-                    group => new FirewallLegacyApplicationRule(group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray()))
+                    group => new FirewallLegacyApplicationRule(
+                        group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray())
+                    )
                 )
                 .OfType<IFirewallRule>();
 
@@ -201,7 +204,9 @@ namespace WindowsFirewallHelper.InternalCollections
                 )
                 .Select(group => group.GroupBy(arg => arg.Profile))
                 .Select(
-                    group => new FirewallLegacyPortRule(group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray()))
+                    group => new FirewallLegacyPortRule(
+                        group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray())
+                    )
                 )
                 .OfType<IFirewallRule>();
 

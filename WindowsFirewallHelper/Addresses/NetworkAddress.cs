@@ -284,7 +284,7 @@ namespace WindowsFirewallHelper.Addresses
 
                                 for (byte i = 0; i < netMask; i++)
                                 {
-                                    bytes[(int)Math.Floor(i / 8d)] |= (byte)(1 << (7 - i % 8));
+                                    bytes[(int) Math.Floor(i / 8d)] |= (byte) (1 << (7 - i % 8));
                                 }
 
                                 addressNetwork = new NetworkAddress(address1, new IPAddress(bytes));

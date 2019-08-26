@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace WindowsFirewallHelper.Tests
 {
-    internal class NetworkAddressTests
+    public class NetworkAddressTests
     {
         [Test]
         public void InvalidParses()

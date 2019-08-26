@@ -24,7 +24,9 @@ namespace WindowsFirewallHelper.FirewallRules
         {
             if (profiles.HasFlag(FirewallProfiles.Public))
             {
-                throw new FirewallLegacyNotSupportedException("Public profile is not supported when working with Windows Firewall Legacy.");
+                throw new FirewallLegacyNotSupportedException(
+                    "Public profile is not supported when working with Windows Firewall Legacy."
+                );
             }
 
             UnderlyingObjects = new Dictionary<FirewallProfiles, INetFwOpenPort[]>();
@@ -35,7 +37,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        new [] { ComHelper.CreateInstance<INetFwOpenPort>() }
+                        new[] {ComHelper.CreateInstance<INetFwOpenPort>()}
                     );
                 }
             }
@@ -129,7 +131,8 @@ namespace WindowsFirewallHelper.FirewallRules
         {
             get => string.Empty;
             set => throw new ArgumentException(
-                "You can not change the identity of a port rule. Consider creating another rule.");
+                "You can not change the identity of a port rule. Consider creating another rule."
+            );
         }
 
         /// <inheritdoc />
@@ -182,13 +185,15 @@ namespace WindowsFirewallHelper.FirewallRules
                 if (value.Length == 0)
                 {
                     throw new ArgumentException(
-                        "You can not change the identity of a port rule. Consider creating another rule.");
+                        "You can not change the identity of a port rule. Consider creating another rule."
+                    );
                 }
 
                 if (value.Length > 1)
                 {
                     throw new FirewallLegacyNotSupportedException(
-                        "This property only accept an array of one element length.");
+                        "This property only accept an array of one element length."
+                    );
                 }
 
                 LocalPort = value[0];
@@ -231,7 +236,10 @@ namespace WindowsFirewallHelper.FirewallRules
 
 
         /// <inheritdoc />
-        /// <exception cref="FirewallLegacyNotSupportedException">Acceptable protocols for Windows Firewall Legacy are UDP, TCP and Any.</exception>
+        /// <exception cref="FirewallLegacyNotSupportedException">
+        ///     Acceptable protocols for Windows Firewall Legacy are UDP, TCP and
+        ///     Any.
+        /// </exception>
         public FirewallProtocol Protocol
         {
             get => new FirewallProtocol((int) UnderlyingObjects.Values.SelectMany(p => p).First().Protocol);
@@ -241,12 +249,16 @@ namespace WindowsFirewallHelper.FirewallRules
                     !value.Equals(FirewallProtocol.TCP) &&
                     !value.Equals(FirewallProtocol.UDP))
                 {
-                    throw new FirewallLegacyNotSupportedException("Acceptable protocols for Windows Firewall Legacy are UDP, TCP and Any.");
+                    throw new FirewallLegacyNotSupportedException(
+                        "Acceptable protocols for Windows Firewall Legacy are UDP, TCP and Any."
+                    );
                 }
 
                 if (value.Equals(FirewallProtocol.Any) && FirewallWAS.IsSupported)
                 {
-                    throw new FirewallLegacyNotSupportedException("`Any` protocol is not available with Windows Firewall Legacy in compatibility mode.");
+                    throw new FirewallLegacyNotSupportedException(
+                        "`Any` protocol is not available with Windows Firewall Legacy in compatibility mode."
+                    );
                 }
 
                 foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
@@ -289,7 +301,9 @@ namespace WindowsFirewallHelper.FirewallRules
             {
                 if (value == FirewallScope.Specific)
                 {
-                    throw new ArgumentException("Use the RemoteAddresses property to set the exact remote addresses.");
+                    throw new ArgumentException(
+                        "Use the RemoteAddresses property to set the exact remote addresses."
+                    );
                 }
 
                 if (value == FirewallScope.LocalSubnet)
@@ -322,7 +336,8 @@ namespace WindowsFirewallHelper.FirewallRules
         {
             get => string.Empty;
             set => throw new ArgumentException(
-                "You can not change the identity of a port rule. Consider creating another rule.");
+                "You can not change the identity of a port rule. Consider creating another rule."
+            );
         }
 
         /// <summary>

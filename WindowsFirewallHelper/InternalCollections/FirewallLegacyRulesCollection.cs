@@ -174,7 +174,6 @@ namespace WindowsFirewallHelper.InternalCollections
                 .SelectMany(pair => pair.Value.Select(rule => new {Profile = pair.Key, Rule = rule}))
                 .GroupBy(
                     arg => Tuple.Create(
-                        arg.Rule.Name,
                         arg.Rule.ProcessImageFileName,
                         arg.Rule.RemoteAddresses,
                         arg.Rule.Scope,
@@ -193,7 +192,6 @@ namespace WindowsFirewallHelper.InternalCollections
                 .SelectMany(pair => pair.Value.Select(rule => new {Profile = pair.Key, Rule = rule}))
                 .GroupBy(
                     arg => Tuple.Create(
-                        arg.Rule.Name,
                         arg.Rule.Port,
                         arg.Rule.Protocol,
                         arg.Rule.Scope,

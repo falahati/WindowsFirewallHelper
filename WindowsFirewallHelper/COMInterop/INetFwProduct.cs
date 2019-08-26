@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using WindowsFirewallHelper.InternalHelpers;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace WindowsFirewallHelper.COMInterop
 {
     [Guid("71881699-18F4-458B-B892-3FFCE5E07F75")]
@@ -47,3 +48,4 @@ namespace WindowsFirewallHelper.COMInterop
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

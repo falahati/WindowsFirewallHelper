@@ -1,4 +1,7 @@
-﻿namespace WindowsFirewallHelper.COMInterop
+﻿// ReSharper disable InconsistentNaming
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+namespace WindowsFirewallHelper.COMInterop
 {
     public enum NetFwRuleCategory
     {
@@ -8,3 +11,4 @@
         ConnectionSecurity = 3
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

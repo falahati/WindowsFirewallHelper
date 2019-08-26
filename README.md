@@ -5,7 +5,8 @@
 
 A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list.
 
-This project supports dotNet4.6 and NetStandard2, therefore, is compatible with NetCore2+ and any version of dotNet equal or greater than version 4.6.
+This project supports dotNet4.6 and NetStandard2, therefore, is compatible with NetCore2+ and any version of dotNet 
+equal or greater than version 4.6.
 
 Even though it is possible to reference this library under Linux or Mac; it's obviously not going to work.
 
@@ -17,7 +18,8 @@ This library is available as a NuGet package at [nuget.org](https://www.nuget.or
 
 ## Donation
 ### Buy me a coffee
-Donations assist development and are greatly appreciated; also always remember that [every coffee counts!](https://media.makeameme.org/created/one-simply-does-i9k8kx.jpg) :)
+Donations assist development and are greatly appreciated; also always remember that 
+[every coffee counts!](https://media.makeameme.org/created/one-simply-does-i9k8kx.jpg) :)
 
 [![](https://img.shields.io/badge/fiat-PayPal-8a00a3.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WR3KK2B6TYYQ4&item_name=Donation&currency_code=USD&source=url)
 [![](https://img.shields.io/badge/crypto-CoinPayments-8a00a3.svg?style=flat-square)](https://www.coinpayments.net/index.php?cmd=_donate&reset=1&merchant=820707aded07845511b841f9c4c335cd&item_name=Donate&currency=USD&amountf=20.00000000&allow_amount=1&want_shipping=0&allow_extra=1)
@@ -27,150 +29,186 @@ Donations assist development and are greatly appreciated; also always remember t
 You can always donate your time by contributing to the project or by introducing it to others.
 
 ## HOW TO USE
-Starting point of this library is the `FirewallManager` static class which can be used to get the instance of the class managing the firewall currently on the system.
+The starting point of this library is the `FirewallManager` static class which can be used to get the instance 
+of the class managing the firewall currently on the system.
+
 
 ### `WindowsFirewallHelper.FirewallManager` Class
-This static class contains properties about the current active Windows Firewall management class instance or the registered active third party firewall. This class also provides methods to register a third party firewall management object.
+This static class contains properties about the currently active Windows Firewall management class instance or the 
+registered third party firewall products. This class also provides methods to register a third-party firewall product.
 
-#### Static Read Only Properties
-*  `FirewallManager.Instance`: Gets the first active third party firewall object or the instance of the Windows Firewall management class.
-*  `FirewallManager.Version`: Gets the type of firewall object that `FirewallManager.Instance` property returns.
-*  `FirewallManager.ThirdPartyFirewalls`: Gets an array containing all registered third party firewall management objects.
+#### `WindowsFirewallHelper.FirewallManager` Static Properties
+*  `FirewallManager.Instance`: Gets an instance of the Windows Firewall management class.
+*  `FirewallManager.Version`: Gets the type of firewall that `FirewallManager.Instance` property returns.
+*  `FirewallManager.IsServiceRunning`: Gets a boolean value indicating if the Windows Firewall Service is currently running.
+*  `FirewallManager.RegisteredProducts`: Gets an array containing all registered third party firewall products.
 
-#### Static Methods
-*  `FirewallManager.RegisterFirewall()`: Registers an instance of a third party firewall management class implementing the `IFirewall` interface.
+#### `WindowsFirewallHelper.FirewallManager` Static Methods
+*  `FirewallManager.RegisterProduct()`: Registers a third-party firewall product returning a handle that will unregisters the product while getting disposed.
 
 
 ### `WindowsFirewallHelper` Namespace
-This namespace contains shared and general classes as well as main starting point of this library, `FirewallManager` class.
+This namespace contains shared and general classes as well as the main starting point of this library, `FirewallManager` class.
 
 #### `WindowsFirewallHelper` Classes
-*  `WindowsFirewallHelper.FirewallManager`: A static class to manage the current active firewall
-*  `WindowsFirewallHelper.FirewallProtocol`: A class representing a Firewall Protocol
-*  `WindowsFirewallHelper.ActiveCollection`: Represents a dynamic data collection that provides notifications when items get added or removed.
-*  `WindowsFirewallHelper.ActiveCollectionChangedEventArgs`: class containing event data about the `ActiveCollection.ItemsModified` event.
+*  `FirewallManager`: A static class to manage the current active firewall
+*  `FirewallProtocol`: A class representing a Firewall Protocol
+*  `FirewallLegacy`: Contains properties and methods of Windows Firewall v1 - Implementing the `IFirewall` interface
+*  `FirewallLegacyProfile`: Contains properties of a Windows Firewall v1 profile - Implementing the `IFirewallProfile` interface
+*  `FirewallWAS`: Contains properties and methods of Windows Firewall with Advanced Security (Vista+) - Implementing the `IFirewall` interface
+*  `FirewallWASProfile`: Contains properties of a Windows Firewall with Advanced Security profile (Vista+) - Implementing the `IFirewallProfile` interface
+*  `FirewallWASRuleGroup`: Contains properties and methods for managing a Windows Firewall with Advanced Security rule group (Vista+)
+*  `FirewallWASInternetControlMessage`: Representing an Internet Control Message (ICM) type
+*  `FirewallProduct`: Representing a third-party firewall product
+*  `FirewallProductRegistrationHandle`: Representing a third-party firewall product registration handle that will automatically unregisters the product while getting disposed.
 
 #### `WindowsFirewallHelper` Interfaces
-*  `WindowsFirewallHelper.IFirewall`: Defines expected methods and properties of a firewall program or API
-*  `WindowsFirewallHelper.IProfile`: Defines expected properties of a firewall profile
-*  `WindowsFirewallHelper.IRule`: Defines expected properties of a firewall rule
-*  `WindowsFirewallHelper.IAddress`: Defines expected methods of a network address
+*  `IFirewall`: Defines expected methods and properties of a firewall program or API
+*  `IFirewallProfile`: Defines expected properties of a firewall profile
+*  `IFirewallRule`: Defines expected properties of a firewall rule
+*  `IAddress`: Defines expected methods of a network address
 
-### `WindowsFirewallHelper.FirewallAPIv1` Namespace
-This namespace contains the classes to manage and manipulate the Windows Firewall using the Windows Firewall API v1. Supporting Windows XP and above.
 
-#### `WindowsFirewallHelper.FirewallAPIv1` Classes
-*  `FirewallAPIv1.Firewall`: Contains properties and methods of Windows Firewall v1 - Implementing `IFirewall` interface
-*  `FirewallAPIv1.FirewallProfile`: Contains properties of a Windows Firewall v1 profile - Implementing `IProfile` interface
-*  `FirewallAPIv1.Rules.ApplicationRule`: Contains properties of a Windows Firewall v1 application rule - Implementing `IRule` interface
-*  `FirewallAPIv1.Rules.PortRule`: Contains properties of a Windows Firewall v1 port rule - Implementing `IRule` interface
-*  `FirewallAPIv1.FirewallAPIv1NotSupportedException`: The exception that is thrown when an invoked method is not supported with the 'Windows Firewall API v1' - Extending `NotSupportedException`
+### `WindowsFirewallHelper.FirewallRules` Namespace
+This namespace contains classes that can be used for direct manipulation of a firewall rule.
 
-### `WindowsFirewallHelper.FirewallAPIv2` Namespace
-This namespace contains the classes to manage and manipulate the Windows Firewall using the Windows Firewall API v2 (aka. Windows Firewall with Advanced Security). Supporting Windows Vista and above.
+#### `WindowsFirewallHelper.FirewallRules` Classes
+*  `FirewallLegacyApplicationRule`: Contains properties of a Windows Firewall v1 application rule - Implementing the `IFirewallRule` interface
+*  `FirewallLegacyPortRule`: Contains properties of a Windows Firewall v1 port rule - Implementing the `IFirewallRule` interface
+*  `FirewallWASRule`: Contains properties of a Windows Firewall with Advanced Security rule - Implementing the `IFirewallRule` interface
+*  `FirewallWASRuleWin7`: Contains properties of a Windows Firewall with Advanced Security rule for Windows 7+ - Extending the `FirewallWASRule` class
+*  `FirewallWASRuleWin8`: Contains properties of a Windows Firewall with Advanced Security rule for Windows 8+ - Extending the `FirewallWASRuleWin7` class
 
-#### `WindowsFirewallHelper.FirewallAPIv2` Classes
-*  `FirewallAPIv2.Firewall`: Contains properties and methods of Windows Firewall with Advanced Security - Implementing `IFirewall` interface
-*  `FirewallAPIv2.FirewallProfile`: Contains properties of a Windows Firewall with Advanced Security profile - Implementing `IProfile` interface
-*  `FirewallAPIv2.Rules.StandardRule`: Contains properties of a Windows Firewall with Advanced Security rule - Implementing `IRule` interface
-*  `FirewallAPIv2.Rules.StandardRuleWin7`: Contains properties of a Windows Firewall with Advanced Security rule for Windows 7+ - Extending `FirewallAPIv2.Rules.StandardRule`
-*  `FirewallAPIv2.Rules.StandardRuleWin8`: Contains properties of a Windows Firewall with Advanced Security rule for Windows 8+ - Extending `FirewallAPIv2.Rules.StandardRuleWin7`
-*  `FirewallAPIv2.InternetControlMessage`: A class representing an Internet Control Message (ICM) type
-*  `FirewallAPIv2.FirewallAPIv2NotSupportedException`: The exception that is thrown when an invoked method is not supported with the 'Windows Firewall with Advanced Security' - Extending `NotSupportedException`
+
+### `WindowsFirewallHelper.Exceptions` Namespace
+This namespace contains exception classes that might be thrown when using this library
+
+#### `WindowsFirewallHelper.Exceptions` Classes
+*  `FirewallLegacyNotSupportedException`: The exception that is thrown when an invoked method or action is not supported with the 'Windows Firewall API v1' - Extending the `NotSupportedException` class
+*  `FirewallWASNotSupportedException`: The exception that is thrown when an invoked method or action is not supported with the 'Windows Firewall with Advanced Security' - Extending the `NotSupportedException` class
+*  `FirewallWASInvalidProtocolException`: The exception that is thrown when a passed FirewallProtocol is invalid for a 'Windows Firewall with Advanced Security' action or method - Extending the `InvalidOperationException`` class
+
+
+### `WindowsFirewallHelper.Addresses` Namespace
+This namespace contains the classes needed for manipulating or understanding a network address or a network service.
+
+#### `WindowsFirewallHelper.Addresses` Classes
+*  `SingleIP`: Represents a single network IP address - Implementing the `IAddress` interface
+*  `IPRange`: Represents a range of network IP addresses - Implementing the `IAddress` interface
+*  `NetworkAddress`: Represents a range of network IP addresses by subnet - Implementing the `IAddress` interface
+*  `SpecialAddress`: An abstract class represents a special network address or network service - Implementing the `IAddress` interface
+*  `DefaultGateway`: Represents the default network gateway - Extending the `SpecialAddress`` class
+*  `LocalSubnet`: Represents thelocal network subnet - Extending the `SpecialAddress`` class
+*  `DHCPService`: Represents the DHCP service - Extending the `SpecialAddress`` class
+*  `DNSService`: Represents the DNS service - Extending the `SpecialAddress`` class
+*  `WINSService`: Represents the WINS service - Extending the `SpecialAddress`` class
+
+
+### `WindowsFirewallHelper.COMInterop` Namespace
+This namespace contains the `interface`s and `enum`s that is used to access the underlying COM objects. Some of these types are public and can be used to directly modify a COM object. Usually firewall rules. Rest of types are internal to this library.
+
 
 ## EXAMPLES
-Check the 'WindowsFirewallHelper.Sample' project as a brief example of what can be done using this class library.
+Check the 'WindowsFirewallHelper.Sample' and 'WindowsFirewallHelper.NetCoreSample' projects as a brief example of what can be done using this class library.
 ![Screenshot](/screenshot.jpg?raw=true "Screenshot")
 
 ### BASIC EXAMPLES
-*  Creating and registering a new application exception rule for out-bound traffic on the currently enable profile:
+*  Creating and registering a new application exception rule for outbound traffic on the currently active profile:
 ```C#
-  var rule = FirewallManager.Instance.CreateApplicationRule(
-        FirewallManager.Instance.GetProfile().Type, @"MyApp Rule", 
-        FirewallAction.Allow, @"C:\MyApp.exe");
-  rule.Direction = FirewallDirection.Outbound;
-  FirewallManager.Instance.Rules.Add(rule);
+var rule = FirewallManager.Instance.CreateApplicationRule(
+    @"MyApp Rule",
+    FirewallAction.Allow,
+    @"C:\MyApp.exe"
+);
+rule.Direction = FirewallDirection.Outbound;
+FirewallManager.Instance.Rules.Add(rule);
 ```
 
-*  Creating and registering a new port rule for in-bound traffic on the currently enable profile:
+*  Creating and registering a new port rule for inbound traffic on the currently active profile:
 ```C#
-  var rule = FirewallManager.Instance.CreatePortRule(
-      FirewallManager.Instance.GetProfile().Type,
-      @"Port 80 - Any Protocol", FirewallAction.Allow, 80, 
-      FirewallProtocol.Any);
-  FirewallManager.Instance.Rules.Add(rule);
+var rule = FirewallManager.Instance.CreatePortRule(
+    @"Port 80 - Any Protocol",
+    FirewallAction.Allow,
+    80,
+    FirewallProtocol.TCP
+);
+FirewallManager.Instance.Rules.Add(rule);
 ```
 
 *  Getting the list of all registered rules:
 ```C#
-  var allRules = FirewallManager.Instance.Rules.ToArray();
+var allRules = FirewallManager.Instance.Rules.ToArray();
 ```
 
 *  Removing a rule by name:
 ```C#
-  var myRule = FirewallManager.Instance.Rules.SingleOrDefault(r => r.Name == "My Rule");
-  if (myRule != null)
-  {
+var myRule = FirewallManager.Instance.Rules.SingleOrDefault(r => r.Name == "My Rule");
+if (myRule != null)
+{
     FirewallManager.Instance.Rules.Remove(myRule);
-  }
+}
 ```
 
 *  Disabling notifications for all firewall profiles:
 ```C#
-  foreach (var profile in FirewallManager.Instance.Profiles)
-  {
+foreach (var profile in FirewallManager.Instance.Profiles)
+{
     profile.ShowNotifications = false;
-  }
+}
 ```
 
 ### ADVANCED EXAMPLES
 *  Creating a heavily customized application rule (Some parts of the following code are only applicable to Windows Vista, Windows 7 and above):
 ```C#
-  var rule = FirewallManager.Instance.CreatePortRule(
-      FirewallManager.Instance.GetProfile().Type,
-      @"Port 80 - Any Protocol", FirewallAction.Allow, 80, 
-      FirewallProtocol.Any);
-  if (rule is FirewallAPIv2.Rules.StandardRule)
-  {
-    ((FirewallAPIv2.Rules.StandardRule)rule).Interfaces =
-        NetworkInterface.GetAllNetworkInterfaces()
-            .Where(@interface => @interface.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
-            .ToArray();
-    ((FirewallAPIv2.Rules.StandardRule)rule).IcmpTypesAndCodes = new[]
+var rule = FirewallManager.Instance.CreatePortRule(
+    @"Port 80 - Any Protocol",
+    FirewallAction.Allow,
+    80,
+    FirewallProtocol.Any
+);
+if (rule is FirewallWASRule wasRule)
+{
+    wasRule.Interfaces = NetworkInterface.GetAllNetworkInterfaces()
+        .Where(i => i.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+        .ToArray();
+    wasRule.ICMPTypesAndCodes = new[]
     {
-        new InternetControlMessage(InternetControlMessageKnownTypes.Echo),
-        new InternetControlMessage(InternetControlMessageKnownTypes.EchoReply)
+        new FirewallWASInternetControlMessage(InternetControlMessageKnownTypes.Echo),
+        new FirewallWASInternetControlMessage(InternetControlMessageKnownTypes.EchoReply)
     };
-    if (rule is FirewallAPIv2.Rules.StandardRuleWin7)
+    if (rule is FirewallWASRuleWin7 wasRuleWin7)
     {
-        ((FirewallAPIv2.Rules.StandardRuleWin7)rule).EdgeTraversalOptions = EdgeTraversalAction.Deny;
+        wasRuleWin7.EdgeTraversalOptions = EdgeTraversalAction.Deny;
     }
-  }
-  rule.Direction = FirewallDirection.Outbound;
-  FirewallManager.Instance.Rules.Add(rule);
+}
+rule.Direction = FirewallDirection.Outbound;
+FirewallManager.Instance.Rules.Add(rule);
 ```
 
 *  Working directly with the desired firewall management class without using the `FirewallManager` to add a new port rule (Following example is limited to Windows 8 and above):
 ```C#
-  if (FirewallAPIv2.Firewall.Instance.IsSupported && StandardRuleWin8.IsSupported)
-  {
-    rule = new StandardRuleWin8("My Port Rule", 1080, FirewallAction.Allow,
+if (FirewallWAS.IsSupported && FirewallWASRuleWin8.IsSupported)
+{
+    var rule = new FirewallWASRuleWin8(
+        "My Port Rule",
+        1080,
+        FirewallAction.Allow,
         FirewallDirection.Inbound,
-        FirewallProfiles.Domain | FirewallProfiles.Private | FirewallProfiles.Public)
+        FirewallProfiles.Domain | FirewallProfiles.Private | FirewallProfiles.Public
+    )
     {
-        Description =
-            "'My Port Rule' Allows Inbound traffic to my local Proxy Server from Wireless Adapters",
-        InterfaceTypes = FirewallInterfaceTypes.Wireless,
+        Description = "'My Port Rule' Allows Inbound traffic to my local Proxy Server from Wireless Adapters",
+        NetworkInterfaceTypes = NetworkInterfaceTypes.Wireless,
         Protocol = FirewallProtocol.TCP
     };
-    FirewallAPIv2.Firewall.Instance.Rules.Add(rule);
-  }
+    FirewallWAS.Instance.Rules.Add(rule);
+}
 ```
 
 ## LICENSE
 The MIT License (MIT)
 
-Copyright (c) 2016 Soroush
+Copyright (c) 2016-2019 Soroush
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

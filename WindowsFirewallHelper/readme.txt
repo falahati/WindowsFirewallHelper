@@ -12,16 +12,20 @@ USAGE
 
 CODE SAMPLE FOR ADDING AN APPLICATION RULE TO THE ACTIVE PROFILE:
   var rule = FirewallManager.Instance.CreateApplicationRule(
-        FirewallManager.Instance.GetActiveProfile().Type, 
-        @"MyApp Rule", FirewallAction.Allow, @"C:\MyApp.exe");
+      @"MyApp Rule",
+      FirewallAction.Allow,
+      @"C:\MyApp.exe"
+  );
   rule.Direction = FirewallDirection.Outbound;
   FirewallManager.Instance.Rules.Add(rule);
 
 CODE SAMPLE FOR ADDING A PORT RULE TO THE ACTIVE PROFILE:
   var rule = FirewallManager.Instance.CreatePortRule(
-      FirewallManager.Instance.GetActiveProfile().Type,
-      @"Port 80 - Any Protocol", FirewallAction.Allow, 80, 
-      FirewallProtocol.TCP);
+      @"Port 80 - Any Protocol",
+      FirewallAction.Allow,
+      80,
+      FirewallProtocol.TCP
+  );
   FirewallManager.Instance.Rules.Add(rule);
 
 CODE SAMPLE TO GET A LIST OF ALL REGISTERED RULES:
@@ -29,4 +33,4 @@ CODE SAMPLE TO GET A LIST OF ALL REGISTERED RULES:
 
 MORE SAMPLES:
   Check the Project's Github page at: 
-              https://github.com/falahati/WindowsFirewallHelper
+  https://github.com/falahati/WindowsFirewallHelper

@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		screenshot.jpg = screenshot.jpg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFirewallHelper.Tests", "WindowsFirewallHelper.Tests\WindowsFirewallHelper.Tests.csproj", "{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsFirewallHelper.Tests", "WindowsFirewallHelper.Tests\WindowsFirewallHelper.Tests.csproj", "{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,9 @@ Global
 		{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B2C0C23-8B5E-4760-A08F-263A055A8DE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A0BDBCB-3C98-4F43-86C5-ABE7EB537D42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -54,7 +54,8 @@ namespace WindowsFirewallHelper
             FirewallProfiles profiles,
             string name,
             FirewallAction action,
-            string filename);
+            string filename
+        );
 
         /// <summary>
         ///     Creates a rule about an executable file (application) to be registered to a firewall profile
@@ -64,6 +65,45 @@ namespace WindowsFirewallHelper
         /// <param name="filename">Address of the executable file that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
         IFirewallRule CreateApplicationRule(FirewallProfiles profiles, string name, string filename);
+
+
+        /// <summary>
+        ///     Creates a rule about an executable file (application) to be registered to the current firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="filename">Address of the executable file that the rule applies to</param>
+        /// <param name="protocol">Protocol that the rule applies to</param>
+        /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
+        // ReSharper disable once TooManyArguments
+        IFirewallRule CreateApplicationRule(
+            string name,
+            FirewallAction action,
+            string filename,
+            FirewallProtocol protocol
+        );
+
+        /// <summary>
+        ///     Creates a rule about an executable file (application) to be registered the current firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="filename">Address of the executable file that the rule applies to</param>
+        /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
+        // ReSharper disable once TooManyArguments
+        IFirewallRule CreateApplicationRule(
+            string name,
+            FirewallAction action,
+            string filename
+        );
+
+        /// <summary>
+        ///     Creates a rule about an executable file (application) to be registered the current firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="filename">Address of the executable file that the rule applies to</param>
+        /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
+        IFirewallRule CreateApplicationRule(string name, string filename);
 
         /// <summary>
         ///     Creates a rule about a port to be registered to a firewall profile
@@ -92,7 +132,12 @@ namespace WindowsFirewallHelper
         /// <param name="portNumber">Port number that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
         // ReSharper disable once TooManyArguments
-        IFirewallRule CreatePortRule(FirewallProfiles profiles, string name, FirewallAction action, ushort portNumber);
+        IFirewallRule CreatePortRule(
+            FirewallProfiles profiles,
+            string name,
+            FirewallAction action,
+            ushort portNumber
+        );
 
         /// <summary>
         ///     Creates a rule about a TCP port to be registered to a firewall profile
@@ -102,6 +147,45 @@ namespace WindowsFirewallHelper
         /// <param name="portNumber">Port number that the rule applies to</param>
         /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
         IFirewallRule CreatePortRule(FirewallProfiles profiles, string name, ushort portNumber);
+
+
+        /// <summary>
+        ///     Creates a rule about a port to be registered to the current firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="portNumber">Port number that the rule applies to</param>
+        /// <param name="protocol">Protocol that the rule applies to</param>
+        /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
+        // ReSharper disable once TooManyArguments
+        IFirewallRule CreatePortRule(
+            string name,
+            FirewallAction action,
+            ushort portNumber,
+            FirewallProtocol protocol
+        );
+
+        /// <summary>
+        ///     Creates a rule about a TCP port to be registered to the current firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="portNumber">Port number that the rule applies to</param>
+        /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
+        // ReSharper disable once TooManyArguments
+        IFirewallRule CreatePortRule(
+            string name,
+            FirewallAction action,
+            ushort portNumber
+        );
+
+        /// <summary>
+        ///     Creates a rule about a TCP port to be registered to the current firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="portNumber">Port number that the rule applies to</param>
+        /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
+        IFirewallRule CreatePortRule(string name, ushort portNumber);
 
         /// <summary>
         ///     Returns the active firewall profile, if any

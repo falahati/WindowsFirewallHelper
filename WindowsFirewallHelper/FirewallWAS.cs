@@ -13,6 +13,7 @@ namespace WindowsFirewallHelper
     /// <summary>
     ///     Contains properties and methods of Windows Firewall with Advanced Security
     /// </summary>
+    // ReSharper disable once ClassTooBig
     public class FirewallWAS : IFirewall
     {
         /// <summary>
@@ -93,7 +94,8 @@ namespace WindowsFirewallHelper
             string name,
             FirewallAction action,
             string filename,
-            FirewallProtocol protocol)
+            FirewallProtocol protocol
+        )
         {
             return CreateApplicationRule(profiles, name, action, FirewallDirection.Inbound, filename, protocol);
         }
@@ -105,7 +107,8 @@ namespace WindowsFirewallHelper
             FirewallProfiles profiles,
             string name,
             FirewallAction action,
-            string filename)
+            string filename
+        )
         {
             return (this as IFirewall).CreateApplicationRule(profiles, name, action, filename, FirewallProtocol.Any);
         }
@@ -118,12 +121,50 @@ namespace WindowsFirewallHelper
 
         /// <inheritdoc />
         // ReSharper disable once TooManyArguments
+        IFirewallRule IFirewall.CreateApplicationRule(
+            string name,
+            FirewallAction action,
+            string filename,
+            FirewallProtocol protocol
+        )
+        {
+            var activeProfile = GetActiveProfile();
+
+            if (activeProfile == null)
+            {
+                throw new InvalidOperationException("No firewall profile is currently active.");
+            }
+
+            return ((IFirewall) this).CreateApplicationRule(
+                activeProfile.Type,
+                name,
+                action,
+                filename,
+                FirewallProtocol.Any
+            );
+        }
+
+        /// <inheritdoc />
+        IFirewallRule IFirewall.CreateApplicationRule(string name, FirewallAction action, string filename)
+        {
+            return ((IFirewall) this).CreateApplicationRule(name, action, filename, FirewallProtocol.Any);
+        }
+
+        /// <inheritdoc />
+        IFirewallRule IFirewall.CreateApplicationRule(string name, string filename)
+        {
+            return ((IFirewall) this).CreateApplicationRule(name, FirewallAction.Allow, filename);
+        }
+
+        /// <inheritdoc />
+        // ReSharper disable once TooManyArguments
         IFirewallRule IFirewall.CreatePortRule(
             FirewallProfiles profiles,
             string name,
             FirewallAction action,
             ushort portNumber,
-            FirewallProtocol protocol)
+            FirewallProtocol protocol
+        )
         {
             return CreatePortRule(profiles, name, action, FirewallDirection.Inbound, portNumber, protocol);
         }
@@ -134,7 +175,8 @@ namespace WindowsFirewallHelper
             FirewallProfiles profiles,
             string name,
             FirewallAction action,
-            ushort portNumber)
+            ushort portNumber
+        )
         {
             return (this as IFirewall).CreatePortRule(profiles, name, action, portNumber, FirewallProtocol.TCP);
         }
@@ -143,6 +185,43 @@ namespace WindowsFirewallHelper
         IFirewallRule IFirewall.CreatePortRule(FirewallProfiles profiles, string name, ushort portNumber)
         {
             return (this as IFirewall).CreatePortRule(profiles, name, FirewallAction.Allow, portNumber);
+        }
+
+        /// <inheritdoc />
+        // ReSharper disable once TooManyArguments
+        IFirewallRule IFirewall.CreatePortRule(
+            string name,
+            FirewallAction action,
+            ushort portNumber,
+            FirewallProtocol protocol
+        )
+        {
+            var activeProfile = GetActiveProfile();
+
+            if (activeProfile == null)
+            {
+                throw new InvalidOperationException("No firewall profile is currently active.");
+            }
+
+            return ((IFirewall) this).CreatePortRule(
+                activeProfile.Type,
+                name,
+                action,
+                portNumber,
+                FirewallProtocol.TCP
+            );
+        }
+
+        /// <inheritdoc />
+        IFirewallRule IFirewall.CreatePortRule(string name, FirewallAction action, ushort portNumber)
+        {
+            return ((IFirewall) this).CreatePortRule(name, action, portNumber, FirewallProtocol.TCP);
+        }
+
+        /// <inheritdoc />
+        IFirewallRule IFirewall.CreatePortRule(string name, ushort portNumber)
+        {
+            return ((IFirewall) this).CreatePortRule(name, FirewallAction.Allow, portNumber);
         }
 
         /// <inheritdoc />
@@ -192,7 +271,8 @@ namespace WindowsFirewallHelper
             FirewallAction action,
             FirewallDirection direction,
             string filename,
-            FirewallProtocol protocol)
+            FirewallProtocol protocol
+        )
         {
             if (!IsSupported)
             {
@@ -227,6 +307,39 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
+        ///     Creates a rule about an executable file (application) to be registered to the currently active firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="direction">The rule control direction</param>
+        /// <param name="filename">Address of the executable file that the rule applies to</param>
+        /// <param name="protocol">Protocol that the rule applies to</param>
+        /// <returns>Returns the newly created <see cref="FirewallWASRule" /> instance or one of its children</returns>
+        // ReSharper disable once TooManyArguments
+        public FirewallWASRule CreateApplicationRule(
+            string name,
+            FirewallAction action,
+            FirewallDirection direction,
+            string filename,
+            FirewallProtocol protocol
+        )
+        {
+            if (!IsSupported)
+            {
+                throw new FirewallWASNotSupportedException();
+            }
+
+            var activeProfile = GetActiveProfile();
+
+            if (activeProfile == null)
+            {
+                throw new InvalidOperationException("No firewall profile is currently active.");
+            }
+
+            return CreateApplicationRule(activeProfile.Type, name, action, direction, filename, protocol);
+        }
+
+        /// <summary>
         ///     Creates a rule about a port to be registered to a firewall profile
         /// </summary>
         /// <param name="profiles">The profile or profiles that the rule belongs to</param>
@@ -243,7 +356,8 @@ namespace WindowsFirewallHelper
             FirewallAction action,
             FirewallDirection direction,
             ushort portNumber,
-            FirewallProtocol protocol)
+            FirewallProtocol protocol
+        )
         {
             if (!IsSupported)
             {
@@ -301,6 +415,39 @@ namespace WindowsFirewallHelper
             }
 
             throw new FirewallWASNotSupportedException();
+        }
+
+        /// <summary>
+        ///     Creates a rule about a port to be registered to the currently firewall profile
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action of the rule</param>
+        /// <param name="direction">The rule control direction</param>
+        /// <param name="portNumber">Port number that the rule applies to</param>
+        /// <param name="protocol">Protocol that the rule applies to</param>
+        /// <returns>Returns the newly created <see cref="FirewallWASRule" /> instance or one of its children</returns>
+        // ReSharper disable once TooManyArguments
+        public FirewallWASRule CreatePortRule(
+            string name,
+            FirewallAction action,
+            FirewallDirection direction,
+            ushort portNumber,
+            FirewallProtocol protocol
+        )
+        {
+            if (!IsSupported)
+            {
+                throw new FirewallWASNotSupportedException();
+            }
+
+            var activeProfile = GetActiveProfile();
+
+            if (activeProfile == null)
+            {
+                throw new InvalidOperationException("No firewall profile is currently active.");
+            }
+
+            return CreatePortRule(activeProfile.Type, name, action, direction, portNumber, protocol);
         }
 
         /// <summary>

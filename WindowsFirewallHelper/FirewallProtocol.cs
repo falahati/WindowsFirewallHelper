@@ -152,31 +152,67 @@ namespace WindowsFirewallHelper
             return ProtocolNumber == other;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="FirewallProtocol" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
+        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(FirewallProtocol left, FirewallProtocol right)
         {
             return Equals(left, right) || left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares one <see cref="FirewallProtocol" /> object with another <see cref="int" /> for equality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
+        /// <param name="right">An <see cref="int" /></param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(FirewallProtocol left, int right)
         {
             return left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares one <see cref="int" /> with another <see cref="FirewallProtocol" /> object for equality
+        /// </summary>
+        /// <param name="left">An <see cref="int" /></param>
+        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(int left, FirewallProtocol right)
         {
             return right?.Equals(left) == true;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="FirewallProtocol" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
+        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(FirewallProtocol left, FirewallProtocol right)
         {
             return !(left == right);
         }
 
+        /// <summary>
+        ///     Compares one <see cref="FirewallProtocol" /> object with another <see cref="int" /> for equality
+        /// </summary>
+        /// <param name="left">A <see cref="FirewallProtocol" /> object</param>
+        /// <param name="right">An <see cref="int" /></param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(FirewallProtocol left, int right)
         {
             return !(left == right);
         }
 
+        /// <summary>
+        ///     Compares one <see cref="int" /> with another <see cref="FirewallProtocol" /> object for equality
+        /// </summary>
+        /// <param name="left">An <see cref="int" /></param>
+        /// <param name="right">A <see cref="FirewallProtocol" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(int left, FirewallProtocol right)
         {
             return !(left == right);

@@ -41,11 +41,23 @@ namespace WindowsFirewallHelper.Addresses
             return AddressString.Equals(other, StringComparison.InvariantCultureIgnoreCase);
         }
 
+        /// <summary>
+        ///     Compares two <see cref="SpecialAddress" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="SpecialAddress" /> object</param>
+        /// <param name="right">A <see cref="SpecialAddress" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(SpecialAddress left, SpecialAddress right)
         {
             return Equals(left, right) || left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="SpecialAddress" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="SpecialAddress" /> object</param>
+        /// <param name="right">A <see cref="SpecialAddress" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(SpecialAddress left, SpecialAddress right)
         {
             return !(left == right);
@@ -129,10 +141,10 @@ namespace WindowsFirewallHelper.Addresses
         }
 
         /// <summary>
-        ///     Converts an address string to a <see cref="T" /> instance.
+        ///     Converts an address string to an instance of one of children of the <see cref="SpecialAddress"/> class.
         /// </summary>
         /// <returns>
-        ///     A <see cref="T" /> instance.
+        ///     An instance from one of children of the <see cref="SpecialAddress"/> class.
         /// </returns>
         /// <param name="str">
         ///     A string that contains an address

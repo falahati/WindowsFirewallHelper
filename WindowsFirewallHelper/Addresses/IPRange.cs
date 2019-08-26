@@ -103,11 +103,23 @@ namespace WindowsFirewallHelper.Addresses
             return StartAddress.Equals(other.StartAddress) && EndAddress.Equals(other.EndAddress);
         }
 
+        /// <summary>
+        ///     Compares two <see cref="IPRange" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="IPRange" /> object</param>
+        /// <param name="right">A <see cref="IPRange" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(IPRange left, IPRange right)
         {
             return Equals(left, right) || left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="IPRange" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="IPRange" /> object</param>
+        /// <param name="right">A <see cref="IPRange" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(IPRange left, IPRange right)
         {
             return !(left == right);

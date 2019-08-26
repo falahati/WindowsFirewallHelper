@@ -137,31 +137,67 @@ namespace WindowsFirewallHelper.Addresses
             return IsLoopback(address.ToIPAddress());
         }
 
+        /// <summary>
+        ///     Compares two <see cref="SingleIP" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="SingleIP" /> object</param>
+        /// <param name="right">A <see cref="SingleIP" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(SingleIP left, SingleIP right)
         {
             return Equals(left, right) || left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares one <see cref="SingleIP" /> object with another <see cref="IPAddress" /> object for equality
+        /// </summary>
+        /// <param name="left">A <see cref="SingleIP" /> object</param>
+        /// <param name="right">A <see cref="IPAddress" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(SingleIP left, IPAddress right)
         {
             return Equals(left, right) || left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares one <see cref="IPAddress" /> object with another <see cref="SingleIP" /> object for equality
+        /// </summary>
+        /// <param name="left">A <see cref="IPAddress" /> object</param>
+        /// <param name="right">A <see cref="SingleIP" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(IPAddress left, SingleIP right)
         {
             return Equals(left, right) || right?.Equals(left) == true;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="SingleIP" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="SingleIP" /> object</param>
+        /// <param name="right">A <see cref="SingleIP" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(SingleIP left, SingleIP right)
         {
             return !(left == right);
         }
 
+        /// <summary>
+        ///     Compares one <see cref="SingleIP" /> object with another <see cref="IPAddress" /> object for equality
+        /// </summary>
+        /// <param name="left">A <see cref="SingleIP" /> object</param>
+        /// <param name="right">A <see cref="IPAddress" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(SingleIP left, IPAddress right)
         {
             return !(left == right);
         }
 
+        /// <summary>
+        ///     Compares one <see cref="IPAddress" /> object with another <see cref="SingleIP" /> object for equality
+        /// </summary>
+        /// <param name="left">A <see cref="IPAddress" /> object</param>
+        /// <param name="right">A <see cref="SingleIP" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(IPAddress left, SingleIP right)
         {
             return !(left == right);

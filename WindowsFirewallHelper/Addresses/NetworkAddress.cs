@@ -202,11 +202,23 @@ namespace WindowsFirewallHelper.Addresses
             return Address.Equals(other.Address) && SubnetMask.Equals(other.SubnetMask);
         }
 
+        /// <summary>
+        ///     Compares two <see cref="NetworkAddress" /> objects for equality
+        /// </summary>
+        /// <param name="left">A <see cref="NetworkAddress" /> object</param>
+        /// <param name="right">A <see cref="NetworkAddress" /> object</param>
+        /// <returns>true if two sides are equal; otherwise false</returns>
         public static bool operator ==(NetworkAddress left, NetworkAddress right)
         {
             return Equals(left, right) || left?.Equals(right) == true;
         }
 
+        /// <summary>
+        ///     Compares two <see cref="NetworkAddress" /> objects for inequality
+        /// </summary>
+        /// <param name="left">A <see cref="NetworkAddress" /> object</param>
+        /// <param name="right">A <see cref="NetworkAddress" /> object</param>
+        /// <returns>true if two sides are not equal; otherwise false</returns>
         public static bool operator !=(NetworkAddress left, NetworkAddress right)
         {
             return !(left == right);

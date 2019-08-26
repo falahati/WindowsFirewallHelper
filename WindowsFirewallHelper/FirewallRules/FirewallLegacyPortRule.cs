@@ -244,6 +244,11 @@ namespace WindowsFirewallHelper.FirewallRules
                     throw new FirewallLegacyNotSupportedException("Acceptable protocols for Windows Firewall Legacy are UDP, TCP and Any.");
                 }
 
+                if (value.Equals(FirewallProtocol.Any) && FirewallWAS.IsSupported)
+                {
+                    throw new FirewallLegacyNotSupportedException("`Any` protocol is not available with Windows Firewall Legacy in compatibility mode.");
+                }
+
                 foreach (var openPort in UnderlyingObjects.Values.SelectMany(p => p))
                 {
                     openPort.Protocol = (NetFwIPProtocol) value.ProtocolNumber;

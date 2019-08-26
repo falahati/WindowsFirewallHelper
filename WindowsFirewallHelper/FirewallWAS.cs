@@ -254,7 +254,8 @@ namespace WindowsFirewallHelper
                 !protocol.Equals(FirewallProtocol.UDP))
             {
                 throw new FirewallWASInvalidProtocolException(
-                    "Invalid protocol selected; rule's protocol should be TCP or UDP.");
+                    "Invalid protocol selected; rule's protocol should be TCP or UDP."
+                );
             }
 
             if (FirewallWASRuleWin8.IsSupported)

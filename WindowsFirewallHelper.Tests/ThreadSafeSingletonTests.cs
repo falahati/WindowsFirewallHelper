@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace WindowsFirewallHelper.Tests
 {
-    class FirewallManagerTests
+    class ThreadSafeSingletonTests
     {
         [Test]
         public void MultiSTAThreadAccessTest()

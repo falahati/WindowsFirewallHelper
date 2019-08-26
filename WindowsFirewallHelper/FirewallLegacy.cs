@@ -40,7 +40,7 @@ namespace WindowsFirewallHelper
         /// </summary>
         public static FirewallLegacy Instance
         {
-            get => ThreadedSingleton.GetInstance<FirewallLegacy>();
+            get => ThreadSafeSingleton.GetInstance<FirewallLegacy>();
         }
 
         /// <summary>

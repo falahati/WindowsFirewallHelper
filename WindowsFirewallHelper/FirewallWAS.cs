@@ -36,7 +36,7 @@ namespace WindowsFirewallHelper
         /// </summary>
         public static FirewallWAS Instance
         {
-            get => ThreadedSingleton.GetInstance<FirewallWAS>();
+            get => ThreadSafeSingleton.GetInstance<FirewallWAS>();
         }
 
         /// <summary>

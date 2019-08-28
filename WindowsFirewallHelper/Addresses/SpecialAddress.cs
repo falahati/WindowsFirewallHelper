@@ -141,10 +141,10 @@ namespace WindowsFirewallHelper.Addresses
         }
 
         /// <summary>
-        ///     Converts an address string to an instance of one of children of the <see cref="SpecialAddress"/> class.
+        ///     Converts an address string to an instance of one of children of the <see cref="SpecialAddress" /> class.
         /// </summary>
         /// <returns>
-        ///     An instance from one of children of the <see cref="SpecialAddress"/> class.
+        ///     An instance from one of children of the <see cref="SpecialAddress" /> class.
         /// </returns>
         /// <param name="str">
         ///     A string that contains an address

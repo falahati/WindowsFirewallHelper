@@ -53,7 +53,7 @@ namespace WindowsFirewallHelper.InternalHelpers.Collections
                 return true;
             }
 
-            _currentSource = default(TSource);
+            _currentSource = default;
 
             return false;
         }

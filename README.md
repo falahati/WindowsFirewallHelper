@@ -10,6 +10,8 @@ equal or greater than version 4.6.
 
 Even though it is possible to reference this library under Linux or Mac; it's obviously not going to work.
 
+**This readme file is for the version 2 of this library. Please check the V1 branch for older readme file.**
+
 ## WHERE TO FIND
 [![](https://img.shields.io/nuget/dt/WindowsFirewallHelper.svg?style=flat-square)](https://www.nuget.org/packages/WindowsFirewallHelper)
 [![](https://img.shields.io/nuget/v/WindowsFirewallHelper.svg?style=flat-square)](https://www.nuget.org/packages/WindowsFirewallHelper)

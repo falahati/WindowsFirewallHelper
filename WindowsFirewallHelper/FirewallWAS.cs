@@ -462,6 +462,17 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
+        ///     Returns a rule group instance by name provided.
+        ///     Any value used for name even if not yet used for a rule will returns a valid instance.
+        /// </summary>
+        /// <param name="name">The name of the group to be requested</param>
+        /// <returns>An instance of <see cref="FirewallWASRuleGroup" /> class</returns>
+        public FirewallWASRuleGroup GetGroupByName(string name)
+        {
+            return new FirewallWASRuleGroup(this, name);
+        }
+
+        /// <summary>
         ///     Returns a specific firewall profile
         /// </summary>
         /// <param name="profile">Requested firewall profile</param>

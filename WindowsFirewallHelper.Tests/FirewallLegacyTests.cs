@@ -373,6 +373,18 @@ namespace WindowsFirewallHelper.Tests
 	        );
         }
 
+        [Test]
+        public void RemoveRuleByName()
+        {
+	        var firewall = (IFirewall) _firewall;
+
+	        Assert.Throws<FirewallLegacyNotSupportedException>(() =>
+		        {
+			        firewall.RemoveRuleByName("Anything");
+		        }
+	        );
+        }
+
         [SetUp]
         public void Setup()
         {

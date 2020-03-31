@@ -346,6 +346,12 @@ namespace WindowsFirewallHelper
 		        "Windows Firewall Legacy does not support accessing rules by name.");
         }
 
+        void IFirewall.RemoveRuleByName(string name)
+        {
+	        throw new FirewallLegacyNotSupportedException(
+		        "Windows Firewall Legacy does not support accessing rules by name.");
+        }
+
         /// <summary>
         ///     Returns the active firewall profile, if any
         /// </summary>

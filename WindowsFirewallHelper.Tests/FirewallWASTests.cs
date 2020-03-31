@@ -339,6 +339,37 @@ namespace WindowsFirewallHelper.Tests
 	        Assert.IsNull(firewall.Rules.FirstOrDefault(firewallRule => firewallRule.Name == ruleName));
         }
 
+        [Test]
+        public void RemoveRuleByName()
+        {
+	        var ruleName = RulesPrefix + Guid.NewGuid().ToString("N");
+	        var fileName = Path.GetTempFileName();
+	        var rule = _firewall.CreateApplicationRule(
+		        FirewallProfiles.Domain | FirewallProfiles.Private,
+		        ruleName,
+		        FirewallAction.Allow,
+		        FirewallDirection.Inbound,
+		        fileName,
+		        FirewallProtocol.Any
+	        );
+
+	        var firewall = (IFirewall) _firewall;
+
+	        var initialRuleCount = _firewall.Rules.Count;
+	        
+	        firewall.RemoveRuleByName(ruleName);
+			Assert.AreEqual(initialRuleCount, _firewall.Rules.Count);
+			Assert.IsNull(firewall.Rules.FirstOrDefault(firewallRule => firewallRule.Name == ruleName));
+
+	        _firewall.Rules.Add(rule);
+	        Assert.AreEqual(initialRuleCount + 1, _firewall.Rules.Count);
+	        Assert.IsNotNull(firewall.Rules.FirstOrDefault(firewallRule => firewallRule.Name == ruleName));
+
+			firewall.RemoveRuleByName(ruleName);
+			Assert.AreEqual(initialRuleCount, _firewall.Rules.Count);
+			Assert.IsNull(firewall.Rules.FirstOrDefault(firewallRule => firewallRule.Name == ruleName));
+        }
+
         [SetUp]
         public void Setup()
         {

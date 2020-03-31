@@ -463,6 +463,11 @@ namespace WindowsFirewallHelper
 	        }
         }
 
+        void IFirewall.RemoveRuleByName(string name)
+        {
+			UnderlyingObject.Rules.Remove(name);
+        }
+
         /// <summary>
         ///     Returns the active firewall profile, if any
         /// </summary>

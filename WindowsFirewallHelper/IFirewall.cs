@@ -195,6 +195,13 @@ namespace WindowsFirewallHelper
 		/// <returns>Flag whether rule with that name exists</returns>
         bool RuleExists(string name);
 
+		/// <summary>
+		///		Removes a rule with a given name.
+		///		Directly tries to remove the rule without enumerating <see cref="Rules"/> first.
+		/// </summary>
+		/// <param name="name">Name of the rule</param>
+		void RemoveRuleByName(string name);
+
         /// <summary>
         ///     Returns the active firewall profile, if any
         /// </summary>

@@ -5,7 +5,7 @@ namespace WindowsFirewallHelper.Collections
     /// <summary>
     ///     Represents the collection of registered firewall products
     /// </summary>
-    public interface IFirewallProductsCollection : IReadOnlyCollection<FirewallProduct>
+    public interface IFirewallProductsCollection : ICollection<FirewallProduct>
     {
         /// <summary>
         ///     Gets the element at the specified index

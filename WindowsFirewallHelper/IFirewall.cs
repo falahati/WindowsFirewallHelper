@@ -187,6 +187,14 @@ namespace WindowsFirewallHelper
         /// <returns>Returns the newly created rule object implementing <see cref="IFirewallRule" /> interface</returns>
         IFirewallRule CreatePortRule(string name, ushort portNumber);
 
+		/// <summary>
+		///		Checks whether a rule with a given name exists.
+		///		Directly tries to check existence without enumerating <see cref="Rules"/> first.
+		/// </summary>
+		/// <param name="name">Name of the rule</param>
+		/// <returns>Flag whether rule with that name exists</returns>
+        bool RuleExists(string name);
+
         /// <summary>
         ///     Returns the active firewall profile, if any
         /// </summary>

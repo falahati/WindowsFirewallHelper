@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.Exceptions;
@@ -448,6 +449,18 @@ namespace WindowsFirewallHelper
             }
 
             return CreatePortRule(activeProfile.Type, name, action, direction, portNumber, protocol);
+        }
+		
+        bool IFirewall.RuleExists(string name)
+        {
+	        try
+	        {
+		        return UnderlyingObject.Rules.Item(name) != null;
+	        }
+	        catch (FileNotFoundException)
+	        {
+		        return false;
+	        }
         }
 
         /// <summary>

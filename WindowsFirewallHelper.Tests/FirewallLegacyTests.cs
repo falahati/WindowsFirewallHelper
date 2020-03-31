@@ -361,6 +361,18 @@ namespace WindowsFirewallHelper.Tests
             );
         }
 
+		 [Test]
+        public void RuleExists()
+        {
+	        var firewall = (IFirewall) _firewall;
+
+	        Assert.Throws<FirewallLegacyNotSupportedException>(() =>
+		        {
+			        firewall.RuleExists("Anything");
+		        }
+	        );
+        }
+
         [SetUp]
         public void Setup()
         {

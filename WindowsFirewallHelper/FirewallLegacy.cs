@@ -339,6 +339,12 @@ namespace WindowsFirewallHelper
 
             return new FirewallLegacyPortRule(name, portNumber, activeProfile.Type) {Protocol = FirewallProtocol.TCP};
         }
+		
+        bool IFirewall.RuleExists(string name)
+        {
+	        throw new FirewallLegacyNotSupportedException(
+		        "Windows Firewall Legacy does not support accessing rules by name.");
+        }
 
         /// <summary>
         ///     Returns the active firewall profile, if any

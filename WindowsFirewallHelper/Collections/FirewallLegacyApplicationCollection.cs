@@ -4,7 +4,7 @@ using System.Runtime.InteropServices.ComTypes;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.InternalHelpers.Collections;
 
-namespace WindowsFirewallHelper.InternalCollections
+namespace WindowsFirewallHelper.Collections
 {
     internal class FirewallLegacyApplicationCollection :
         ComNativeCollectionBase<INetFwAuthorizedApplications, INetFwAuthorizedApplication, string>
@@ -78,7 +78,14 @@ namespace WindowsFirewallHelper.InternalCollections
         /// <inheritdoc />
         protected override INetFwAuthorizedApplication InternalItem(string key)
         {
-            return NativeEnumerable.Item(key);
+            try
+            {
+                return NativeEnumerable.Item(key);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc />

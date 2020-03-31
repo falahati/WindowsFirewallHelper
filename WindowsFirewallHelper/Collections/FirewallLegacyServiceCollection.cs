@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.InternalHelpers.Collections;
 
-namespace WindowsFirewallHelper.InternalCollections
+namespace WindowsFirewallHelper.Collections
 {
     internal class FirewallLegacyServiceCollection :
         ComNativeCollectionBase<INetFwServices, INetFwService, NetFwServiceType>
@@ -44,7 +45,14 @@ namespace WindowsFirewallHelper.InternalCollections
         /// <inheritdoc />
         protected override INetFwService InternalItem(NetFwServiceType key)
         {
-            return NativeEnumerable.Item(key);
+            try
+            {
+                return NativeEnumerable.Item(key);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc />

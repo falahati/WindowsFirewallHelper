@@ -1,17 +1,15 @@
 ﻿using System;
 using WindowsFirewallHelper.COMInterop;
 
-namespace WindowsFirewallHelper.InternalCollections
+namespace WindowsFirewallHelper.Collections
 {
     internal class FirewallLegacyPortCollectionKey : IEquatable<FirewallLegacyPortCollectionKey>
     {
-        /// <inheritdoc />
         public FirewallLegacyPortCollectionKey(int portNumber, NetFwIPProtocol protocolType)
         {
             PortNumber = portNumber;
             ProtocolType = protocolType;
         }
-
 
         public int PortNumber { get; }
         public NetFwIPProtocol ProtocolType { get; }

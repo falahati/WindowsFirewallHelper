@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ServiceProcess;
+using WindowsFirewallHelper.Collections;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallRules;
-using WindowsFirewallHelper.InternalCollections;
 using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
@@ -63,7 +62,7 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Returns the list of all registered third party firewalls
         /// </summary>
-        public static ICollection<FirewallProduct> RegisteredProducts
+        public static IFirewallProductsCollection RegisteredProducts
         {
             get => new FirewallProductsCollection(GetProducts());
         }

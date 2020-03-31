@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallRules;
 
-namespace WindowsFirewallHelper.InternalCollections
+namespace WindowsFirewallHelper.Collections
 {
-    internal class FirewallLegacyRulesCollection : ICollection<IFirewallRule>
+    internal class FirewallLegacyRulesCollection : IFirewallLegacyRulesCollection
     {
         private readonly Dictionary<FirewallProfiles, FirewallLegacyApplicationCollection>
             _firewallApplicationCollections;
@@ -209,6 +210,60 @@ namespace WindowsFirewallHelper.InternalCollections
                 .OfType<IFirewallRule>();
 
             return applicationRules.Concat(portRules).GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        public FirewallLegacyApplicationRule this[string applicationPath]
+        {
+            get
+            {
+                var rules = _firewallApplicationCollections
+                    .ToDictionary(pair => pair.Key, pair => pair.Value[applicationPath])
+                    .Where(pair => pair.Value != null)
+                    .ToDictionary(pair => pair.Key, pair => new[] {pair.Value});
+
+                if (rules.Count == 0)
+                {
+                    return null;
+                }
+
+                return new FirewallLegacyApplicationRule(rules);
+            }
+        }
+
+        /// <inheritdoc />
+        public FirewallLegacyPortRule this[ushort portNumber, NetFwIPProtocol protocol]
+        {
+            get
+            {
+                var key = new FirewallLegacyPortCollectionKey(portNumber, protocol);
+                var rules = _firewallPortCollections
+                    .ToDictionary(pair => pair.Key, pair => pair.Value[key])
+                    .Where(pair => pair.Value != null)
+                    .ToDictionary(pair => pair.Key, pair => new[] {pair.Value});
+
+                if (rules.Count == 0)
+                {
+                    return null;
+                }
+
+                return new FirewallLegacyPortRule(rules);
+            }
+        }
+
+        /// <inheritdoc />
+        public bool Remove(ushort portNumber, NetFwIPProtocol protocol)
+        {
+            var key = new FirewallLegacyPortCollectionKey(portNumber, protocol);
+
+            return _firewallPortCollections.Select(pair => pair.Value.Remove(key)).Any(success => success);
+        }
+
+        /// <inheritdoc />
+        public bool Remove(string applicationPath)
+        {
+            return _firewallApplicationCollections.Select(pair => pair.Value.Remove(applicationPath))
+                .Any(success => success);
         }
     }
 }

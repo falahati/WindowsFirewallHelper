@@ -1,13 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallRules;
 using WindowsFirewallHelper.InternalHelpers.Collections;
 
-namespace WindowsFirewallHelper.InternalCollections
+namespace WindowsFirewallHelper.Collections
 {
     internal class
-        FirewallWASRulesCollection<TManaged> : ComCollectionBase<INetFwRules, INetFwRule, string, TManaged>
+        FirewallWASRulesCollection<TManaged> :
+            ComCollectionBase<INetFwRules, INetFwRule, string, TManaged>,
+            IFirewallWASRulesCollection<TManaged>
         where TManaged : class, IFirewallRule
     {
         /// <inheritdoc />
@@ -41,6 +44,12 @@ namespace WindowsFirewallHelper.InternalCollections
 
                 throw;
             }
+        }
+
+        /// <inheritdoc />
+        public new FirewallWASRule this[string name]
+        {
+            get => base[name] as FirewallWASRule;
         }
 
         /// <inheritdoc />
@@ -104,7 +113,14 @@ namespace WindowsFirewallHelper.InternalCollections
         /// <inheritdoc />
         protected override INetFwRule InternalItem(string key)
         {
-            return NativeEnumerable.Item(key);
+            try
+            {
+                return NativeEnumerable.Item(key);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc />

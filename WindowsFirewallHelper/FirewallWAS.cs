@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WindowsFirewallHelper.Collections;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.Exceptions;
 using WindowsFirewallHelper.FirewallRules;
-using WindowsFirewallHelper.InternalCollections;
 using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
@@ -80,7 +80,7 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Gets the list of all registered rules of the firewall
         /// </summary>
-        public ICollection<FirewallWASRule> Rules
+        public IFirewallWASRulesCollection<FirewallWASRule> Rules
         {
             get => new FirewallWASRulesCollection<FirewallWASRule>(UnderlyingObject.Rules);
         }

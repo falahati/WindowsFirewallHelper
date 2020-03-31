@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WindowsFirewallHelper.Collections;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.Exceptions;
 using WindowsFirewallHelper.FirewallRules;
-using WindowsFirewallHelper.InternalCollections;
 using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
@@ -55,6 +55,14 @@ namespace WindowsFirewallHelper
         ///     Gets the list of all available profiles of the firewall
         /// </summary>
         public ReadOnlyCollection<FirewallLegacyProfile> Profiles { get; }
+
+        /// <summary>
+        ///     Gets the list of all registered rules of the firewall
+        /// </summary>
+        public IFirewallLegacyRulesCollection Rules
+        {
+            get => new FirewallLegacyRulesCollection(Profiles.ToArray());
+        }
 
         internal INetFwMgr UnderlyingObject { get; }
 
@@ -247,9 +255,9 @@ namespace WindowsFirewallHelper
         }
 
         /// <inheritdoc />
-        public ICollection<IFirewallRule> Rules
+        ICollection<IFirewallRule> IFirewall.Rules
         {
-            get => new FirewallLegacyRulesCollection(Profiles.ToArray());
+            get => Rules;
         }
 
         /// <summary>

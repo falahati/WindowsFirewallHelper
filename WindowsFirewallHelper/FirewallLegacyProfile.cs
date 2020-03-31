@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using WindowsFirewallHelper.Collections;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.Exceptions;
-using WindowsFirewallHelper.InternalCollections;
 
 namespace WindowsFirewallHelper
 {
@@ -23,7 +22,7 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Gets the list of all firewall rules for this profile
         /// </summary>
-        public ICollection<IFirewallRule> Rules
+        public IFirewallLegacyRulesCollection Rules
         {
             get => new FirewallLegacyRulesCollection(new[] {this});
         }

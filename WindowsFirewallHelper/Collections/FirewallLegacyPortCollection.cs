@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.InternalHelpers.Collections;
 
-namespace WindowsFirewallHelper.InternalCollections
+namespace WindowsFirewallHelper.Collections
 {
     internal class FirewallLegacyPortCollection :
         ComNativeCollectionBase<INetFwOpenPorts, INetFwOpenPort, FirewallLegacyPortCollectionKey>
@@ -70,7 +71,14 @@ namespace WindowsFirewallHelper.InternalCollections
         /// <inheritdoc />
         protected override INetFwOpenPort InternalItem(FirewallLegacyPortCollectionKey key)
         {
-            return NativeEnumerable.Item(key.PortNumber, key.ProtocolType);
+            try
+            {
+                return NativeEnumerable.Item(key.PortNumber, key.ProtocolType);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc />

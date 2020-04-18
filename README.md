@@ -10,30 +10,29 @@ equal or greater than version 4.6.
 
 Even though it is possible to reference this library under Linux or Mac; it's obviously not going to work.
 
-**This readme file is for the version 2 of this library. Please check the V1 branch for older readme file.**
+**This readme file is for the version 2 of this library. Please check the `V1` branch for older readme file.**
 
-## WHERE TO FIND
+## How to get
 [![](https://img.shields.io/nuget/dt/WindowsFirewallHelper.svg?style=flat-square)](https://www.nuget.org/packages/WindowsFirewallHelper)
 [![](https://img.shields.io/nuget/v/WindowsFirewallHelper.svg?style=flat-square)](https://www.nuget.org/packages/WindowsFirewallHelper)
 
 This library is available as a NuGet package at [nuget.org](https://www.nuget.org/packages/WindowsFirewallHelper/).
 
-## Donation
-### Buy me a coffee
-Donations assist development and are greatly appreciated; also always remember that 
-[every coffee counts!](https://media.makeameme.org/created/one-simply-does-i9k8kx.jpg) :)
+## Help me fund my own Death Star
 
-[![](https://img.shields.io/badge/fiat-PayPal-8a00a3.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WR3KK2B6TYYQ4&item_name=Donation&currency_code=USD&source=url)
 [![](https://img.shields.io/badge/crypto-CoinPayments-8a00a3.svg?style=flat-square)](https://www.coinpayments.net/index.php?cmd=_donate&reset=1&merchant=820707aded07845511b841f9c4c335cd&item_name=Donate&currency=USD&amountf=20.00000000&allow_amount=1&want_shipping=0&allow_extra=1)
 [![](https://img.shields.io/badge/shetab-ZarinPal-8a00a3.svg?style=flat-square)](https://zarinp.al/@falahati)
+[![](https://img.shields.io/badge/usd-Paypal-8a00a3.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ramin.graphix@gmail.com&lc=US&item_name=Donate&no_note=0&cn=&curency_code=USD&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted)
 
-### Or, help me make it better
+**--OR--**
+
 You can always donate your time by contributing to the project or by introducing it to others.
 
-## HOW TO USE
+## How to use
 The starting point of this library is the `FirewallManager` static class which can be used to get the instance 
 of the class managing the firewall currently on the system.
 
+If you are only targeting WinVista+ consider using the `FirewallWAS.Instance` static property to access the library's functionality. It allows for more flexibility and is easier to work with.
 
 ### `WindowsFirewallHelper.FirewallManager` Class
 This static class contains properties about the currently active Windows Firewall management class instance or the 
@@ -47,7 +46,6 @@ registered third party firewall products. This class also provides methods to re
 
 #### `WindowsFirewallHelper.FirewallManager` Static Methods
 *  `FirewallManager.RegisterProduct()`: Registers a third-party firewall product returning a handle that will unregisters the product while getting disposed.
-
 
 ### `WindowsFirewallHelper` Namespace
 This namespace contains shared and general classes as well as the main starting point of this library, `FirewallManager` class.
@@ -70,7 +68,6 @@ This namespace contains shared and general classes as well as the main starting 
 *  `IFirewallRule`: Defines expected properties of a firewall rule
 *  `IAddress`: Defines expected methods of a network address
 
-
 ### `WindowsFirewallHelper.FirewallRules` Namespace
 This namespace contains classes that can be used for direct manipulation of a firewall rule.
 
@@ -81,7 +78,6 @@ This namespace contains classes that can be used for direct manipulation of a fi
 *  `FirewallWASRuleWin7`: Contains properties of a Windows Firewall with Advanced Security rule for Windows 7+ - Extending the `FirewallWASRule` class
 *  `FirewallWASRuleWin8`: Contains properties of a Windows Firewall with Advanced Security rule for Windows 8+ - Extending the `FirewallWASRuleWin7` class
 
-
 ### `WindowsFirewallHelper.Exceptions` Namespace
 This namespace contains exception classes that might be thrown when using this library
 
@@ -89,7 +85,6 @@ This namespace contains exception classes that might be thrown when using this l
 *  `FirewallLegacyNotSupportedException`: The exception that is thrown when an invoked method or action is not supported with the 'Windows Firewall API v1' - Extending the `NotSupportedException` class
 *  `FirewallWASNotSupportedException`: The exception that is thrown when an invoked method or action is not supported with the 'Windows Firewall with Advanced Security' - Extending the `NotSupportedException` class
 *  `FirewallWASInvalidProtocolException`: The exception that is thrown when a passed FirewallProtocol is invalid for a 'Windows Firewall with Advanced Security' action or method - Extending the `InvalidOperationException`` class
-
 
 ### `WindowsFirewallHelper.Addresses` Namespace
 This namespace contains the classes needed for manipulating or understanding a network address or a network service.
@@ -105,16 +100,14 @@ This namespace contains the classes needed for manipulating or understanding a n
 *  `DNSService`: Represents the DNS service - Extending the `SpecialAddress`` class
 *  `WINSService`: Represents the WINS service - Extending the `SpecialAddress`` class
 
-
 ### `WindowsFirewallHelper.COMInterop` Namespace
 This namespace contains the `interface`s and `enum`s that is used to access the underlying COM objects. Some of these types are public and can be used to directly modify a COM object. Usually firewall rules. Rest of types are internal to this library.
 
-
-## EXAMPLES
+## Examples
 Check the 'WindowsFirewallHelper.Sample' and 'WindowsFirewallHelper.NetCoreSample' projects as a brief example of what can be done using this class library.
 ![Screenshot](/screenshot.jpg?raw=true "Screenshot")
 
-### BASIC EXAMPLES
+### Basic examples
 *  Creating and registering a new application exception rule for outbound traffic on the currently active profile:
 ```C#
 var rule = FirewallManager.Instance.CreateApplicationRule(
@@ -159,7 +152,7 @@ foreach (var profile in FirewallManager.Instance.Profiles)
 }
 ```
 
-### ADVANCED EXAMPLES
+### Advanced examples
 *  Creating a heavily customized application rule (Some parts of the following code are only applicable to Windows Vista, Windows 7 and above):
 ```C#
 var rule = FirewallManager.Instance.CreatePortRule(
@@ -207,10 +200,10 @@ if (FirewallWAS.IsSupported && FirewallWASRuleWin8.IsSupported)
 }
 ```
 
-## LICENSE
+## License
 The MIT License (MIT)
 
-Copyright (c) 2016-2019 Soroush
+Copyright (c) 2016-2020 Soroush
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

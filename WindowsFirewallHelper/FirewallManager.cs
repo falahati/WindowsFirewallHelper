@@ -16,6 +16,7 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Returns a instance of the active firewall
         /// </summary>
+        /// <exception cref="NotSupportedException">Thrown if firewall API version is not supported.</exception>
         public static IFirewall Instance
         {
             get
@@ -33,6 +34,25 @@ namespace WindowsFirewallHelper
                 }
 
                 throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        ///     Attempts to get an instance of the active firewall.
+        /// </summary>
+        /// <param name="instance">Outputs the active firewall instance, if successful.</param>
+        /// <returns>Returns true if successful, otherwise false.</returns>
+        public static bool TryGetInstance(out IFirewall instance)
+        {
+            try
+            {
+                instance = Instance;
+                return true;
+            }
+            catch
+            {
+                instance = null;
+                return false;
             }
         }
 
@@ -62,9 +82,26 @@ namespace WindowsFirewallHelper
         /// <summary>
         ///     Returns the list of all registered third party firewalls
         /// </summary>
-        public static IFirewallProductsCollection RegisteredProducts
+        /// <exception cref="NotSupportedException">Thrown if third party firewalls are not supported.</exception>
+        public static IFirewallProductsCollection RegisteredProducts => new FirewallProductsCollection(GetProducts());
+
+        /// <summary>
+        ///     Attempts to get the list of all registered third party firewalls.
+        /// </summary>
+        /// <param name="collection">Outputs the collection of third party firewalls, if successful.</param>
+        /// <returns>Returns true if successful, otherwise false.</returns>
+        public static bool TryGetRegisteredProducts(out IFirewallProductsCollection collection)
         {
-            get => new FirewallProductsCollection(GetProducts());
+            try
+            {
+                collection = RegisteredProducts;
+                return true;
+            }
+            catch
+            {
+                collection = null;
+                return false;
+            }
         }
 
         /// <summary>

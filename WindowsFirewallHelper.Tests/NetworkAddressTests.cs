@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using WindowsFirewallHelper.Addresses;
@@ -151,6 +152,138 @@ namespace WindowsFirewallHelper.Tests
                 "*,::1,2001:1::,2001:2::/ffff:ffff:ffff:ffff:ffff:ffff:ffff:0,2001:3::/ffff:ffff:ffff:ffff:ffff:ffff::",
                 addressesInString
             );
+        }
+
+        [Test]
+        public void CheckRanges()
+        {
+            var expectedRanges = new Dictionary<string, Tuple<string, string>>()
+            {
+                {
+                    "1.1.1.1/32", new Tuple<string, string>("1.1.1.1", "1.1.1.1")
+                },
+                {
+                    "1.1.1.1/31", new Tuple<string, string>("1.1.1.0", "1.1.1.1")
+                },
+                {
+                    "1.1.1.1/30", new Tuple<string, string>("1.1.1.0", "1.1.1.3")
+                },
+                {
+                    "1.1.1.1/29", new Tuple<string, string>("1.1.1.0", "1.1.1.7")
+                },
+                {
+                    "1.1.1.1/28", new Tuple<string, string>("1.1.1.0", "1.1.1.15")
+                },
+                {
+                    "1.1.1.1/27", new Tuple<string, string>("1.1.1.0", "1.1.1.31")
+                },
+                {
+                    "1.1.1.1/26", new Tuple<string, string>("1.1.1.0", "1.1.1.63")
+                },
+                {
+                    "1.1.1.1/25", new Tuple<string, string>("1.1.1.0", "1.1.1.127")
+                },
+                {
+                    "1.1.1.1/24", new Tuple<string, string>("1.1.1.0", "1.1.1.255")
+                },
+                {
+                    "1.1.1.1/23", new Tuple<string, string>("1.1.0.0", "1.1.1.255")
+                },
+                {
+                    "1.1.1.1/9", new Tuple<string, string>("1.0.0.0", "1.127.255.255")
+                },
+                {
+                    "1.1.1.1/8", new Tuple<string, string>("1.0.0.0", "1.255.255.255")
+                },
+                {
+                    "1.1.1.1/7", new Tuple<string, string>("0.0.0.0", "1.255.255.255")
+                },
+                {
+                    "1.1.1.1/6", new Tuple<string, string>("0.0.0.0", "3.255.255.255")
+                },
+                {
+                    "1.1.1.1/5", new Tuple<string, string>("0.0.0.0", "7.255.255.255")
+                },
+                {
+                    "1.1.1.1/4", new Tuple<string, string>("0.0.0.0", "15.255.255.255")
+                },
+                {
+                    "1.1.1.1/3", new Tuple<string, string>("0.0.0.0", "31.255.255.255")
+                },
+                {
+                    "1.1.1.1/2", new Tuple<string, string>("0.0.0.0", "63.255.255.255")
+                },
+                {
+                    "1.1.1.1/1", new Tuple<string, string>("0.0.0.0", "127.255.255.255")
+                },
+                {
+                    "127.127.127.127/32", new Tuple<string, string>("127.127.127.127", "127.127.127.127")
+                },
+                {
+                    "127.127.127.127/31", new Tuple<string, string>("127.127.127.126", "127.127.127.127")
+                },
+                {
+                    "127.127.127.127/30", new Tuple<string, string>("127.127.127.124", "127.127.127.127")
+                },
+                {
+                    "127.127.127.127/29", new Tuple<string, string>("127.127.127.120", "127.127.127.127")
+                },
+                {
+                    "127.127.127.127/25", new Tuple<string, string>("127.127.127.0", "127.127.127.127")
+                },
+                {
+                    "127.127.127.127/24", new Tuple<string, string>("127.127.127.0", "127.127.127.255")
+                },
+                {
+                    "127.127.127.127/23", new Tuple<string, string>("127.127.126.0", "127.127.127.255")
+                },
+                {
+                    "127.127.127.127/3", new Tuple<string, string>("96.0.0.0", "127.255.255.255")
+                },
+                {
+                    "127.127.127.127/2", new Tuple<string, string>("64.0.0.0", "127.255.255.255")
+                },
+                {
+                    "127.127.127.127/1", new Tuple<string, string>("0.0.0.0", "127.255.255.255")
+                },
+                {
+                    "255.255.255.255/32", new Tuple<string, string>("255.255.255.255", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/31", new Tuple<string, string>("255.255.255.254", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/30", new Tuple<string, string>("255.255.255.252", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/29", new Tuple<string, string>("255.255.255.248", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/25", new Tuple<string, string>("255.255.255.128", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/24", new Tuple<string, string>("255.255.255.0", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/23", new Tuple<string, string>("255.255.254.0", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/3", new Tuple<string, string>("224.0.0.0", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/2", new Tuple<string, string>("192.0.0.0", "255.255.255.255")
+                },
+                {
+                    "255.255.255.255/1", new Tuple<string, string>("128.0.0.0", "255.255.255.255")
+                },
+            };
+
+            foreach (var expectedRange in expectedRanges)
+            {
+                var address = NetworkAddress.Parse(expectedRange.Key);
+                Assert.AreEqual(IPAddress.Parse(expectedRange.Value.Item1), address.StartAddress, "Start of {0}", expectedRange.Key);
+                Assert.AreEqual(IPAddress.Parse(expectedRange.Value.Item2), address.EndAddress, "End of {0}", expectedRange.Key);
+            }
         }
     }
 }

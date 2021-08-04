@@ -118,10 +118,8 @@ namespace WindowsFirewallHelper.Addresses
 
                 for (var i = 0; i < addressBytes.Length; i++)
                 {
-                    addressBytes[i] |= (byte) (subnetMaskBytes[i] ^ 0xFF);
+                    addressBytes[i] |= (byte) ~subnetMaskBytes[i];
                 }
-
-                addressBytes[addressBytes.Length - 1] &= 0xFE;
 
                 return new IPAddress(addressBytes);
             }
@@ -146,8 +144,6 @@ namespace WindowsFirewallHelper.Addresses
                 {
                     addressBytes[i] &= subnetMaskBytes[i];
                 }
-
-                addressBytes[addressBytes.Length - 1] |= 0x01;
 
                 return new IPAddress(addressBytes);
             }

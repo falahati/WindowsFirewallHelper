@@ -3,17 +3,15 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2;net4</TargetFrameworks>
     <PackageId>WindowsFirewallHelper</PackageId>
-    <Version>1.6.3.40</Version>
+    <Version>1.6.3.46</Version>
     <Authors>Soroush Falahati</Authors>
     <Description>A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list. Supporting Windows XP+.</Description>
     <PackageLicenseUrl>https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/falahati/WindowsFirewallHelper</PackageProjectUrl>
     <PackageIconUrl>https://github.com/falahati/WindowsFirewallHelper/blob/master/WindowsFirewallHelper/Icon.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/falahati/WindowsFirewallHelper</RepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <IncludeSource>true</IncludeSource>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Copyright>Copyright (c) 2019 Soroush Falahati</Copyright>
+    <Copyright>Copyright (c) 2021 Soroush Falahati</Copyright>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Title>Windows Firewall Helper (Win XP+)</Title>
     <AssemblyOriginatorKeyFile>OpenSourceStrongNameSignKey.pfx</AssemblyOriginatorKeyFile>
@@ -38,6 +36,9 @@
     <OutputPath>..\Debug</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EmbedAllSources>True</EmbedAllSources>
+    <DebugType>embedded</DebugType>
     <BumpRevision>True</BumpRevision>
     <BumpResetLabel>dev</BumpResetLabel>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

@@ -224,7 +224,7 @@ namespace WindowsFirewallHelper.Tests
             );
 
             // `Any` protocol is not supported with Windows Firewall Legacy in compatibility mode
-            if (FirewallWAS.IsSupported)
+            if (FirewallWAS.IsLocallySupported)
             {
                 Assert.Throws<FirewallLegacyNotSupportedException>(() =>
                     {

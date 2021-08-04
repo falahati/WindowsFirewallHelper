@@ -9,14 +9,17 @@ namespace WindowsFirewallHelper.Collections
 {
     internal class FirewallLegacyRulesCollection : IFirewallLegacyRulesCollection
     {
+        private readonly FirewallLegacy _firewall;
+
         private readonly Dictionary<FirewallProfiles, FirewallLegacyApplicationCollection>
             _firewallApplicationCollections;
 
         private readonly Dictionary<FirewallProfiles, FirewallLegacyPortCollection> _firewallPortCollections;
         private readonly Dictionary<FirewallProfiles, FirewallLegacyServiceCollection> _firewallServiceCollections;
 
-        public FirewallLegacyRulesCollection(FirewallLegacyProfile[] profiles)
+        public FirewallLegacyRulesCollection(FirewallLegacyProfile[] profiles, FirewallLegacy firewall)
         {
+            _firewall = firewall;
             _firewallPortCollections = profiles.ToDictionary(
                 profile => profile.Type,
                 profile => new FirewallLegacyPortCollection(profile.UnderlyingObject.GloballyOpenPorts)
@@ -204,7 +207,7 @@ namespace WindowsFirewallHelper.Collections
                 .Select(group => group.GroupBy(arg => arg.Profile))
                 .Select(
                     group => new FirewallLegacyPortRule(
-                        group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray())
+                        group.ToDictionary(t => t.Key, t => t.Select(arg => arg.Rule).ToArray()), _firewall.TypeResolver
                     )
                 )
                 .OfType<IFirewallRule>();
@@ -247,7 +250,7 @@ namespace WindowsFirewallHelper.Collections
                     return null;
                 }
 
-                return new FirewallLegacyPortRule(rules);
+                return new FirewallLegacyPortRule(rules, _firewall.TypeResolver);
             }
         }
 

@@ -210,5 +210,10 @@ namespace WindowsFirewallHelper
         /// <param name="profile">Requested firewall profile</param>
         /// <returns>Firewall profile object implementing <see cref="IFirewallProfile" /> interface</returns>
         IFirewallProfile GetProfile(FirewallProfiles profile);
+
+        /// <summary>
+        ///     Gets the active COM+ Object resolver instance
+        /// </summary>
+        COMTypeResolver TypeResolver { get; }
     }
 }

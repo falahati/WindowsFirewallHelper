@@ -20,7 +20,16 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <param name="name">Name of the rule</param>
         /// <param name="processAddress">Address of the executable file</param>
         /// <param name="profiles">The profile that this rule belongs to</param>
-        public FirewallLegacyApplicationRule(string name, string processAddress, FirewallProfiles profiles)
+        public FirewallLegacyApplicationRule(string name, string processAddress, FirewallProfiles profiles) : this(name, processAddress, profiles, new COMTypeResolver()) { }
+
+        /// <summary>
+        ///     Creates a new application rule for Windows Firewall v1
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="processAddress">Address of the executable file</param>
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        /// <param name="typeResolver">The COM+ object resolver</param>
+        public FirewallLegacyApplicationRule(string name, string processAddress, FirewallProfiles profiles, COMTypeResolver typeResolver)
         {
             if (profiles.HasFlag(FirewallProfiles.Public))
             {
@@ -37,7 +46,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        new[] {ComHelper.CreateInstance<INetFwAuthorizedApplication>()}
+                        new[] { typeResolver.CreateInstance<INetFwAuthorizedApplication>() }
                     );
                 }
             }
@@ -63,9 +72,9 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <summary>
         ///     Returns a Boolean value indicating if these class is available in the current machine
         /// </summary>
-        public static bool IsSupported
+        public static bool IsLocallySupported
         {
-            get => ComHelper.IsSupported<INetFwAuthorizedApplication>();
+            get => new COMTypeResolver().IsSupported<INetFwAuthorizedApplication>();
         }
 
         private Dictionary<FirewallProfiles, INetFwAuthorizedApplication[]> UnderlyingObjects { get; }

@@ -13,17 +13,27 @@ namespace WindowsFirewallHelper
     public class FirewallProduct
     {
         /// <summary>
-        ///     Creates a new <see cref="FirewallProduct" /> instance to be registered later
+        ///     Creates a new <see cref="FirewallProduct" /> instance locally to be registered later
         /// </summary>
-        /// <param name="name"></param>
-        public FirewallProduct(string name)
+        /// <param name="name">The name of the product</param>
+        public FirewallProduct(string name) : this(name, new COMTypeResolver())
         {
-            if (!IsSupported)
+        }
+
+        /// <summary>
+        ///     Creates a new <see cref="FirewallProduct" /> instance remotely to be registered later
+        /// </summary>
+        /// <param name="name">The name of the product</param>
+        /// <param name="typeResolver">The object resolver for COM+ objects</param>
+        public FirewallProduct(string name, COMTypeResolver typeResolver)
+        {
+            TypeResolver = typeResolver;
+            if (!TypeResolver.IsSupported<INetFwProduct>())
             {
                 throw new NotSupportedException();
             }
 
-            UnderlyingObject = ComHelper.CreateInstance<INetFwProduct>();
+            UnderlyingObject = TypeResolver.CreateInstance<INetFwProduct>();
             Name = name;
         }
 
@@ -41,11 +51,19 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Gets a Boolean value indicating if third party firewall product registration is available and supported
+        ///     Gets a Boolean value indicating if third party firewall product registration is locally available and supported
         /// </summary>
-        public static bool IsSupported
+        public static bool IsLocallySupported
         {
-            get => ComHelper.IsSupported<INetFwProduct>();
+            get => IsSupported(new COMTypeResolver());
+        }
+
+        /// <summary>
+        ///     Gets a Boolean value indicating if third party firewall product registration is remotely available and supported
+        /// </summary>
+        public static bool IsSupported(COMTypeResolver typeResolver)
+        {
+            return typeResolver.IsSupported<INetFwProduct>();
         }
 
         /// <summary>
@@ -56,6 +74,8 @@ namespace WindowsFirewallHelper
             get => UnderlyingObject.DisplayName;
             set => UnderlyingObject.DisplayName = value;
         }
+
+        public COMTypeResolver TypeResolver { get; }
 
         /// <summary>
         ///     Gets or sets the rule categories that this firewall product is capable of handling

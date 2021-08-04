@@ -24,7 +24,7 @@ namespace WindowsFirewallHelper
         /// </summary>
         public IFirewallLegacyRulesCollection Rules
         {
-            get => new FirewallLegacyRulesCollection(new[] {this});
+            get => new FirewallLegacyRulesCollection(new[] { this }, _firewall);
         }
 
         internal INetFwProfile UnderlyingObject { get; }

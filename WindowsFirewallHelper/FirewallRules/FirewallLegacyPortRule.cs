@@ -20,8 +20,19 @@ namespace WindowsFirewallHelper.FirewallRules
         /// <param name="name">Name of the rule</param>
         /// <param name="port">Port number of the rule</param>
         /// <param name="profiles">The profiles that this rule belongs to</param>
-        public FirewallLegacyPortRule(string name, ushort port, FirewallProfiles profiles)
+        public FirewallLegacyPortRule(string name, ushort port, FirewallProfiles profiles): this(name, port, profiles, new COMTypeResolver()) { }
+
+        /// <summary>
+        ///     Creates a new port rule for Windows Firewall v1
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="port">Port number of the rule</param>
+        /// <param name="profiles">The profiles that this rule belongs to</param>
+        /// <param name="typeResolver">The COM+ object resolver</param>
+        public FirewallLegacyPortRule(string name, ushort port, FirewallProfiles profiles, COMTypeResolver typeResolver)
         {
+            TypeResolver = typeResolver;
+
             if (profiles.HasFlag(FirewallProfiles.Public))
             {
                 throw new FirewallLegacyNotSupportedException(
@@ -37,7 +48,7 @@ namespace WindowsFirewallHelper.FirewallRules
                 {
                     UnderlyingObjects.Add(
                         profile,
-                        new[] {ComHelper.CreateInstance<INetFwOpenPort>()}
+                        new[] { typeResolver.CreateInstance<INetFwOpenPort>() }
                     );
                 }
             }
@@ -54,17 +65,18 @@ namespace WindowsFirewallHelper.FirewallRules
             IsEnable = true;
         }
 
-        internal FirewallLegacyPortRule(Dictionary<FirewallProfiles, INetFwOpenPort[]> openPorts)
+        internal FirewallLegacyPortRule(Dictionary<FirewallProfiles, INetFwOpenPort[]> openPorts, COMTypeResolver typeResolver)
         {
+            TypeResolver = typeResolver;
             UnderlyingObjects = openPorts;
         }
 
         /// <summary>
         ///     Returns a Boolean value indicating if these class is available in the current machine
         /// </summary>
-        public static bool IsSupported
+        public static bool IsLocallySupported
         {
-            get => ComHelper.IsSupported<INetFwOpenPort>();
+            get => new COMTypeResolver().IsSupported<INetFwOpenPort>();
         }
 
         /// <summary>
@@ -82,8 +94,12 @@ namespace WindowsFirewallHelper.FirewallRules
             }
         }
 
-        private Dictionary<FirewallProfiles, INetFwOpenPort[]> UnderlyingObjects { get; }
+        /// <summary>
+        ///     Gets the active COM+ object resolver
+        /// </summary>
+        public COMTypeResolver TypeResolver { get; }
 
+        private Dictionary<FirewallProfiles, INetFwOpenPort[]> UnderlyingObjects { get; }
 
         /// <inheritdoc />
         public bool Equals(FirewallLegacyPortRule other)
@@ -245,16 +261,18 @@ namespace WindowsFirewallHelper.FirewallRules
             get => new FirewallProtocol((int) UnderlyingObjects.Values.SelectMany(p => p).First().Protocol);
             set
             {
-                if (!value.Equals(FirewallProtocol.Any) &&
+                if (
+                    !value.Equals(FirewallProtocol.Any) &&
                     !value.Equals(FirewallProtocol.TCP) &&
-                    !value.Equals(FirewallProtocol.UDP))
+                    !value.Equals(FirewallProtocol.UDP)
+                )
                 {
                     throw new FirewallLegacyNotSupportedException(
                         "Acceptable protocols for Windows Firewall Legacy are UDP, TCP and Any."
                     );
                 }
 
-                if (value.Equals(FirewallProtocol.Any) && FirewallWAS.IsSupported)
+                if (value.Equals(FirewallProtocol.Any) && FirewallWAS.IsSupported(TypeResolver))
                 {
                     throw new FirewallLegacyNotSupportedException(
                         "`Any` protocol is not available with Windows Firewall Legacy in compatibility mode."

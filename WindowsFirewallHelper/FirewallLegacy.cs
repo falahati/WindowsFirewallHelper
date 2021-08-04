@@ -16,18 +16,26 @@ namespace WindowsFirewallHelper
     public class FirewallLegacy : IFirewall
     {
         /// <summary>
-        ///     Creates a new instance of this class on the current thread and leaves the cross thread control to the user of the
+        ///     Creates a new instance of this class on the current thread for the local machine and leaves the cross thread control to the user of the
         ///     class.
         /// </summary>
-        public FirewallLegacy()
+        public FirewallLegacy() : this(new COMTypeResolver())
         {
-            if (!IsSupported)
+        }
+
+        /// <summary>
+        ///     Creates a new instance of this class on the current thread for a remote machine and leaves the cross thread control to the user of the
+        ///     class.
+        /// </summary>
+        public FirewallLegacy(COMTypeResolver typeResolver)
+        {
+            if (!IsSupported(typeResolver))
             {
                 throw new NotSupportedException("This type is not supported in this environment.");
             }
 
-            UnderlyingObject = ComHelper.CreateInstance<INetFwMgr>();
-
+            TypeResolver = typeResolver;
+            UnderlyingObject = TypeResolver.CreateInstance<INetFwMgr>();
             Profiles = new ReadOnlyCollection<FirewallLegacyProfile>(
                 new[]
                 {
@@ -40,9 +48,12 @@ namespace WindowsFirewallHelper
         /// <inheritdoc />
         public IFirewall Reload()
         {
-            UnderlyingObject = ComHelper.CreateInstance<INetFwMgr>();
+            UnderlyingObject = TypeResolver.CreateInstance<INetFwMgr>();
             return this;
         }
+
+        /// <inheritdoc />
+        public COMTypeResolver TypeResolver { get; }
 
         /// <summary>
         ///     Gets the current singleton instance of this class
@@ -53,11 +64,19 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Gets a Boolean value showing if the firewall is supported in this environment.
+        ///     Gets a Boolean value showing if the firewall is supported locally
         /// </summary>
-        public static bool IsSupported
+        public static bool IsLocallySupported
         {
-            get => ComHelper.IsSupported<INetFwMgr>();
+            get => IsSupported(new COMTypeResolver());
+        }
+
+        /// <summary>
+        ///     Gets a Boolean value showing if the firewall is supported remotely
+        /// </summary>
+        public static bool IsSupported(COMTypeResolver typeResolver)
+        {
+            return typeResolver.IsSupported<INetFwMgr>();
         }
 
         /// <summary>
@@ -70,7 +89,7 @@ namespace WindowsFirewallHelper
         /// </summary>
         public IFirewallLegacyRulesCollection Rules
         {
-            get => new FirewallLegacyRulesCollection(Profiles.ToArray());
+            get => new FirewallLegacyRulesCollection(Profiles.ToArray(), this);
         }
 
         internal INetFwMgr UnderlyingObject { get; private set; }
@@ -85,11 +104,6 @@ namespace WindowsFirewallHelper
             string filename,
             FirewallProtocol protocol)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             if (!protocol.Equals(FirewallProtocol.Any))
             {
                 throw new FirewallLegacyNotSupportedException(
@@ -170,18 +184,13 @@ namespace WindowsFirewallHelper
             FirewallProtocol protocol
         )
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             if (action != FirewallAction.Allow)
             {
                 throw new FirewallLegacyNotSupportedException(
                     "Windows Firewall Legacy only accepts allow exception rules.");
             }
 
-            return new FirewallLegacyPortRule(name, portNumber, profiles) {Protocol = protocol};
+            return new FirewallLegacyPortRule(name, portNumber, profiles, TypeResolver) {Protocol = protocol};
         }
 
         /// <inheritdoc />
@@ -282,12 +291,7 @@ namespace WindowsFirewallHelper
             string filename
         )
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            return new FirewallLegacyApplicationRule(name, filename, profiles);
+            return new FirewallLegacyApplicationRule(name, filename, profiles, TypeResolver);
         }
 
         /// <summary>
@@ -301,11 +305,6 @@ namespace WindowsFirewallHelper
             string filename
         )
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             var activeProfile = GetActiveProfile();
 
             if (activeProfile == null)
@@ -313,7 +312,7 @@ namespace WindowsFirewallHelper
                 throw new InvalidOperationException("No firewall profile is currently active.");
             }
 
-            return new FirewallLegacyApplicationRule(name, filename, activeProfile.Type);
+            return new FirewallLegacyApplicationRule(name, filename, activeProfile.Type, TypeResolver);
         }
 
         /// <summary>
@@ -325,12 +324,7 @@ namespace WindowsFirewallHelper
         /// <returns>Returns the newly created <see cref="FirewallLegacyPortRule" /> instance</returns>
         public FirewallLegacyPortRule CreatePortRule(FirewallProfiles profiles, string name, ushort portNumber)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
-            return new FirewallLegacyPortRule(name, portNumber, profiles) {Protocol = FirewallProtocol.TCP};
+            return new FirewallLegacyPortRule(name, portNumber, profiles, TypeResolver) {Protocol = FirewallProtocol.TCP};
         }
 
         /// <summary>
@@ -342,11 +336,6 @@ namespace WindowsFirewallHelper
         /// <returns>Returns the newly created <see cref="FirewallLegacyPortRule" /> instance</returns>
         public FirewallLegacyPortRule CreatePortRule(string name, ushort portNumber)
         {
-            if (!IsSupported)
-            {
-                throw new NotSupportedException();
-            }
-
             var activeProfile = GetActiveProfile();
 
             if (activeProfile == null)
@@ -354,7 +343,7 @@ namespace WindowsFirewallHelper
                 throw new InvalidOperationException("No firewall profile is currently active.");
             }
 
-            return new FirewallLegacyPortRule(name, portNumber, activeProfile.Type) {Protocol = FirewallProtocol.TCP};
+            return new FirewallLegacyPortRule(name, portNumber, activeProfile.Type, TypeResolver) {Protocol = FirewallProtocol.TCP};
         }
 
         /// <summary>

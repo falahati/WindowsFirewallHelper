@@ -30,7 +30,28 @@ namespace WindowsFirewallHelper.FirewallRules
             string filename,
             FirewallAction action,
             FirewallDirection direction,
-            FirewallProfiles profiles) : this(name, action, direction, profiles)
+            FirewallProfiles profiles
+        ) : this(name, filename, action, direction, profiles, new COMTypeResolver())
+        { }
+
+        /// <summary>
+        ///     Creates a new application rule for Windows Firewall with Advanced Security
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="filename">Address of the executable file</param>
+        /// <param name="action">Action that this rule defines</param>
+        /// <param name="direction">Data direction in which this rule applies to</param>
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        /// <param name="typeResolver">The COM+ object resolver</param>
+        // ReSharper disable once TooManyDependencies
+        public FirewallWASRule(
+            string name,
+            string filename,
+            FirewallAction action,
+            FirewallDirection direction,
+            FirewallProfiles profiles,
+            COMTypeResolver typeResolver
+        ) : this(name, action, direction, profiles, typeResolver)
         {
             ApplicationName = filename;
         }
@@ -47,8 +68,29 @@ namespace WindowsFirewallHelper.FirewallRules
             string name,
             FirewallAction action,
             FirewallDirection direction,
-            FirewallProfiles profiles) :
-            this(ComHelper.CreateInstance<INetFwRule>())
+            FirewallProfiles profiles
+        ) :
+            this(name, action, direction, profiles, new COMTypeResolver())
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new general rule for Windows Firewall with Advanced Security
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="action">Action that this rule defines</param>
+        /// <param name="direction">Data direction in which this rule applies to</param>
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        /// <param name="typeResolver">The COM+ object resolver</param>
+        // ReSharper disable once TooManyDependencies
+        public FirewallWASRule(
+            string name,
+            FirewallAction action,
+            FirewallDirection direction,
+            FirewallProfiles profiles,
+            COMTypeResolver typeResolver
+        ) :
+            this(typeResolver.CreateInstance<INetFwRule>())
         {
             Name = name;
             Action = action;
@@ -71,10 +113,32 @@ namespace WindowsFirewallHelper.FirewallRules
             ushort port,
             FirewallAction action,
             FirewallDirection direction,
-            FirewallProfiles profiles) : this(name, action, direction, profiles)
+            FirewallProfiles profiles
+        ) : this(name, port, action, direction, profiles, new COMTypeResolver())
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new port rule for Windows Firewall with Advanced Security
+        /// </summary>
+        /// <param name="name">Name of the rule</param>
+        /// <param name="port">Port number of the rule</param>
+        /// <param name="action">Action that this rule defines</param>
+        /// <param name="direction">Data direction in which this rule applies to</param>
+        /// <param name="profiles">The profile that this rule belongs to</param>
+        /// <param name="typeResolver">The COM+ object resolver</param>
+        // ReSharper disable once TooManyDependencies
+        public FirewallWASRule(
+            string name,
+            ushort port,
+            FirewallAction action,
+            FirewallDirection direction,
+            FirewallProfiles profiles,
+            COMTypeResolver typeResolver
+        ) : this(name, action, direction, profiles, typeResolver)
         {
             Protocol = FirewallProtocol.TCP;
-            LocalPorts = new[] {port};
+            LocalPorts = new[] { port };
         }
 
         internal FirewallWASRule(INetFwRule rule)
@@ -169,11 +233,19 @@ namespace WindowsFirewallHelper.FirewallRules
         }
 
         /// <summary>
-        ///     Returns a Boolean value indicating if these class is available in the current machine
+        ///     Returns a Boolean value indicating if this class is available in the current machine
         /// </summary>
-        public static bool IsSupported
+        public static bool IsLocallySupported
         {
-            get => ComHelper.IsSupported<INetFwRule>();
+            get => IsSupported(new COMTypeResolver());
+        }
+
+        /// <summary>
+        ///     Returns a Boolean value indicating if this class is available in the remote machine
+        /// </summary>
+        public static bool IsSupported(COMTypeResolver typeResolver)
+        {
+            return typeResolver.IsSupported<INetFwRule>();
         }
 
         /// <summary>

@@ -3,7 +3,6 @@ using System.ServiceProcess;
 using WindowsFirewallHelper.Collections;
 using WindowsFirewallHelper.COMInterop;
 using WindowsFirewallHelper.FirewallRules;
-using WindowsFirewallHelper.InternalHelpers;
 
 namespace WindowsFirewallHelper
 {
@@ -83,7 +82,10 @@ namespace WindowsFirewallHelper
         ///     Returns the list of all registered third party firewalls
         /// </summary>
         /// <exception cref="NotSupportedException">Thrown if third party firewalls are not supported.</exception>
-        public static IFirewallProductsCollection RegisteredProducts => new FirewallProductsCollection(GetProducts());
+        public static IFirewallProductsCollection RegisteredProducts
+        {
+            get => GetRegisteredProducts(new COMTypeResolver());
+        }
 
         /// <summary>
         ///     Attempts to get the list of all registered third party firewalls.
@@ -111,14 +113,14 @@ namespace WindowsFirewallHelper
         {
             get
             {
-                if (FirewallWAS.IsSupported)
+                if (FirewallWAS.IsLocallySupported)
                 {
-                    if (FirewallWASRuleWin8.IsSupported)
+                    if (FirewallWASRuleWin8.IsLocallySupported)
                     {
                         return FirewallAPIVersion.FirewallWASWin8;
                     }
 
-                    if (FirewallWASRuleWin7.IsSupported)
+                    if (FirewallWASRuleWin7.IsLocallySupported)
                     {
                         return FirewallAPIVersion.FirewallWASWin7;
                     }
@@ -126,7 +128,7 @@ namespace WindowsFirewallHelper
                     return FirewallAPIVersion.FirewallWAS;
                 }
 
-                if (FirewallLegacy.IsSupported)
+                if (FirewallLegacy.IsLocallySupported)
                 {
                     return FirewallAPIVersion.FirewallLegacy;
                 }
@@ -136,21 +138,38 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Register an instance of a third party firewall management class
+        ///     Register an instance of a third party firewall management class locally
+        /// </summary>
+        public static FirewallProductRegistrationHandle RegisterProduct(FirewallProduct product, COMTypeResolver typeResolver)
+        {
+            return new FirewallProductRegistrationHandle(GetProducts(typeResolver).Register(product.GetCOMObject()));
+        }
+
+        /// <summary>
+        ///     Register an instance of a third party firewall management class remotely
         /// </summary>
         public static FirewallProductRegistrationHandle RegisterProduct(FirewallProduct product)
         {
-            return new FirewallProductRegistrationHandle(GetProducts().Register(product.GetCOMObject()));
+            return RegisterProduct(product, new COMTypeResolver());
         }
 
-        private static INetFwProducts GetProducts()
+        /// <summary>
+        ///     Returns the list of all registered third party firewalls remotely
+        /// </summary>
+        /// <exception cref="NotSupportedException">Thrown if third party firewalls are not supported.</exception>
+        public static IFirewallProductsCollection GetRegisteredProducts(COMTypeResolver typeResolver)
         {
-            if (!FirewallProduct.IsSupported)
+           return new FirewallProductsCollection(GetProducts(typeResolver));
+        }
+
+        private static INetFwProducts GetProducts(COMTypeResolver typeResolver)
+        {
+            if (!FirewallProduct.IsSupported(typeResolver))
             {
                 throw new NotSupportedException();
             }
 
-            return ComHelper.CreateInstance<INetFwProducts>();
+            return typeResolver.CreateInstance<INetFwProducts>();
         }
     }
 }

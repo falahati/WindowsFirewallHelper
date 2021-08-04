@@ -17,13 +17,26 @@ namespace WindowsFirewallHelper
     public class FirewallWAS : IFirewall
     {
         /// <summary>
-        ///     Creates a new instance of this class on the current thread and leaves the cross thread control to the user of the
+        ///     Creates a new instance of this class on the current thread for the local machine and leaves the cross thread control to the user of the
         ///     class.
         /// </summary>
-        public FirewallWAS()
+        public FirewallWAS() : this(new COMTypeResolver())
         {
-            UnderlyingObject = ComHelper.CreateInstance<INetFwPolicy2>();
+        }
 
+        /// <summary>
+        ///     Creates a new instance of this class on the current thread for a remote machine and leaves the cross thread control to the user of the
+        ///     class.
+        /// </summary>
+        public FirewallWAS(COMTypeResolver typeResolver)
+        {
+            if (!IsSupported(typeResolver))
+            {
+                throw new NotSupportedException("This type is not supported in this environment.");
+            }
+
+            TypeResolver = typeResolver;
+            UnderlyingObject = TypeResolver.CreateInstance<INetFwPolicy2>();
             Profiles = new ReadOnlyCollection<FirewallWASProfile>(
                 new[]
                 {
@@ -37,9 +50,12 @@ namespace WindowsFirewallHelper
         /// <inheritdoc />
         public IFirewall Reload()
         {
-            UnderlyingObject = ComHelper.CreateInstance<INetFwPolicy2>();
+            UnderlyingObject = TypeResolver.CreateInstance<INetFwPolicy2>();
             return this;
         }
+
+        /// <inheritdoc />
+        public COMTypeResolver TypeResolver { get; }
 
         /// <summary>
         ///     Gets the current singleton instance of this class
@@ -50,11 +66,19 @@ namespace WindowsFirewallHelper
         }
 
         /// <summary>
-        ///     Gets a Boolean value showing if the firewall is supported in this environment.
+        ///     Gets a Boolean value showing if the firewall is supported locally
         /// </summary>
-        public static bool IsSupported
+        public static bool IsLocallySupported
         {
-            get => ComHelper.IsSupported<INetFwPolicy2>();
+            get => IsSupported(new COMTypeResolver());
+        }
+
+        /// <summary>
+        ///     Gets a Boolean value showing if the firewall is supported remotely
+        /// </summary>
+        public static bool IsSupported(COMTypeResolver typeResolver)
+        {
+            return typeResolver.IsSupported<INetFwPolicy2>();
         }
 
         /// <summary>
@@ -283,30 +307,25 @@ namespace WindowsFirewallHelper
             FirewallProtocol protocol
         )
         {
-            if (!IsSupported)
+            if (FirewallWASRuleWin8.IsSupported(TypeResolver))
             {
-                throw new FirewallWASNotSupportedException();
-            }
-
-            if (FirewallWASRuleWin8.IsSupported)
-            {
-                return new FirewallWASRuleWin8(name, filename, action, direction, profiles)
+                return new FirewallWASRuleWin8(name, filename, action, direction, profiles, TypeResolver)
                 {
                     Protocol = protocol
                 };
             }
 
-            if (FirewallWASRuleWin7.IsSupported)
+            if (FirewallWASRuleWin7.IsSupported(TypeResolver))
             {
-                return new FirewallWASRuleWin7(name, filename, action, direction, profiles)
+                return new FirewallWASRuleWin7(name, filename, action, direction, profiles, TypeResolver)
                 {
                     Protocol = protocol
                 };
             }
 
-            if (FirewallWASRule.IsSupported)
+            if (FirewallWASRule.IsSupported(TypeResolver))
             {
-                return new FirewallWASRule(name, filename, action, direction, profiles)
+                return new FirewallWASRule(name, filename, action, direction, profiles, TypeResolver)
                 {
                     Protocol = protocol
                 };
@@ -333,11 +352,6 @@ namespace WindowsFirewallHelper
             FirewallProtocol protocol
         )
         {
-            if (!IsSupported)
-            {
-                throw new FirewallWASNotSupportedException();
-            }
-
             var activeProfile = GetActiveProfile();
 
             if (activeProfile == null)
@@ -368,55 +382,55 @@ namespace WindowsFirewallHelper
             FirewallProtocol protocol
         )
         {
-            if (!IsSupported)
-            {
-                throw new FirewallWASNotSupportedException();
-            }
-
-            if (!protocol.Equals(FirewallProtocol.TCP) &&
-                !protocol.Equals(FirewallProtocol.UDP))
+            if (
+                !protocol.Equals(FirewallProtocol.TCP) &&
+                !protocol.Equals(FirewallProtocol.UDP)
+                )
             {
                 throw new FirewallWASInvalidProtocolException(
                     "Invalid protocol selected; rule's protocol should be TCP or UDP."
                 );
             }
 
-            if (FirewallWASRuleWin8.IsSupported)
+            if (FirewallWASRuleWin8.IsSupported(TypeResolver))
             {
                 return new FirewallWASRuleWin8(
                     name,
                     portNumber,
                     action,
                     direction,
-                    profiles
+                    profiles,
+                    TypeResolver
                 )
                 {
                     Protocol = protocol
                 };
             }
 
-            if (FirewallWASRuleWin7.IsSupported)
+            if (FirewallWASRuleWin7.IsSupported(TypeResolver))
             {
                 return new FirewallWASRuleWin7(
                     name,
                     portNumber,
                     action,
                     direction,
-                    profiles
+                    profiles,
+                    TypeResolver
                 )
                 {
                     Protocol = protocol
                 };
             }
 
-            if (FirewallWASRule.IsSupported)
+            if (FirewallWASRule.IsSupported(TypeResolver))
             {
                 return new FirewallWASRule(
                     name,
                     portNumber,
                     action,
                     direction,
-                    profiles
+                    profiles,
+                    TypeResolver
                 )
                 {
                     Protocol = protocol
@@ -444,11 +458,6 @@ namespace WindowsFirewallHelper
             FirewallProtocol protocol
         )
         {
-            if (!IsSupported)
-            {
-                throw new FirewallWASNotSupportedException();
-            }
-
             var activeProfile = GetActiveProfile();
 
             if (activeProfile == null)

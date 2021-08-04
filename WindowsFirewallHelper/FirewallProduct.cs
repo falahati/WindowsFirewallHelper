@@ -75,6 +75,9 @@ namespace WindowsFirewallHelper
             set => UnderlyingObject.DisplayName = value;
         }
 
+        /// <summary>
+        ///     Gets the active COM+ Object resolver instance
+        /// </summary>
         public COMTypeResolver TypeResolver { get; }
 
         /// <summary>

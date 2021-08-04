@@ -14,11 +14,18 @@ namespace WindowsFirewallHelper
         /// </summary>
         public string MachineName { get; }
 
+        /// <summary>
+        ///     Creates a new instance of <see cref="COMTypeResolver"/> allowing COM+ connection to remote machines
+        /// </summary>
+        /// <param name="machineName">The remote machine name or IP address</param>
         public COMTypeResolver(string machineName)
         {
             MachineName = machineName;
         }
 
+        /// <summary>
+        ///     Creates a new instance of <see cref="COMTypeResolver"/> providing COM+ connection to local machine
+        /// </summary>
         public COMTypeResolver() : this(null)
         {
             

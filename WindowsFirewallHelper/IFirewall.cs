@@ -180,6 +180,14 @@ namespace WindowsFirewallHelper
         );
 
         /// <summary>
+        ///     Creates a new instance of the underlying COM object and clears all caches.
+        ///     Previously returned objects that are bound to the firewall COM object might not work as expected.
+        /// </summary>
+        /// <returns>Returns the current instance of the <see cref="IFirewall" /> interface that can be used for method chaining.</returns>
+        // ReSharper disable once TooManyArguments
+        IFirewall Reload();
+
+        /// <summary>
         ///     Creates a rule about a TCP port to be registered to the current firewall profile
         /// </summary>
         /// <param name="name">Name of the rule</param>

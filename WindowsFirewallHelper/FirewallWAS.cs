@@ -24,12 +24,21 @@ namespace WindowsFirewallHelper
         {
             UnderlyingObject = ComHelper.CreateInstance<INetFwPolicy2>();
 
-            Profiles = new ReadOnlyCollection<FirewallWASProfile>(new[]
-            {
-                new FirewallWASProfile(this, NetFwProfileType2.Domain),
-                new FirewallWASProfile(this, NetFwProfileType2.Private),
-                new FirewallWASProfile(this, NetFwProfileType2.Public)
-            });
+            Profiles = new ReadOnlyCollection<FirewallWASProfile>(
+                new[]
+                {
+                    new FirewallWASProfile(this, NetFwProfileType2.Domain),
+                    new FirewallWASProfile(this, NetFwProfileType2.Private),
+                    new FirewallWASProfile(this, NetFwProfileType2.Public)
+                }
+            );
+        }
+
+        /// <inheritdoc />
+        public IFirewall Reload()
+        {
+            UnderlyingObject = ComHelper.CreateInstance<INetFwPolicy2>();
+            return this;
         }
 
         /// <summary>
@@ -85,7 +94,7 @@ namespace WindowsFirewallHelper
             get => new FirewallWASRulesCollection<FirewallWASRule>(UnderlyingObject.Rules);
         }
 
-        internal INetFwPolicy2 UnderlyingObject { get; }
+        internal INetFwPolicy2 UnderlyingObject { get; private set; }
 
         /// <inheritdoc />
         // ReSharper disable once TooManyArguments

@@ -28,11 +28,20 @@ namespace WindowsFirewallHelper
 
             UnderlyingObject = ComHelper.CreateInstance<INetFwMgr>();
 
-            Profiles = new ReadOnlyCollection<FirewallLegacyProfile>(new[]
-            {
-                new FirewallLegacyProfile(this, FirewallProfiles.Domain),
-                new FirewallLegacyProfile(this, FirewallProfiles.Private)
-            });
+            Profiles = new ReadOnlyCollection<FirewallLegacyProfile>(
+                new[]
+                {
+                    new FirewallLegacyProfile(this, FirewallProfiles.Domain),
+                    new FirewallLegacyProfile(this, FirewallProfiles.Private)
+                }
+            );
+        }
+
+        /// <inheritdoc />
+        public IFirewall Reload()
+        {
+            UnderlyingObject = ComHelper.CreateInstance<INetFwMgr>();
+            return this;
         }
 
         /// <summary>
@@ -64,7 +73,7 @@ namespace WindowsFirewallHelper
             get => new FirewallLegacyRulesCollection(Profiles.ToArray());
         }
 
-        internal INetFwMgr UnderlyingObject { get; }
+        internal INetFwMgr UnderlyingObject { get; private set; }
 
         /// <inheritdoc />
         // ReSharper disable once TooManyArguments

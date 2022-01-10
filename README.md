@@ -5,7 +5,7 @@
 
 A class library to manage the Windows Firewall as well as adding your program to the Windows Firewall Exception list.
 
-This project supports dotNet4.6 and NetStandard2, therefore, is compatible with NetCore2+ and any version of dotNet 
+This project supports dotNet4.6, NetStandard2 and dotnet 5, therefore, is compatible with NetCore2+ and any version of dotNet 
 equal or greater than version 4.6.
 
 Even though it is possible to reference this library under Linux or Mac; it's obviously not going to work.

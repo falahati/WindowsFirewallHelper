@@ -76,7 +76,7 @@ namespace WindowsFirewallHelper.Sample
 
                 var newAppRule = FirewallManager.Instance.CreateApplicationRule(
                     profileType.Value,
-                    "!!TETS!! " + Guid.NewGuid().ToString("B"),
+                    "!!TEST!! " + Guid.NewGuid().ToString("B"),
                     FirewallAction.Allow,
                     ofd_app.FileName
                 );

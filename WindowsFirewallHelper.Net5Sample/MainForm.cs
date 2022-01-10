@@ -27,7 +27,7 @@ namespace WindowsFirewallHelper.Net5Sample
 
             node.Nodes.Clear();
 
-            if (o is ICollection<FirewallWASRule> || o is ICollection<IFirewallRule>)
+            if (o is ICollection<FirewallWASRule> or ICollection<IFirewallRule>)
             {
                 foreach (var item in ((IEnumerable) o).Cast<IFirewallRule>().OrderBy(rule => rule.FriendlyName))
                 {
@@ -48,7 +48,7 @@ namespace WindowsFirewallHelper.Net5Sample
                     if (propertyInfo.PropertyType.GetInterfaces().Contains(typeof(IEnumerable)) &&
                         propertyInfo.PropertyType != typeof(string))
                     {
-                        if (!propertyInfo.GetGetMethod().IsStatic)
+                        if (propertyInfo.GetGetMethod()?.IsStatic == false)
                         {
                             var value = propertyInfo.GetValue(o, null);
                             node.Nodes.Add(new TreeNode("[" + propertyInfo.Name + "] ") {Tag = value});
@@ -76,7 +76,7 @@ namespace WindowsFirewallHelper.Net5Sample
 
                 var newAppRule = FirewallManager.Instance.CreateApplicationRule(
                     profileType.Value,
-                    "!!TETS!! " + Guid.NewGuid().ToString("B"),
+                    "!!TEST!! " + Guid.NewGuid().ToString("B"),
                     FirewallAction.Allow,
                     ofd_app.FileName
                 );

@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WindowsFirewallHelper\WindowsFirewallHelper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="AddPortForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AddPortForm.Designer.cs">
+      <DependentUpon>AddPortForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="EditRuleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="EditRuleForm.Designer.cs">
+      <DependentUpon>EditRuleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="AddPortForm.resx">
+      <DependentUpon>AddPortForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="EditRuleForm.resx">
+      <DependentUpon>EditRuleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

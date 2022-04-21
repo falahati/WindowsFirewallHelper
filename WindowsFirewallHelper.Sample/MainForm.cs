@@ -124,15 +124,15 @@ namespace WindowsFirewallHelper.Sample
                     addPortDialog.FirewallProtocol
                 );
 
-				// GMS 2019-08-22 - Commented as the property grid was consistently having error showing the newly created object.
-				//var editDialog = new EditRuleForm(newPortRule);
-				//if (editDialog.ShowDialog() == DialogResult.OK)
-				//{
-					FirewallManager.Instance.Rules.Add(newPortRule);
+                // GMS 2019-08-22 - Commented as the property grid was consistently having error showing the newly created object.
+                //var editDialog = new EditRuleForm(newPortRule);
+                //if (editDialog.ShowDialog() == DialogResult.OK)
+                //{
+                    FirewallManager.Instance.Rules.Add(newPortRule);
 
-					RefreshTreeView();
-				//}
-			}
+                    RefreshTreeView();
+                //}
+            }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -190,12 +190,12 @@ namespace WindowsFirewallHelper.Sample
             NodeDiscovery(topLevelNode);
         }
 
-		private void buttonThirdParty_Click(object sender, EventArgs e)
-		{
-			using (ThirdPartyFirewalls form = new ThirdPartyFirewalls())
-			{
-				form.ShowDialog();
-			}
-		}
-	}
+        private void buttonThirdParty_Click(object sender, EventArgs e)
+        {
+            using (ThirdPartyFirewalls form = new ThirdPartyFirewalls())
+            {
+                form.ShowDialog();
+            }
+        }
+    }
 }

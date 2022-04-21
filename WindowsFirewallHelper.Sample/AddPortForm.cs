@@ -4,17 +4,21 @@ namespace WindowsFirewallHelper.Sample
 {
     internal partial class AddPortForm : Form
     {
-        public AddPortForm(
+		public AddPortForm()
+		{
+			InitializeComponent();
+
+			cb_protocol.Items.Add(FirewallProtocol.TCP);
+			cb_protocol.Items.Add(FirewallProtocol.UDP);
+			cb_protocol.Items.Add(FirewallProtocol.Any);
+			cb_protocol.SelectedIndex = 0;
+		}
+
+		public AddPortForm(
 			FirewallProfiles currentProfile,
 			string defaultRuleName)
+			: this()
         {
-            InitializeComponent();
-
-            cb_protocol.Items.Add(FirewallProtocol.TCP);
-            cb_protocol.Items.Add(FirewallProtocol.UDP);
-            cb_protocol.Items.Add(FirewallProtocol.Any);
-            cb_protocol.SelectedIndex = 0;
-
 			textBoxRuleName.Text = defaultRuleName;
 
 			for (int index = 0; index < checkedListBoxProfiles.Items.Count; index++)

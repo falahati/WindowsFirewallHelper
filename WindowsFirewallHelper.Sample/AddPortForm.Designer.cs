@@ -73,7 +73,7 @@
             0,
             0});
 			this.nud_port.Name = "nud_port";
-			this.nud_port.Size = new System.Drawing.Size(172, 20);
+			this.nud_port.Size = new System.Drawing.Size(105, 20);
 			this.nud_port.TabIndex = 1;
 			this.nud_port.Value = new decimal(new int[] {
             8080,
@@ -87,14 +87,14 @@
 			this.cb_protocol.FormattingEnabled = true;
 			this.cb_protocol.Location = new System.Drawing.Point(103, 68);
 			this.cb_protocol.Name = "cb_protocol";
-			this.cb_protocol.Size = new System.Drawing.Size(172, 21);
+			this.cb_protocol.Size = new System.Drawing.Size(105, 21);
 			this.cb_protocol.TabIndex = 2;
 			// 
 			// btn_ok
 			// 
 			this.btn_ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btn_ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btn_ok.Location = new System.Drawing.Point(197, 224);
+			this.btn_ok.Location = new System.Drawing.Point(374, 224);
 			this.btn_ok.Name = "btn_ok";
 			this.btn_ok.Size = new System.Drawing.Size(78, 23);
 			this.btn_ok.TabIndex = 5;
@@ -105,7 +105,7 @@
 			// 
 			this.btn_cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btn_cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btn_cancel.Location = new System.Drawing.Point(113, 224);
+			this.btn_cancel.Location = new System.Drawing.Point(290, 224);
 			this.btn_cancel.Name = "btn_cancel";
 			this.btn_cancel.Size = new System.Drawing.Size(78, 23);
 			this.btn_cancel.TabIndex = 4;
@@ -123,9 +123,11 @@
 			// 
 			// textBoxRuleName
 			// 
+			this.textBoxRuleName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.textBoxRuleName.Location = new System.Drawing.Point(103, 10);
 			this.textBoxRuleName.Name = "textBoxRuleName";
-			this.textBoxRuleName.Size = new System.Drawing.Size(172, 20);
+			this.textBoxRuleName.Size = new System.Drawing.Size(349, 20);
 			this.textBoxRuleName.TabIndex = 0;
 			// 
 			// checkedListBoxProfiles
@@ -137,7 +139,7 @@
             "Public"});
 			this.checkedListBoxProfiles.Location = new System.Drawing.Point(103, 105);
 			this.checkedListBoxProfiles.Name = "checkedListBoxProfiles";
-			this.checkedListBoxProfiles.Size = new System.Drawing.Size(172, 109);
+			this.checkedListBoxProfiles.Size = new System.Drawing.Size(105, 109);
 			this.checkedListBoxProfiles.TabIndex = 3;
 			// 
 			// label4
@@ -155,7 +157,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btn_cancel;
-			this.ClientSize = new System.Drawing.Size(287, 256);
+			this.ClientSize = new System.Drawing.Size(464, 256);
 			this.ControlBox = false;
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.checkedListBoxProfiles);

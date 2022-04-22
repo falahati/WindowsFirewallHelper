@@ -16,6 +16,7 @@
     <Title>Windows Firewall Helper (Win XP+)</Title>
     <AssemblyOriginatorKeyFile>OpenSourceStrongNameSignKey.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference PrivateAssets="all" Include="MSBump" Version="2.3.2">

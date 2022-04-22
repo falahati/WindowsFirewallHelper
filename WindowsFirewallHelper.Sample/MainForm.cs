@@ -125,13 +125,13 @@ namespace WindowsFirewallHelper.Sample
                 );
 
                 // GMS 2019-08-22 - Commented as the property grid was consistently having error showing the newly created object.
-                //var editDialog = new EditRuleForm(newPortRule);
-                //if (editDialog.ShowDialog() == DialogResult.OK)
-                //{
+                var editDialog = new EditRuleForm(newPortRule);
+                if (editDialog.ShowDialog() == DialogResult.OK)
+                {
                     FirewallManager.Instance.Rules.Add(newPortRule);
 
                     RefreshTreeView();
-                //}
+                }
             }
             catch (Exception ex)
             {

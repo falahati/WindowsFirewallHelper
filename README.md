@@ -1,5 +1,5 @@
 # Windows Firewall Helper Class Library
-[![](https://img.shields.io/github/license/falahati/WindowsFirewallHelper.svg?style=flat-square)](https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE)
+[![Financial Contributors on Open Collective](https://opencollective.com/WindowsFirewallHelper/all/badge.svg?label=financial+contributors)](https://opencollective.com/WindowsFirewallHelper) [![](https://img.shields.io/github/license/falahati/WindowsFirewallHelper.svg?style=flat-square)](https://github.com/falahati/WindowsFirewallHelper/blob/master/LICENSE)
 [![](https://img.shields.io/github/commit-activity/y/falahati/WindowsFirewallHelper.svg?style=flat-square)](https://github.com/falahati/WindowsFirewallHelper/commits/master)
 [![](https://img.shields.io/github/issues/falahati/WindowsFirewallHelper.svg?style=flat-square)](https://github.com/falahati/WindowsFirewallHelper/issues)
 
@@ -199,6 +199,36 @@ if (FirewallWAS.IsSupported && FirewallWASRuleWin8.IsSupported)
     FirewallWAS.Instance.Rules.Add(rule);
 }
 ```
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/falahati/WindowsFirewallHelper/graphs/contributors"><img src="https://opencollective.com/WindowsFirewallHelper/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/WindowsFirewallHelper/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/WindowsFirewallHelper"><img src="https://opencollective.com/WindowsFirewallHelper/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/WindowsFirewallHelper/contribute)]
+
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/0/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/1/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/2/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/3/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/4/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/5/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/6/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/7/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/8/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/WindowsFirewallHelper/organization/9/website"><img src="https://opencollective.com/WindowsFirewallHelper/organization/9/avatar.svg"></a>
 
 ## License
 The MIT License (MIT)
